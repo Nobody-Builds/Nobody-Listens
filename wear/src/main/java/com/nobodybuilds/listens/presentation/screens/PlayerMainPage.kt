@@ -22,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
@@ -30,13 +29,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.wear.compose.foundation.ExperimentalWearFoundationApi
-import androidx.wear.compose.foundation.requestFocusOnHierarchyActive
-import androidx.wear.compose.foundation.rotary.rotaryScrollable
+import com.nobodybuilds.listens.presentation.components.rotaryInput
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.google.android.horologist.audio.ui.VolumeUiState
 import com.google.android.horologist.audio.ui.volumeRotaryBehavior
-import com.google.android.horologist.compose.layout.ScalingLazyColumn
+import com.nobodybuilds.listens.presentation.components.WatchScalingColumn
 import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
 import com.nobodybuilds.listens.presentation.components.AlwaysOnScalingPositionIndicator
 import com.nobodybuilds.listens.presentation.components.CurvedVolumeIndicator
@@ -120,7 +118,6 @@ internal fun MainPlayerPage(
         animationSpec = tween(durationMillis = 220),
         label = "queueShortcutReveal",
     )
-    val rotaryFocusRequester = remember { FocusRequester() }
     val rotaryVolumeUiState = remember(activeVolumeState.level, activeVolumeState.max) {
         VolumeUiState(
             current = activeVolumeState.level.coerceAtLeast(0),
@@ -152,19 +149,18 @@ internal fun MainPlayerPage(
     }
 
     val rotaryModifier = if (rotaryEnabled && volumeEnabled && activeVolumeState.max > 0) {
-        Modifier
-            .requestFocusOnHierarchyActive()
-            .rotaryScrollable(
-                behavior = volumeRotaryBehavior(
-                    volumeUiStateProvider = { rotaryVolumeUiState },
-                    onRotaryVolumeInput = { newVolume ->
-                        showVolumeOverlay = true
-                        volumeOverlayInteractionTick++
-                        onSetActiveVolume(newVolume)
-                    },
-                ),
-                focusRequester = rotaryFocusRequester,
-            )
+        // The bezel is volume here, but only while this page is on show (see rotaryInput).
+        Modifier.rotaryInput(
+            behavior = volumeRotaryBehavior(
+                volumeUiStateProvider = { rotaryVolumeUiState },
+                onRotaryVolumeInput = { newVolume ->
+                    showVolumeOverlay = true
+                    volumeOverlayInteractionTick++
+                    onSetActiveVolume(newVolume)
+                },
+            ),
+            active = true,
+        )
     } else {
         Modifier
     }
@@ -174,11 +170,12 @@ internal fun MainPlayerPage(
             .fillMaxSize()
             .then(rotaryModifier)
     ) {
-        ScalingLazyColumn(
+        WatchScalingColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 6.dp),
             columnState = columnState,
+            rotaryActive = false, // the bezel sets the volume on this page
         ) {
             item { Spacer(modifier = Modifier.height(24.dp)) }
 

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
-import com.google.android.horologist.compose.layout.ScalingLazyColumn
+import com.nobodybuilds.listens.presentation.components.WatchScalingColumn
 import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
 import com.nobodybuilds.listens.R
 import com.nobodybuilds.listens.data.TransferState
@@ -57,7 +57,7 @@ internal fun DownloadedSongActionScreen(
             .background(palette.screenBackgroundColor())
             .zIndex(12f),
     ) {
-        ScalingLazyColumn(
+        WatchScalingColumn(
             modifier = Modifier.fillMaxSize(),
             columnState = columnState,
         ) {
@@ -173,7 +173,7 @@ internal fun ConfirmDeleteDownloadedSongScreen(
             .background(palette.screenBackgroundColor())
             .zIndex(12f),
     ) {
-        ScalingLazyColumn(
+        WatchScalingColumn(
             modifier = Modifier.fillMaxSize(),
             columnState = columnState,
         ) {
@@ -267,7 +267,7 @@ internal fun ConfirmCancelTransferScreen(
             .background(palette.screenBackgroundColor())
             .zIndex(12f),
     ) {
-        ScalingLazyColumn(
+        WatchScalingColumn(
             modifier = Modifier.fillMaxSize(),
             columnState = columnState,
         ) {

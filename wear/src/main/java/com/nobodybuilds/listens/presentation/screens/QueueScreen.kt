@@ -39,7 +39,7 @@ import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
-import com.google.android.horologist.compose.layout.ScalingLazyColumn
+import com.nobodybuilds.listens.presentation.components.WatchScalingColumn
 import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
 import com.nobodybuilds.listens.R
 import com.nobodybuilds.listens.presentation.components.AlwaysOnScalingPositionIndicator
@@ -145,7 +145,7 @@ fun QueueScreen(
                     .fillMaxWidth()
                     .weight(1f),
             ) {
-                ScalingLazyColumn(
+                WatchScalingColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 8.dp),

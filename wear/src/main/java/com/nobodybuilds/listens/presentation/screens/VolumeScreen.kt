@@ -34,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,8 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.wear.compose.foundation.ExperimentalWearFoundationApi
-import androidx.wear.compose.foundation.requestFocusOnHierarchyActive
-import androidx.wear.compose.foundation.rotary.rotaryScrollable
+import com.nobodybuilds.listens.presentation.components.rotaryInput
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
@@ -99,7 +97,6 @@ fun VolumeScreen(
         label = "volumeProgress",
     )
     val background = palette.screenBackgroundColor()
-    val rotaryFocusRequester = remember { FocusRequester() }
     val rotaryVolumeUiState = remember(volumeState.level, volumeState.max) {
         VolumeUiState(
             current = volumeState.level.coerceAtLeast(0),
@@ -111,13 +108,12 @@ fun VolumeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .requestFocusOnHierarchyActive()
-            .rotaryScrollable(
+            .rotaryInput(
                 behavior = volumeRotaryBehavior(
                     volumeUiStateProvider = { rotaryVolumeUiState },
                     onRotaryVolumeInput = viewModel::setActiveVolume,
                 ),
-                focusRequester = rotaryFocusRequester,
+                active = true,
             )
             .background(background),
     ) {

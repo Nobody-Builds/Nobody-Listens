@@ -36,7 +36,7 @@ import androidx.wear.compose.material.Text
 import com.nobodybuilds.listens.data.WearAudioOutputRoute
 import com.nobodybuilds.listens.data.WearLifecycleState
 import com.nobodybuilds.listens.R
-import com.google.android.horologist.compose.layout.ScalingLazyColumn
+import com.nobodybuilds.listens.presentation.components.WatchScalingColumn
 import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
 import com.nobodybuilds.listens.data.WearOutputTarget
 import com.nobodybuilds.listens.presentation.components.AlwaysOnScalingPositionIndicator
@@ -95,7 +95,7 @@ fun OutputScreen(
             .fillMaxSize()
             .background(background),
     ) {
-        ScalingLazyColumn(
+        WatchScalingColumn(
             modifier = Modifier.fillMaxSize(),
             columnState = columnState,
         ) {

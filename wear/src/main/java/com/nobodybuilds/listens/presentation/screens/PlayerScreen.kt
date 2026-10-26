@@ -157,6 +157,7 @@ private fun PlayerContent(
                 else -> {
                     BrowseScreen(
                         onCategoryClick = onBrowseCategoryClick,
+                        rotaryActive = pagerState.currentPage == 1,
                     )
                 }
             }
