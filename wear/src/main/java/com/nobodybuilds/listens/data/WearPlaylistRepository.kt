@@ -8,6 +8,7 @@ import com.nobodybuilds.listens.shared.WearTransferProgress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -70,6 +71,7 @@ class WearPlaylistRepository @Inject constructor(
 
     /** Saves the playlist now and fetches its songs in the background, even after the screen closes. */
     fun savePlaylist(playlistId: String, name: String, items: List<WearLibraryItem>) {
+        if (playlistId in _savingPlaylistIds.value) return
         val songs = items.filter { it.type == WearLibraryItem.TYPE_SONG }
         _savingPlaylistIds.update { it + playlistId }
         scope.launch {
@@ -102,26 +104,40 @@ class WearPlaylistRepository @Inject constructor(
         }
     }
 
-    /** Requests one song and waits until it's saved or its transfer ends. Returns whether it was saved. */
+    /**
+     * Requests one song (or follows a transfer of it that is already running) and waits until it's
+     * saved or the transfer ends. Returns whether it was saved.
+     */
     private suspend fun fetchSong(songId: String): Boolean {
         val requestId = UUID.randomUUID().toString()
         transferRepository.requestTransfer(songId, requestId = requestId)
+        var seen = false
         val saved = withTimeoutOrNull(SONG_TIMEOUT_MS) {
             combine(transferRepository.downloadedSongIds, transferRepository.activeTransfers) { downloaded, active ->
+                val transfer = active[requestId] ?: active.values.firstOrNull {
+                    it.songId == songId && it.status == WearTransferProgress.STATUS_TRANSFERRING
+                }
+                if (transfer != null) seen = true
                 when {
                     songId in downloaded -> true
-                    active[requestId]?.status in ENDED_STATUSES -> false
+                    transfer?.status in ENDED_STATUSES -> false
+                    // Cancelled transfers are removed rather than marked; a finished one leaves a row.
+                    transfer == null && seen -> false
                     else -> null
                 }
             }.first { it != null }
         }
-        return saved == true
+        if (saved == true) return true
+        // The row can land just after the transfer entry goes away.
+        delay(ROW_SETTLE_MS)
+        return songId in transferRepository.downloadedSongIds.first()
     }
 
     private companion object {
         const val TAG = "WearPlaylistRepo"
         const val SONG_TIMEOUT_MS = 5 * 60_000L
         const val MAX_FAILURES_IN_A_ROW = 3
+        const val ROW_SETTLE_MS = 1_000L
         val ENDED_STATUSES = setOf(WearTransferProgress.STATUS_FAILED, WearTransferProgress.STATUS_CANCELLED)
     }
 }

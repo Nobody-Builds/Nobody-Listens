@@ -88,7 +88,7 @@ object YouTubeMusicParsers {
             val title = row["title"]?.let(::firstRun) ?: return@mapNotNull null
             val byline = row["longBylineText"]?.let { joinRuns(it) }.orEmpty()
             // "Artist • Album • 2022"
-            val names = byline.split("•").map { it.trim() }.filter { it.isNotBlank() && !isMetaText(it) }
+            val names = namesOnly(byline.split("•").map { it.trim() })
             val ids = browseIds(row["longBylineText"])
             YouTubeMusicTrack(
                 videoId = videoId,
@@ -259,12 +259,12 @@ object YouTubeMusicParsers {
             ?: return null
         // "Song • Arijit Singh • Album", "Sony Music • 88M views • 3:18": keep only names.
         val detailParts = columns.drop(1).flatMap { it.split("•") }.map { it.trim() }
-        val rest = detailParts.filter { it.isNotBlank() && !isMetaText(it) }
+        val rest = namesOnly(detailParts)
         val rawSubtitleParts = item["subtitle"]?.let { joinRuns(it) }.orEmpty()
             .split("•")
             .map { it.trim() }
             .filter { it.isNotBlank() }
-        val subtitleParts = rawSubtitleParts.filterNot(::isMetaText)
+        val subtitleParts = namesOnly(rawSubtitleParts)
         val durationMs = detailParts.firstNotNullOfOrNull { parseDuration(it) }
             ?: rawSubtitleParts.firstNotNullOfOrNull { parseDuration(it) }
             ?: 0L
@@ -449,8 +449,11 @@ object YouTubeMusicParsers {
 
     private val DURATION_TEXT = Regex("""\d{1,2}:\d{2}(?::\d{2})?""")
     // "88M views", "24 crore views", "1.2 lakh plays": a number, an optional scale word, a unit.
+    // "88M views", "6.7K plays", "24 crore views", "1.2 lakh plays": a number, an optional scale, a unit.
+    // Only known scale words, so names like "69 Love Songs" stay.
     private val COUNT_TEXT = Regex(
-        """[\d.,]+\s*(?:[^\s\d]+\s+)?(views?|plays?|likes?|songs?|subscribers?|monthly audience|watching)""",
+        """[\d.,]+\s*[KMB]?\s*(?:(?:lakh|crore|thousand|million|billion)\s+)?""" +
+            """(views?|plays?|likes?|songs?|subscribers?|monthly audience|watching)""",
         RegexOption.IGNORE_CASE,
     )
 
@@ -460,6 +463,16 @@ object YouTubeMusicParsers {
 
     // Upload dates on video and episode rows: "Aug 20, 2021", "2021".
     private val DATE_TEXT = Regex("""(?:[A-Z][a-z]{2} \d{1,2}, )?\d{4}""")
+
+    private val YEAR_TEXT = Regex("""\d{4}""")
+
+    /**
+     * The name parts of a byline. A bare year only counts as a date in the last slot
+     * ("Artist • Album • 2014"), so an album called "1989" is kept.
+     */
+    private fun namesOnly(parts: List<String>): List<String> = parts.filterIndexed { index, part ->
+        part.isNotBlank() && (!isMetaText(part) || (part.matches(YEAR_TEXT) && index < parts.lastIndex))
+    }
 
     private fun isMetaText(text: String): Boolean =
         text in TYPE_LABELS || text.matches(DURATION_TEXT) ||

@@ -8,6 +8,7 @@ import com.nobodybuilds.listens.shared.WearBrowseRequest
 import com.nobodybuilds.listens.shared.WearLibraryItem
 import kotlinx.coroutines.flow.first
 import timber.log.Timber
+import java.io.File
 
 private const val MAX_QUEUE_ITEMS = 20
 
@@ -165,9 +166,8 @@ internal class WearLibraryBrowser(
             title = title,
             subtitle = displayArtist,
             type = WearLibraryItem.TYPE_SONG,
-            // A cheap guess for the list; the transfer itself checks the file properly.
-            canSaveToWatch = path.isNotBlank() || contentUriString.startsWith("content://") ||
-                contentUriString.startsWith("file://"),
+            // Only songs with a file on this phone (Jellyfin/Navidrome paths are server paths).
+            canSaveToWatch = (path.isNotBlank() && File(path).isFile) || contentUriString.startsWith("content://"),
         )
     }
 

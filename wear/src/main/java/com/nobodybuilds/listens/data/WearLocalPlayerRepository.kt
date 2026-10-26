@@ -7,6 +7,8 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.HttpDataSource
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
@@ -134,8 +136,11 @@ class WearLocalPlayerRepository @Inject constructor(
                     updateState()
                 }
 
+                @androidx.annotation.OptIn(UnstableApi::class)
                 override fun onPlayerError(error: PlaybackException) {
-                    // A refused YouTube URL: the next try asks another stream client.
+                    // YouTube refused the URL (not a dropped connection): the next try asks another client.
+                    val code = (error.cause as? HttpDataSource.InvalidResponseCodeException)?.responseCode
+                    if (code != 403 && code != 410) return
                     val uri = player.currentMediaItem?.localConfiguration?.uri ?: return
                     WearYouTubeRepository.videoIdFrom(uri)?.let(youTube::reportStreamRejected)
                 }

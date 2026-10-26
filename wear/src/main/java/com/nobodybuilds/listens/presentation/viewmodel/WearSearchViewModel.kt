@@ -68,17 +68,17 @@ class WearSearchViewModel @Inject constructor(
         searchJob = viewModelScope.launch {
             launch {
                 val tracks = runCatching { youTubeRepository.search(trimmed) }.getOrDefault(emptyList())
-                _state.update { it.copy(youTubeTracks = tracks.take(MAX_YOUTUBE_RESULTS), isSearchingYouTube = false) }
+                updateIfCurrent(trimmed) { it.copy(youTubeTracks = tracks.take(MAX_YOUTUBE_RESULTS), isSearchingYouTube = false) }
             }
             val saved = transferRepository.localSongs.first()
                 .filter { WearSearchMatcher.matches(trimmed, it.title, it.artist, it.album) }
             // Without the audio permission the scan fails; the saved songs still show.
             val device = runCatching { deviceMusicRepository.scanDeviceSongs() }.getOrDefault(emptyList())
                 .filter { WearSearchMatcher.matches(trimmed, it.title, it.artist, it.album) }
-            _state.update { it.copy(savedSongs = saved, deviceSongs = device) }
+            updateIfCurrent(trimmed) { it.copy(savedSongs = saved, deviceSongs = device) }
 
             val phone = libraryRepository.browse(WearBrowseRequest.SEARCH, trimmed)
-            _state.update {
+            updateIfCurrent(trimmed) {
                 it.copy(
                     isSearching = false,
                     phoneSongs = phone.items.filter { item -> item.type == WearLibraryItem.TYPE_SONG },
@@ -86,6 +86,11 @@ class WearSearchViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    /** Lookups swallow cancellation, so a replaced search can still finish; drop its results. */
+    private fun updateIfCurrent(query: String, change: (WearSearchState) -> WearSearchState) {
+        _state.update { if (it.query == query) change(it) else it }
     }
 
     fun playSavedSong(songId: String) {

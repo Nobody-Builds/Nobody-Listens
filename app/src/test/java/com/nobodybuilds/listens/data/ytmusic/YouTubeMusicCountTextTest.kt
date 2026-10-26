@@ -48,6 +48,26 @@ class YouTubeMusicCountTextTest {
     }
 
     @Test
+    fun `names that look like counts or years are kept`() {
+        val page = YouTubeMusicParsers.parseBrowse(
+            """{ "contents": [
+                ${row("fffffffffff", "Book of Love", "Song • The Magnetic Fields • 69 Love Songs", "1.2K plays")}
+            ] }"""
+        )
+        assertEquals("69 Love Songs", page.shelves.flatMap { it.tracks }.single().album)
+
+        val radio = YouTubeMusicParsers.parseRadio(
+            """{ "contents": [{ "playlistPanelVideoRenderer": {
+                "videoId": "ggggggggggg",
+                "title": { "runs": [{ "text": "Style" }] },
+                "longBylineText": { "runs": [{ "text": "Taylor Swift" }, { "text": " • " }, { "text": "1989" }, { "text": " • " }, { "text": "2014" }] }
+            } }] }"""
+        )
+        assertEquals("Taylor Swift", radio.tracks.single().artist)
+        assertEquals("1989", radio.tracks.single().album)
+    }
+
+    @Test
     fun `radio rows drop like counts`() {
         val radio = YouTubeMusicParsers.parseRadio(
             """{ "contents": [{ "playlistPanelVideoRenderer": {
