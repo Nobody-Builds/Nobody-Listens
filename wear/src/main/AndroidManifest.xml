@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- YouTube Music search and streaming straight from the watch (Wi-Fi, LTE or the phone's Bluetooth proxy). -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
@@ -20,7 +22,7 @@
             android:name="com.google.android.wearable"
             android:required="true" />
 
-        <!-- standalone=true: Watch can play locally stored songs without the phone -->
+        <!-- standalone=true: the watch plays saved songs, saved playlists and YouTube Music without the phone -->
         <meta-data
             android:name="com.google.android.wearable.standalone"
             android:value="true" />

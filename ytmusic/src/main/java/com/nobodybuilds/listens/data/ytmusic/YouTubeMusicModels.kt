@@ -112,6 +112,8 @@ data class YouTubeMusicStream(
     val origin: String = YouTubeMusicClients.ORIGIN,
     /** Song length from the player response; search rows often come without one. */
     val durationMs: Long = 0L,
+    /** The innertube client that returned the URL, so it can be rested if YouTube refuses it. */
+    val clientName: String = "",
 )
 
 data class YouTubeMusicVideo(

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.PhoneAndroid
+import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -75,6 +76,7 @@ fun WatchSearchScreen(
             onDeviceSong = viewModel::playDeviceSong,
             onPhoneSong = { songId -> browseViewModel.playFromContext(songId, WearBrowseRequest.SEARCH, state.query) },
         )
+        youTubeResults(state, onTrack = viewModel::playYouTubeTrack)
     }
 }
 
@@ -104,19 +106,33 @@ private fun ScalingLazyListScope.searchResults(
             WatchListChip(song.title, song.subtitle, Icons.Rounded.PhoneAndroid) { onPhoneSong(song.id) }
         }
     }
+    val foundElsewhere = onWatch || state.youTubeTracks.isNotEmpty()
     when {
         state.isSearching -> item {
             Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(indicatorColor = LocalWearPalette.current.textSecondary)
             }
         }
-        state.phoneError != null && state.phoneSongs.isEmpty() -> item {
-            WatchListMessage(
-                stringResource(if (onWatch) R.string.wear_search_phone_offline else R.string.wear_search_no_results)
-            )
+        state.phoneSongs.isNotEmpty() -> Unit
+        state.phoneError != null && foundElsewhere -> item {
+            WatchListMessage(stringResource(R.string.wear_search_phone_offline))
         }
-        !onWatch && state.phoneSongs.isEmpty() -> item {
+        !foundElsewhere && !state.isSearchingYouTube -> item {
             WatchListMessage(stringResource(R.string.wear_search_no_results))
+        }
+    }
+}
+
+private fun ScalingLazyListScope.youTubeResults(state: WearSearchState, onTrack: (String) -> Unit) {
+    if (state.query.isEmpty() || (state.youTubeTracks.isEmpty() && !state.isSearchingYouTube)) return
+    item { SearchSectionHeader(R.string.wear_search_youtube) }
+    items(state.youTubeTracks.size) { index ->
+        val track = state.youTubeTracks[index]
+        WatchListChip(track.title, track.artist, Icons.Rounded.Public) { onTrack(track.videoId) }
+    }
+    if (state.isSearchingYouTube) item {
+        Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(indicatorColor = LocalWearPalette.current.textSecondary)
         }
     }
 }

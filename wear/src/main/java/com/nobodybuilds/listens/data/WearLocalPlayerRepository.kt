@@ -6,8 +6,10 @@ import android.net.Uri
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.session.MediaSession
 import com.nobodybuilds.listens.data.local.LocalSongDao
 import com.nobodybuilds.listens.data.local.LocalSongEntity
@@ -41,6 +43,7 @@ import javax.inject.Singleton
 class WearLocalPlayerRepository @Inject constructor(
     private val application: Application,
     private val localSongDao: LocalSongDao,
+    private val youTube: WearYouTubeRepository,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val json = Json { ignoreUnknownKeys = true }
@@ -101,7 +104,9 @@ class WearLocalPlayerRepository @Inject constructor(
     }
 
     private fun getOrCreatePlayer(): ExoPlayer {
-        return exoPlayer ?: ExoPlayer.Builder(application).build().also { player ->
+        return exoPlayer ?: ExoPlayer.Builder(application)
+            .setMediaSourceFactory(DefaultMediaSourceFactory(wearPlayerDataSourceFactory(application, youTube)))
+            .build().also { player ->
             exoPlayer = player
             player.setAudioAttributes(
                 AudioAttributes.Builder()
@@ -127,6 +132,12 @@ class WearLocalPlayerRepository @Inject constructor(
 
                 override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                     updateState()
+                }
+
+                override fun onPlayerError(error: PlaybackException) {
+                    // A refused YouTube URL: the next try asks another stream client.
+                    val uri = player.currentMediaItem?.localConfiguration?.uri ?: return
+                    WearYouTubeRepository.videoIdFrom(uri)?.let(youTube::reportStreamRejected)
                 }
             })
             Timber.tag(TAG).d("ExoPlayer created")
@@ -549,7 +560,9 @@ class WearLocalPlayerRepository @Inject constructor(
 
         val queueItem = currentQueueItemsById[songId] ?: return
         scope.launch(Dispatchers.IO) {
-            val extractedSeed = artworkLoader.extractSeedFromUri(queueItem.uri, queueItem.songId)
+            val extractedSeed = queueItem.artworkUrl
+                ?.let { url -> artworkLoader.loadRemoteArtwork(url)?.let(artworkLoader::extractSeed) }
+                ?: artworkLoader.extractSeedFromUri(queueItem.uri, queueItem.songId)
             withContext(Dispatchers.Main) {
                 if (lastPaletteSongId != queueItem.songId) return@withContext
                 _localThemePalette.value = null
@@ -585,7 +598,8 @@ class WearLocalPlayerRepository @Inject constructor(
             return
         }
         scope.launch(Dispatchers.IO) {
-            val bitmap = artworkLoader.loadArtworkBitmapFromUri(queueItem.uri, queueItem.songId)
+            val bitmap = queueItem.artworkUrl?.let(artworkLoader::loadRemoteArtwork)
+                ?: artworkLoader.loadArtworkBitmapFromUri(queueItem.uri, queueItem.songId)
             withContext(Dispatchers.Main) {
                 if (lastArtworkSongId != queueItem.songId) return@withContext
                 _localAlbumArt.value = bitmap

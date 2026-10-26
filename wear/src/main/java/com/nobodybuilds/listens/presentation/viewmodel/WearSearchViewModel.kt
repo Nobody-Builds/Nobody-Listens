@@ -11,7 +11,10 @@ import com.nobodybuilds.listens.data.WearQueueSong
 import com.nobodybuilds.listens.data.WearSearchMatcher
 import com.nobodybuilds.listens.data.WearStateRepository
 import com.nobodybuilds.listens.data.WearTransferRepository
+import com.nobodybuilds.listens.data.WearYouTubeRepository
 import com.nobodybuilds.listens.data.local.LocalSongEntity
+import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicFormats
+import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicTrack
 import com.nobodybuilds.listens.shared.WearBrowseRequest
 import com.nobodybuilds.listens.shared.WearLibraryItem
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,10 +36,14 @@ data class WearSearchState(
     val deviceSongs: List<WearDeviceSong> = emptyList(),
     val phoneSongs: List<WearLibraryItem> = emptyList(),
     val phoneError: String? = null,
+    /** Straight from YouTube over the watch's own connection. */
+    val youTubeTracks: List<YouTubeMusicTrack> = emptyList(),
+    val isSearchingYouTube: Boolean = false,
 )
 
 /**
- * Searches the watch first, so results show without the phone, then the phone's library when it's reachable.
+ * Searches the watch first, so results show without the phone, then the phone's library when it's reachable,
+ * and YouTube Music when the watch has internet.
  */
 @HiltViewModel
 class WearSearchViewModel @Inject constructor(
@@ -45,6 +52,7 @@ class WearSearchViewModel @Inject constructor(
     private val libraryRepository: WearLibraryRepository,
     private val localPlayerRepository: WearLocalPlayerRepository,
     private val stateRepository: WearStateRepository,
+    private val youTubeRepository: WearYouTubeRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(WearSearchState())
@@ -56,8 +64,12 @@ class WearSearchViewModel @Inject constructor(
         val trimmed = query.trim()
         if (trimmed.isEmpty()) return
         searchJob?.cancel()
-        _state.value = WearSearchState(query = trimmed, isSearching = true)
+        _state.value = WearSearchState(query = trimmed, isSearching = true, isSearchingYouTube = true)
         searchJob = viewModelScope.launch {
+            launch {
+                val tracks = runCatching { youTubeRepository.search(trimmed) }.getOrDefault(emptyList())
+                _state.update { it.copy(youTubeTracks = tracks.take(MAX_YOUTUBE_RESULTS), isSearchingYouTube = false) }
+            }
             val saved = transferRepository.localSongs.first()
                 .filter { WearSearchMatcher.matches(trimmed, it.title, it.artist, it.album) }
             // Without the audio permission the scan fails; the saved songs still show.
@@ -93,5 +105,30 @@ class WearSearchViewModel @Inject constructor(
             startIndex = index,
         )
         stateRepository.setOutputTarget(WearOutputTarget.WATCH)
+    }
+
+    /** Streams the YouTube results on the watch, starting at [videoId]. */
+    fun playYouTubeTrack(videoId: String) {
+        val tracks = _state.value.youTubeTracks
+        val index = tracks.indexOfFirst { it.videoId == videoId }
+        if (index < 0) return
+        localPlayerRepository.playUriSongs(
+            songs = tracks.map { track ->
+                WearQueueSong(
+                    songId = WearYouTubeRepository.songId(track.videoId),
+                    title = track.title,
+                    artist = track.artist,
+                    album = track.album,
+                    uri = WearYouTubeRepository.trackUri(track.videoId),
+                    artworkUrl = YouTubeMusicFormats.largeThumbnail(track.thumbnailUrl),
+                )
+            },
+            startIndex = index,
+        )
+        stateRepository.setOutputTarget(WearOutputTarget.WATCH)
+    }
+
+    private companion object {
+        const val MAX_YOUTUBE_RESULTS = 20
     }
 }

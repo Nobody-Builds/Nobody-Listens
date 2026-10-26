@@ -82,7 +82,7 @@
     <string name="wear_search_on_watch">On watch</string>
     <string name="wear_search_on_phone">On phone</string>
     <string name="wear_search_no_results">No songs found</string>
-    <string name="wear_search_phone_offline">Phone not connected. Showing songs on the watch.</string>
+    <string name="wear_search_phone_offline">Phone not connected.</string>
     <string name="wear_watch_playlists">Watch playlists</string>
     <string name="wear_watch_playlists_empty">Open a playlist under Playlists and save it to play without your phone.</string>
     <string name="wear_save_playlist_to_watch">Save playlist to watch</string>
@@ -92,4 +92,5 @@
     <string name="wear_play_all">Play</string>
     <string name="wear_remove_playlist">Remove from watch</string>
     <string name="wear_not_on_watch_yet">Not on watch yet</string>
+    <string name="wear_search_youtube" translatable="false">YouTube Music</string>
 </resources>

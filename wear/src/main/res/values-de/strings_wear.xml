@@ -82,7 +82,7 @@
     <string name="wear_search_on_watch">Auf der Uhr</string>
     <string name="wear_search_on_phone">Auf dem Handy</string>
     <string name="wear_search_no_results">Keine Songs gefunden</string>
-    <string name="wear_search_phone_offline">Handy nicht verbunden. Songs auf der Uhr werden angezeigt.</string>
+    <string name="wear_search_phone_offline">Handy nicht verbunden.</string>
     <string name="wear_watch_playlists">Uhr-Playlists</string>
     <string name="wear_watch_playlists_empty">Öffne eine Playlist unter Playlists und speichere sie, um sie ohne Handy abzuspielen.</string>
     <string name="wear_save_playlist_to_watch">Playlist auf Uhr speichern</string>

@@ -310,6 +310,7 @@ dependencies {
 
     // Projects
     implementation(project(":shared"))
+    implementation(project(":ytmusic"))
 
     // Testing (Unit)
     testImplementation(libs.junit.jupiter.api)

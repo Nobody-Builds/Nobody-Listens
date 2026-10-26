@@ -82,7 +82,7 @@
     <string name="wear_search_on_watch">En el reloj</string>
     <string name="wear_search_on_phone">En el teléfono</string>
     <string name="wear_search_no_results">No se encontraron canciones</string>
-    <string name="wear_search_phone_offline">Teléfono no conectado. Se muestran las canciones del reloj.</string>
+    <string name="wear_search_phone_offline">Teléfono no conectado.</string>
     <string name="wear_watch_playlists">Listas del reloj</string>
     <string name="wear_watch_playlists_empty">Abre una lista en Listas y guárdala para escucharla sin el teléfono.</string>
     <string name="wear_save_playlist_to_watch">Guardar lista en el reloj</string>

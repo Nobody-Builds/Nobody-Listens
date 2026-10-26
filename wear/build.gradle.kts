@@ -77,6 +77,7 @@ kotlin {
 
 dependencies {
     implementation(project(":shared"))
+    implementation(project(":ytmusic"))
 
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)

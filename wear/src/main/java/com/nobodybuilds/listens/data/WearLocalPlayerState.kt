@@ -28,4 +28,6 @@ data class WearQueueSong(
     val artist: String,
     val album: String,
     val uri: Uri,
+    /** Cover for songs with no embedded art, such as YouTube streams. */
+    val artworkUrl: String? = null,
 )

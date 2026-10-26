@@ -82,7 +82,7 @@
     <string name="wear_search_on_watch">На часах</string>
     <string name="wear_search_on_phone">На телефоне</string>
     <string name="wear_search_no_results">Песни не найдены</string>
-    <string name="wear_search_phone_offline">Телефон не подключён. Показаны песни на часах.</string>
+    <string name="wear_search_phone_offline">Телефон не подключён.</string>
     <string name="wear_watch_playlists">Плейлисты на часах</string>
     <string name="wear_watch_playlists_empty">Откройте плейлист в разделе «Плейлисты» и сохраните его, чтобы слушать без телефона.</string>
     <string name="wear_save_playlist_to_watch">Сохранить плейлист на часы</string>

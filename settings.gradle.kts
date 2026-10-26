@@ -33,5 +33,6 @@ dependencyResolutionManagement {
 rootProject.name = "NobodyListens"
 include(":app")
 include(":shared")
+include(":ytmusic")
 include(":wear")
 include(":baselineprofile")

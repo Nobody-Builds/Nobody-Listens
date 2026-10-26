@@ -82,7 +82,7 @@
     <string name="wear_search_on_watch">På klokken</string>
     <string name="wear_search_on_phone">På telefonen</string>
     <string name="wear_search_no_results">Fant ingen sanger</string>
-    <string name="wear_search_phone_offline">Telefonen er ikke tilkoblet. Viser sanger på klokken.</string>
+    <string name="wear_search_phone_offline">Telefonen er ikke tilkoblet.</string>
     <string name="wear_watch_playlists">Spillelister på klokken</string>
     <string name="wear_watch_playlists_empty">Åpne en spilleliste under Spillelister og lagre den for å spille uten telefonen.</string>
     <string name="wear_save_playlist_to_watch">Lagre spillelisten på klokken</string>

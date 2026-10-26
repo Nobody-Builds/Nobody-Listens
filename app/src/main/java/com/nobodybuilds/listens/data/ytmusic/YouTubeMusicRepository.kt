@@ -43,8 +43,9 @@ class YouTubeMusicRepository @Inject constructor(
         migrateLegacySession(context, encrypted)
     }
     private val api = YouTubeMusicApi(okHttpClient)
-    private val streamPlayback = ConcurrentHashMap<String, StreamPlayback>()
-    private val failedClientsUntil = ConcurrentHashMap<String, Long>()
+    private val streamFinder = YouTubeMusicStreamFinder(api)
+    /** The client behind each song's current URL, so a refused URL rests that client. */
+    private val streamClients = ConcurrentHashMap<String, String>()
     private val streamCache = ConcurrentHashMap<String, CachedStream>()
     private val inFlightStreams = ConcurrentHashMap<String, Deferred<YouTubeMusicStream>>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -98,7 +99,7 @@ class YouTubeMusicRepository @Inject constructor(
     /** A stream URL was refused mid-playback: rest its client so the next resolve picks another. */
     fun reportStreamRejected(videoId: String) {
         streamCache.keys.removeIf { it.startsWith("$videoId:") }
-        streamPlayback.remove(videoId)?.let { markClientFailed(it.clientName) }
+        streamClients.remove(videoId)?.let(streamFinder::markClientFailed)
     }
 
     fun saveSession(session: YouTubeMusicSession) {
@@ -119,7 +120,7 @@ class YouTubeMusicRepository @Inject constructor(
 
     fun logout() {
         prefs.edit().clear().apply()
-        streamPlayback.clear()
+        streamClients.clear()
         streamCache.clear()
         _session.value = YouTubeMusicSession()
     }
@@ -276,51 +277,14 @@ class YouTubeMusicRepository @Inject constructor(
         quality: YouTubeMusicAudioQuality,
         opusOnly: Boolean,
     ): YouTubeMusicStream {
-        val session = readySession()
-        var lastError = "YouTube Music did not return a playable stream"
-        val now = System.currentTimeMillis()
-        val clients = YouTubeMusicClients.STREAM.filter { (failedClientsUntil[it.clientName] ?: 0L) <= now }
-            .ifEmpty { YouTubeMusicClients.STREAM }
-        for (client in clients) {
-            val payload = runCatching {
-                YouTubeMusicParsers.parsePlayer(api.player(session, client, videoId))
-            }.getOrElse { error ->
-                lastError = error.message ?: lastError
-                continue
-            }
-            if (payload.status != "OK") {
-                lastError = payload.reason ?: payload.status
-                if (isBotCheck(lastError)) markClientFailed(client.clientName)
-                continue
-            }
-            val formats = YouTubeMusicFormats.ranked(payload.formats, payload.durationMs, quality.maxBitrate, opusOnly)
-            for (format in formats.take(3)) {
-                val url = YouTubeMusicFormats.resolveUrl(format) ?: continue
-                if (client.probeBeforeUse && !api.probeStream(url, client.userAgent, format.contentLength)) {
-                    // Every format of a client fails the same way, so move on to the next client.
-                    lastError = "YouTube Music refused the stream"
-                    markClientFailed(client.clientName)
-                    break
-                }
-                val origin = if (client.useYoutubeHost) {
-                    YouTubeMusicClients.YOUTUBE_ORIGIN
-                } else {
-                    YouTubeMusicClients.ORIGIN
-                }
-                streamPlayback[videoId] = StreamPlayback(client.clientName, client.userAgent, origin)
-                Timber.d("Resolved %s with %s itag %d in %d ms", videoId, client.clientName, format.itag, System.currentTimeMillis() - now)
-                return YouTubeMusicStream(
-                    videoId = videoId,
-                    url = url,
-                    format = format,
-                    expiresInSeconds = payload.expiresInSeconds ?: DEFAULT_EXPIRY_SECONDS,
-                    userAgent = client.userAgent,
-                    origin = origin,
-                    durationMs = payload.durationMs ?: format.approxDurationMs ?: 0L,
-                )
-            }
-        }
-        throw IllegalStateException(lastError)
+        val startedAt = System.currentTimeMillis()
+        val stream = streamFinder.find(readySession(), videoId, quality, opusOnly)
+        streamClients[videoId] = stream.clientName
+        Timber.d(
+            "Resolved %s with %s itag %d in %d ms",
+            videoId, stream.clientName, stream.format.itag, System.currentTimeMillis() - startedAt,
+        )
+        return stream
     }
 
     private suspend fun readySession(): YouTubeMusicSession {
@@ -359,22 +323,7 @@ class YouTubeMusicRepository @Inject constructor(
         accountEmail = prefs.getString(KEY_EMAIL, "").orEmpty(),
     )
 
-    private fun markClientFailed(clientName: String) {
-        failedClientsUntil[clientName] = System.currentTimeMillis() + CLIENT_BACKOFF_MS
-    }
-
-    private fun isBotCheck(reason: String): Boolean {
-        val lower = reason.lowercase()
-        return "bot" in lower || "sign in" in lower
-    }
-
     private class CachedStream(val stream: YouTubeMusicStream, val expiresAtMs: Long)
-
-    private data class StreamPlayback(
-        val clientName: String,
-        val userAgent: String,
-        val origin: String,
-    )
 
     private companion object {
         const val PREFS = "ytmusic_prefs"
@@ -387,9 +336,7 @@ class YouTubeMusicRepository @Inject constructor(
         const val KEY_EMAIL = "email"
         const val HOME = "FEmusic_home"
         const val LIBRARY = "FEmusic_liked_playlists"
-        const val DEFAULT_EXPIRY_SECONDS = 6 * 60 * 60
         const val MAX_CONTINUATIONS = 20
-        const val CLIENT_BACKOFF_MS = 10L * 60 * 1000
         const val SETTINGS_PREFS = "ytmusic_settings"
         const val KEY_STREAM_QUALITY = "stream_quality"
         const val KEY_DOWNLOAD_QUALITY = "download_quality"

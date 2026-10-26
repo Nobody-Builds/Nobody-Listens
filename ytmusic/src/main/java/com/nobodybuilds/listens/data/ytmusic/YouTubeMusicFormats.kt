@@ -1,6 +1,5 @@
 package com.nobodybuilds.listens.data.ytmusic
 
-import com.nobodybuilds.listens.data.stream.CloudStreamSecurity
 
 object YouTubeMusicFormats {
     const val HIGHEST_TARGET_BITRATE = 320_000
@@ -100,7 +99,9 @@ object YouTubeMusicFormats {
         )
     }
 
-    fun isValidVideoId(videoId: String): Boolean = CloudStreamSecurity.validateYouTubeVideoId(videoId)
+    fun isValidVideoId(videoId: String): Boolean = VIDEO_ID.matches(videoId)
+
+    private val VIDEO_ID = Regex("^[A-Za-z0-9_-]{11}$")
 
     /** Byte offset that shows whether a URL works past YouTube's unauthenticated first megabyte. */
     fun probeOffset(contentLength: Long?): Long {
