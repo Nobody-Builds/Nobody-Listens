@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "com.nobodybuilds.listens"
-        minSdk = 30
+        minSdk = 26
         targetSdk = 37
         versionCode = (project.findProperty("APP_VERSION_CODE") as String).toInt()
         versionName = project.findProperty("APP_VERSION_NAME") as String

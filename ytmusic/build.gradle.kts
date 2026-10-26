@@ -10,7 +10,7 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        minSdk = 30 // the lower of the app (33) and watch (30) minimums
+        minSdk = 26 // the lower of the app (33) and watch (26) minimums
     }
 
     compileOptions {

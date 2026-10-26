@@ -1,6 +1,7 @@
 name: Build & Release Nobody Listens
 
-# Every push to main builds signed phone and watch APKs (download them from the run's "Artifacts").
+# Every build (pushes to main, pull requests, manual runs) makes every APK type, signed: arm64-v8a,
+# armeabi-v7a, x86_64, universal and the watch. Download them from the run's "Artifacts".
 # Releases: when a push to main carries a version (APP_VERSION_NAME in gradle.properties)
 # that has no GitHub Release yet, the build is published as release v<version> with every
 # APK attached (arm64-v8a, armeabi-v7a, x86_64, universal and the watch). So to ship 1.1.0:
@@ -130,6 +131,12 @@ jobs:
           else
             NAME="$BASE-build.${GITHUB_RUN_NUMBER}"
           fi
+          # Releases must be signed with the real key (secrets); a CI-generated key would make later
+          # updates fail to install. Without the secrets the APKs still build as artifacts.
+          if [[ "$RELEASE" == "true" && "${{ steps.secret-key.outputs.found }}" != "true" ]]; then
+            echo "::warning::Not publishing v$NAME: set the NOBODY_LISTENS_* signing secrets, then re-run this workflow."
+            RELEASE=false
+          fi
           echo "code=$CODE" >> "$GITHUB_OUTPUT"
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "release=$RELEASE" >> "$GITHUB_OUTPUT"
@@ -139,12 +146,12 @@ jobs:
       - name: Build release APKs
         run: |
           chmod +x gradlew
-          # Phone APKs are split per ABI. Releases also build x86_64 and a universal APK
-          # (every ABI in one, largest); other builds keep to arm64-v8a and armeabi-v7a.
-          # The Wear OS watch app (Galaxy Watch 4 and newer) is signed with the same key so it pairs.
+          # Phone APKs are split per ABI (arm64-v8a, armeabi-v7a, x86_64) plus a universal APK with
+          # every ABI in one. The Wear OS watch app (Galaxy Watch 4 and newer) is signed with the same
+          # key so the two pair.
           ./gradlew :app:assembleRelease :wear:assembleRelease --stacktrace \
             -Pnobodylistens.enableAbiSplits=true \
-            -Pnobodylistens.allApks=${{ steps.version.outputs.release }} \
+            -Pnobodylistens.allApks=true \
             -PAPP_VERSION_CODE=${{ steps.version.outputs.code }} \
             -PAPP_VERSION_NAME=${{ steps.version.outputs.name }}
 

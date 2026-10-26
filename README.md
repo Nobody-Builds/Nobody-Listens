@@ -17,6 +17,19 @@ Developers: **Shaan Shoukath** ([@Shaan-Shoukath](https://github.com/Shaan-Shouk
 > contributed to LMusic) and its own fixes. It installs as its own app (`com.nobodybuilds.listens`), so it sits
 > beside LMusic: move your library over with Settings → Backup & Restore, since LMusic backups restore here.
 
+## Screenshots
+
+<p>
+  <img src="assets/screenshots/phone-home.jpg" alt="Home on a phone" width="240">
+  &nbsp;
+  <img src="assets/screenshots/watch-player.png" alt="Watch player streaming YouTube Music" width="200">
+  <img src="assets/screenshots/watch-search.png" alt="Watch search: phone and YouTube Music results" width="200">
+</p>
+<p>
+  <img src="assets/screenshots/watch-library.png" alt="Watch library" width="200">
+  <img src="assets/screenshots/watch-offline.png" alt="Watch playing a song saved on the watch" width="200">
+</p>
+
 ## Install
 
 1. Open the [latest release](https://github.com/Nobody-Builds/Nobody-Listens/releases/latest)
@@ -29,13 +42,14 @@ Developers: **Shaan Shoukath** ([@Shaan-Shoukath](https://github.com/Shaan-Shouk
    or **My Files** — allow it once.
 3. Later releases install as updates on top. Your library, playlists and stats stay.
 
-Every push to `main` also builds APKs — open the run under **Actions** and download them
-from **Artifacts**.
+Every push to `main` and every pull request also builds all of these APKs (and the watch APK) — open the
+run under **Actions** and download them from **Artifacts**.
 
 ### Galaxy Watch (Wear OS)
 
-`NobodyListens-Watch-<version>.apk` runs on Galaxy Watch 4 and newer, and other Wear OS 3+ watches, round or
-square. It works without the phone:
+`NobodyListens-Watch-<version>.apk` runs on every Wear OS watch from Wear OS 2 (Android 8) up: Galaxy Watch,
+Pixel Watch, TicWatch, Fossil and others, round or square. The bezel (one song per click on Galaxy watches) or the
+crown scrolls lists and sets the volume on the player. It works without the phone:
 
 - **Songs and playlists saved on the watch** play through its speaker or Bluetooth headphones. Save a song, or a
   whole phone playlist (**Save playlist to watch**), and it stays on the watch (**Library › Watch playlists**).
