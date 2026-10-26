@@ -129,7 +129,9 @@ fun LibraryScreen(
     }
     val isSortSheetVisible by playerViewModel.isSortingSheetVisible.collectAsStateWithLifecycle()
     val isSendingToWatch by songInfoBottomSheetViewModel.isSendingToWatch.collectAsStateWithLifecycle()
-    val activeWatchTransfer by songInfoBottomSheetViewModel.activeWatchTransfer.collectAsStateWithLifecycle()
+    // Kept as State and read only where it's drawn: progress ticks would otherwise recompose this whole screen.
+    val activeWatchTransfer = songInfoBottomSheetViewModel.activeWatchTransfer.collectAsStateWithLifecycle()
+    val activeWatchRequestId by remember { derivedStateOf { activeWatchTransfer.value?.requestId } }
     var showWatchTransferDialog by screenState.showWatchTransferDialog
     val canNavigateBackInFolders by remember(playerViewModel) {
         playerViewModel.playerUiState
@@ -149,8 +151,8 @@ fun LibraryScreen(
         uri?.let { playlistViewModel.importM3u(it) }
     }
 
-    LaunchedEffect(activeWatchTransfer?.requestId) {
-        if (activeWatchTransfer == null) {
+    LaunchedEffect(activeWatchRequestId) {
+        if (activeWatchRequestId == null) {
             showWatchTransferDialog = false
         }
     }
@@ -494,7 +496,7 @@ fun LibraryScreen(
                 tabRowState = tabRowState,
                 scope = scope,
                 isSendingToWatch = isSendingToWatch,
-                activeWatchTransfer = activeWatchTransfer
+                activeWatchTransfer = activeWatchTransfer.value
             )
         }
     ) { innerScaffoldPadding ->
@@ -547,7 +549,7 @@ fun LibraryScreen(
         hasActiveAiProviderApiKey = hasActiveAiProviderApiKey,
         isGeneratingAiPlaylist = isGeneratingAiPlaylist,
         aiError = aiError,
-        activeWatchTransfer = activeWatchTransfer,
+        activeWatchTransfer = { activeWatchTransfer.value },
         selectedSongForInfo = selectedSongForInfo,
         favoriteIds = favoriteIds,
         bottomBarHeightDp = bottomBarHeightDp,

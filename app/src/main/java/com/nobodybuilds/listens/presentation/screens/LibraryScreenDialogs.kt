@@ -64,7 +64,7 @@ internal fun LibraryScreenDialogs(
     hasActiveAiProviderApiKey: Boolean,
     isGeneratingAiPlaylist: Boolean,
     aiError: String?,
-    activeWatchTransfer: PhoneWatchTransferState?,
+    activeWatchTransfer: () -> PhoneWatchTransferState?,
     selectedSongForInfo: Song?,
     favoriteIds: Set<String>,
     bottomBarHeightDp: Dp,
@@ -172,8 +172,8 @@ internal fun LibraryScreenDialogs(
         }
     )
 
-    if (showWatchTransferDialog && activeWatchTransfer != null) {
-        val currentWatchTransfer = activeWatchTransfer!!
+    val currentWatchTransfer = if (showWatchTransferDialog) activeWatchTransfer() else null
+    if (currentWatchTransfer != null) {
         WatchTransferProgressDialog(
             transfer = currentWatchTransfer,
             onDismiss = { showWatchTransferDialog = false },

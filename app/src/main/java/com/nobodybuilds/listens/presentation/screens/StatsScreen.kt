@@ -111,10 +111,13 @@ fun StatsScreen(
     val maxTopBarHeightPx = with(density) { maxTopBarHeight.toPx() }
 
     val topBarHeight = remember { Animatable(maxTopBarHeightPx) }
-    var collapseFraction by remember { mutableStateOf(0f) }
 
-    LaunchedEffect(topBarHeight.value) {
-        collapseFraction = 1f - ((topBarHeight.value - minTopBarHeightPx) / (maxTopBarHeightPx - minTopBarHeightPx)).coerceIn(0f, 1f)
+    // Derived, not a LaunchedEffect keyed on the height: reading the height here recomposed the
+    // whole screen on every frame of the top bar collapsing.
+    val collapseFraction by remember(minTopBarHeightPx, maxTopBarHeightPx) {
+        derivedStateOf {
+            1f - ((topBarHeight.value - minTopBarHeightPx) / (maxTopBarHeightPx - minTopBarHeightPx)).coerceIn(0f, 1f)
+        }
     }
 
     val nestedScrollConnection = remember {

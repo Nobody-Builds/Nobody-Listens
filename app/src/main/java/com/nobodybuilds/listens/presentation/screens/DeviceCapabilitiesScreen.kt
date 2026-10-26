@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -68,11 +69,13 @@ fun DeviceCapabilitiesScreen(
     val maxTopBarHeightPx = with(density) { maxTopBarHeight.toPx() }
 
     val topBarHeight = remember { Animatable(maxTopBarHeightPx) }
-    var collapseFraction by remember { mutableFloatStateOf(0f) }
 
-    LaunchedEffect(topBarHeight.value) {
-        collapseFraction = 1f - ((topBarHeight.value - minTopBarHeightPx) / (maxTopBarHeightPx - minTopBarHeightPx))
-            .coerceIn(0f, 1f)
+    // Derived, not a LaunchedEffect keyed on the height: reading the height here recomposed the
+    // whole screen on every frame of the top bar collapsing.
+    val collapseFraction by remember(minTopBarHeightPx, maxTopBarHeightPx) {
+        derivedStateOf {
+            1f - ((topBarHeight.value - minTopBarHeightPx) / (maxTopBarHeightPx - minTopBarHeightPx)).coerceIn(0f, 1f)
+        }
     }
 
     val nestedScrollConnection = remember {

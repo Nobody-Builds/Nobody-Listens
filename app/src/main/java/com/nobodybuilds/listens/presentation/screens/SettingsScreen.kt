@@ -50,6 +50,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -137,14 +138,13 @@ fun SettingsScreen(
     var showCornerRadiusOverlay by remember { mutableStateOf(false) }
 
     val topBarHeight = remember { Animatable(maxTopBarHeightPx) }
-    var collapseFraction by remember { mutableStateOf(0f) }
 
-    LaunchedEffect(topBarHeight.value) {
-        collapseFraction =
-                1f -
-                        ((topBarHeight.value - minTopBarHeightPx) /
-                                        (maxTopBarHeightPx - minTopBarHeightPx))
-                                .coerceIn(0f, 1f)
+    // Derived, not a LaunchedEffect keyed on the height: reading the height here recomposed the
+    // whole screen on every frame of the top bar collapsing.
+    val collapseFraction by remember(minTopBarHeightPx, maxTopBarHeightPx) {
+        derivedStateOf {
+            1f - ((topBarHeight.value - minTopBarHeightPx) / (maxTopBarHeightPx - minTopBarHeightPx)).coerceIn(0f, 1f)
+        }
     }
 
     val nestedScrollConnection = remember {
