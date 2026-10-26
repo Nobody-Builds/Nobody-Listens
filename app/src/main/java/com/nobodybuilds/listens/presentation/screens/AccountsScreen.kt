@@ -65,6 +65,7 @@ fun AccountsScreen(
     onOpenNavidromeDashboard: () -> Unit = {},
     onOpenJellyfinDashboard: () -> Unit = {},
     onOpenYouTubeMusicDashboard: () -> Unit = {},
+    onOpenJioSaavnDashboard: () -> Unit = {},
     viewModel: AccountsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -180,6 +181,7 @@ fun AccountsScreen(
                                 onOpenNavidromeDashboard = onOpenNavidromeDashboard,
                                 onOpenJellyfinDashboard = onOpenJellyfinDashboard,
                                 onOpenYouTubeMusicDashboard = onOpenYouTubeMusicDashboard,
+                                onOpenJioSaavnDashboard = onOpenJioSaavnDashboard,
                                 preferNeteaseDashboard = true
                             )
                         },
@@ -206,6 +208,7 @@ fun AccountsScreen(
                                 onOpenNavidromeDashboard = onOpenNavidromeDashboard,
                                 onOpenJellyfinDashboard = onOpenJellyfinDashboard,
                                 onOpenYouTubeMusicDashboard = onOpenYouTubeMusicDashboard,
+                                onOpenJioSaavnDashboard = onOpenJioSaavnDashboard,
                                 preferNeteaseDashboard = false
                             )
                         }

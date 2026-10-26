@@ -36,6 +36,8 @@ class LyricsRepositoryImpl @Inject constructor(
     private val okHttpClient: OkHttpClient,
     /** YouTube Music's plain lyrics for a video id; used only for streamed YouTube songs. */
     private val youTubeLyrics: (suspend (videoId: String) -> String?)? = null,
+    /** JioSaavn's plain lyrics for a song id; used only for streamed JioSaavn songs. */
+    private val jioSaavnLyrics: (suspend (songId: String) -> String?)? = null,
 ) : LyricsRepository {
 
     companion object {
@@ -99,12 +101,18 @@ class LyricsRepositoryImpl @Inject constructor(
             remoteFetcher.fetchLyricsFromAPI(song)
         }
 
-        // Streamed YouTube songs have no file, so embedded and local lyrics cannot exist:
-        // try the lyrics API (synced) and then YouTube Music's own lyrics. Phone songs never go to YouTube.
+        // Streamed YouTube and JioSaavn songs have no file, so embedded and local lyrics cannot
+        // exist: try the lyrics API (synced) and then the service's own lyrics. Phone songs never go to either.
         val youTubeVideoId = com.nobodybuilds.listens.data.ytmusic.YouTubeMusicUris.videoIdFrom(song.contentUriString)
-        if (youTubeVideoId != null) {
+        val jioSaavnId = com.nobodybuilds.listens.data.jiosaavn.JioSaavnUris.songIdFrom(song.contentUriString)
+        val serviceLyrics: (suspend () -> String?)? = when {
+            youTubeVideoId != null -> { { youTubeLyrics?.invoke(youTubeVideoId) } }
+            jioSaavnId != null -> { { jioSaavnLyrics?.invoke(jioSaavnId) } }
+            else -> null
+        }
+        if (serviceLyrics != null) {
             val lyrics = runCatching { fetchFromAPI() }.getOrNull()?.takeIf { it.isValid() }
-                ?: runCatching { youTubeLyrics?.invoke(youTubeVideoId) }.getOrNull()
+                ?: runCatching { serviceLyrics() }.getOrNull()
                     ?.lines()?.map { it.trimEnd() }?.takeIf { lines -> lines.any { it.isNotBlank() } }
                     ?.let { lines -> Lyrics(plain = lines, areFromRemote = true) }
             if (lyrics != null) {

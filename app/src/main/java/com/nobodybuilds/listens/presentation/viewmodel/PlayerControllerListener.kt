@@ -39,6 +39,7 @@ internal class PlayerControllerListener(
     private val userPreferencesRepository: UserPreferencesRepository,
     private val dualPlayerEngine: DualPlayerEngine,
     private val youTubeMusicRadio: YouTubeMusicRadio,
+    private val jioSaavnRadio: com.nobodybuilds.listens.data.jiosaavn.JioSaavnRadio,
     private val playbackStateHolder: PlaybackStateHolder,
     private val lyricsStateHolder: LyricsStateHolder,
     private val themeStateHolder: ThemeStateHolder,
@@ -355,12 +356,19 @@ internal class PlayerControllerListener(
             mediaItem?.let { transitionedItem ->
                 val song = songResolver.resolveSongFromMediaItem(transitionedItem)
 
-                // YouTube radio: top the queue up before it runs out. Other queues are untouched.
+                // YouTube and JioSaavn radio: top the queue up before it runs out. Other queues are untouched.
                 val songsLeft = playerCtrl.mediaItemCount - playerCtrl.currentMediaItemIndex - 1
-                if (youTubeMusicRadio.isRadioSong(song?.id) && songsLeft <= RADIO_REFILL_WHEN_LEFT) {
-                    scope.launch {
-                        youTubeMusicRadio.more().forEach { next ->
-                            mediaController?.addMediaItem(playbackLauncher.buildPlaybackMediaItem(next))
+                if (songsLeft <= RADIO_REFILL_WHEN_LEFT) {
+                    val refill: (suspend () -> List<com.nobodybuilds.listens.data.model.Song>)? = when {
+                        youTubeMusicRadio.isRadioSong(song?.id) -> youTubeMusicRadio::more
+                        jioSaavnRadio.isRadioSong(song?.id) -> jioSaavnRadio::more
+                        else -> null
+                    }
+                    if (refill != null) {
+                        scope.launch {
+                            refill().forEach { next ->
+                                mediaController?.addMediaItem(playbackLauncher.buildPlaybackMediaItem(next))
+                            }
                         }
                     }
                 }

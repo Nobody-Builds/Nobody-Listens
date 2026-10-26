@@ -229,7 +229,8 @@ internal class PlayerPlaybackLauncher(
                 startingUri.scheme == "qqmusic" ||
                 startingUri.scheme == "navidrome" ||
                 startingUri.scheme == "jellyfin" ||
-                startingUri.scheme == "ytmusic"
+                startingUri.scheme == "ytmusic" ||
+                startingUri.scheme == "jiosaavn"
             ) {
                 if (startingUri.scheme == "telegram") {
                     currentSongSync.ensureTelegramPlaybackObserversStarted()

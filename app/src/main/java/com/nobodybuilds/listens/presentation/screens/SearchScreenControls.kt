@@ -12,6 +12,7 @@ import com.nobodybuilds.listens.presentation.nb.NbShapes
 import com.nobodybuilds.listens.presentation.nb.NbType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -247,13 +248,15 @@ fun SearchFilterChip(
 @Composable
 internal fun SearchSourceChips(
     current: com.nobodybuilds.listens.data.model.StorageFilter,
-    youTubeSelected: Boolean,
+    online: OnlineSearch?,
     onSelect: (com.nobodybuilds.listens.data.model.StorageFilter) -> Unit,
-    onYouTube: () -> Unit,
+    onOnline: (OnlineSearch) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(androidx.compose.foundation.rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         listOf(
@@ -263,15 +266,23 @@ internal fun SearchSourceChips(
         ).forEach { (filter, label) ->
             NbChip(
                 text = label,
-                selected = !youTubeSelected && current == filter,
-                onClick = { if (youTubeSelected || current != filter) onSelect(filter) }
+                selected = online == null && current == filter,
+                onClick = { if (online != null || current != filter) onSelect(filter) }
             )
         }
         // Online search, only while chosen: library results stay offline by default.
-        NbChip(
-            text = "YouTube",
-            selected = youTubeSelected,
-            onClick = onYouTube
-        )
+        OnlineSearch.entries.forEach { service ->
+            NbChip(
+                text = service.label,
+                selected = online == service,
+                onClick = { onOnline(service) }
+            )
+        }
     }
+}
+
+/** An online service the Search screen can search instead of the library. */
+internal enum class OnlineSearch(val label: String) {
+    YOUTUBE("YouTube"),
+    JIOSAAVN("JioSaavn"),
 }

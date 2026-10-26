@@ -148,8 +148,8 @@ fun SearchScreen(
         playerViewModel.performSearch(searchQuery)
     }
     val searchResults = searchUiState.searchResults
-    // YouTube chip: show online YouTube results instead of the library while it is on.
-    var youTubeSearch by rememberSaveable { mutableStateOf(false) }
+    // YouTube and JioSaavn chips: show that service's results instead of the library while one is on.
+    var onlineSearch by rememberSaveable { mutableStateOf<OnlineSearch?>(null) }
     val handleSongMoreOptionsClick: (Song) -> Unit = { song ->
         playerViewModel.selectSongForInfo(song)
         showSongInfoBottomSheet = true
@@ -325,25 +325,35 @@ fun SearchScreen(
                         }
                         SearchSourceChips(
                             current = searchSourceFilter,
-                            youTubeSelected = youTubeSearch,
+                            online = onlineSearch,
                             onSelect = {
-                                youTubeSearch = false
+                                onlineSearch = null
                                 playerViewModel.setStorageFilter(it)
                             },
-                            onYouTube = { youTubeSearch = !youTubeSearch },
+                            onOnline = { service -> onlineSearch = service.takeIf { it != onlineSearch } },
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        if (youTubeSearch) {
+                        val onSuggestionPick: (String) -> Unit = { suggestion ->
+                            searchQuery = suggestion
+                            playerViewModel.updateSearchQuery(suggestion)
+                        }
+                        if (onlineSearch == OnlineSearch.YOUTUBE) {
                             com.nobodybuilds.listens.presentation.ytmusic.YouTubeMusicSearchResults(
                                 query = searchQuery,
                                 playerViewModel = playerViewModel,
                                 currentPlayingSongId = stablePlayerState.currentSong?.id,
                                 isPlaying = stablePlayerState.isPlaying,
                                 onSongMoreOptionsClick = handleSongMoreOptionsClick,
-                                onSuggestionPick = { suggestion ->
-                                    searchQuery = suggestion
-                                    playerViewModel.updateSearchQuery(suggestion)
-                                },
+                                onSuggestionPick = onSuggestionPick,
+                            )
+                        } else if (onlineSearch == OnlineSearch.JIOSAAVN) {
+                            com.nobodybuilds.listens.presentation.jiosaavn.JioSaavnSearchResults(
+                                query = searchQuery,
+                                playerViewModel = playerViewModel,
+                                currentPlayingSongId = stablePlayerState.currentSong?.id,
+                                isPlaying = stablePlayerState.isPlaying,
+                                onSongMoreOptionsClick = handleSongMoreOptionsClick,
+                                onSuggestionPick = onSuggestionPick,
                             )
                         } else Crossfade(
                             targetState = searchResults.isEmpty(),

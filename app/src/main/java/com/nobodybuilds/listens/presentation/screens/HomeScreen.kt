@@ -99,6 +99,7 @@ fun HomeScreen(
     navidromeViewModel: NavidromeDashboardViewModel = hiltViewModel(),
     jellyfinViewModel: JellyfinDashboardViewModel = hiltViewModel(),
     youTubeMusicViewModel: YouTubeMusicDashboardViewModel = hiltViewModel(),
+    jioSaavnViewModel: com.nobodybuilds.listens.presentation.jiosaavn.dashboard.JioSaavnDashboardViewModel = hiltViewModel(),
     nbHomeViewModel: NbHomeViewModel = hiltViewModel(),
     onOpenSidebar: () -> Unit
 ) {
@@ -560,6 +561,7 @@ fun HomeScreen(
         val isNavidromeLoggedIn by navidromeViewModel.isLoggedIn.collectAsStateWithLifecycle()
         val isJellyfinLoggedIn by jellyfinViewModel.isLoggedIn.collectAsStateWithLifecycle()
         val isYouTubeMusicLoggedIn by youTubeMusicViewModel.isLoggedIn.collectAsStateWithLifecycle()
+        val isJioSaavnLoggedIn by jioSaavnViewModel.isLoggedIn.collectAsStateWithLifecycle()
         StreamingProviderSheet(
             onDismissRequest = { showStreamingProviderSheet = false },
             isNeteaseLoggedIn = isNeteaseLoggedIn,
@@ -581,6 +583,10 @@ fun HomeScreen(
             isYouTubeMusicLoggedIn = isYouTubeMusicLoggedIn,
             onNavigateToYouTubeMusicDashboard = {
                 navController.navigateSafely(Screen.YouTubeMusicDashboard.route)
+            },
+            isJioSaavnLoggedIn = isJioSaavnLoggedIn,
+            onNavigateToJioSaavnDashboard = {
+                navController.navigateSafely(Screen.JioSaavnDashboard.route)
             }
         )
     }

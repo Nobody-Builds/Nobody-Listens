@@ -24,11 +24,13 @@ object LibrarySourceFilter {
         StorageFilter.DOWNLOADED -> 3
     }
 
-    /** Folder the YouTube Music downloader saves into; matches MusicDao's `filterMode = 3`. */
-    const val DOWNLOADS_FOLDER_SUFFIX = "/Nobody Listens/YouTube Music"
+    /** Folders the YouTube Music and JioSaavn downloaders save into; match MusicDao's `filterMode = 3`. */
+    val DOWNLOADS_FOLDER_SUFFIXES = listOf("/Nobody Listens/YouTube Music", "/Nobody Listens/JioSaavn")
 
-    fun isDownloaded(song: Song): Boolean =
-        isLocal(song) && song.path.substringBeforeLast('/').endsWith(DOWNLOADS_FOLDER_SUFFIX)
+    fun isDownloaded(song: Song): Boolean {
+        val folder = song.path.substringBeforeLast('/')
+        return isLocal(song) && DOWNLOADS_FOLDER_SUFFIXES.any(folder::endsWith)
+    }
 
     fun isLocalSourceType(sourceType: Int): Boolean = sourceType == SourceType.LOCAL
 

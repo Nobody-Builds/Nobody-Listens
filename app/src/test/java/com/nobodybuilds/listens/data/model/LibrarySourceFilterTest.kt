@@ -84,6 +84,15 @@ class LibrarySourceFilterTest {
     }
 
     @Test
+    fun `downloaded also keeps phone files saved from JioSaavn`() {
+        val downloaded = local.copy(path = "/storage/emulated/0/Music/Nobody Listens/JioSaavn/Arijit Singh - Kesariya.m4a")
+        val streamed = song("9", "jiosaavn://track/KGfDrbWe")
+        assertTrue(LibrarySourceFilter.matchesSong(StorageFilter.DOWNLOADED, downloaded))
+        assertFalse(LibrarySourceFilter.matchesSong(StorageFilter.DOWNLOADED, streamed))
+        assertEquals(SourceType.JIOSAAVN, LibrarySourceFilter.sourceTypeOf(streamed))
+    }
+
+    @Test
     fun `search results drop songs, albums and artists from the other source`() {
         val localAlbum = Album.empty().copy(id = 10L, title = "Local", songCount = 1)
         val cloudAlbum = localAlbum.copy(id = 11L, title = "Cloud")

@@ -79,6 +79,7 @@ class PlayerViewModel @Inject constructor(
 
     private val dualPlayerEngine: DualPlayerEngine,
     private val youTubeMusicRadio: com.nobodybuilds.listens.data.ytmusic.YouTubeMusicRadio,
+    private val jioSaavnRadio: com.nobodybuilds.listens.data.jiosaavn.JioSaavnRadio,
     private val appShortcutManager: AppShortcutManager,
     private val telegramCacheManagerProvider: Lazy<com.nobodybuilds.listens.data.telegram.TelegramCacheManager>,
     private val listeningStatsTracker: ListeningStatsTracker,
@@ -130,7 +131,7 @@ class PlayerViewModel @Inject constructor(
     private val transport = PlayerTransportController(shared, musicRepository, userPreferencesRepository, castStateHolder,
         castTransferStateHolder, playbackStateHolder, songResolver, playbackLauncher, queuePlayback)
     private val controllerListener = PlayerControllerListener(shared, context, musicRepository, userPreferencesRepository,
-        dualPlayerEngine, youTubeMusicRadio, playbackStateHolder, lyricsStateHolder, themeStateHolder, libraryStateHolder,
+        dualPlayerEngine, youTubeMusicRadio, jioSaavnRadio, playbackStateHolder, lyricsStateHolder, themeStateHolder, libraryStateHolder,
         connectivityStateHolder, castStateHolder, sleepTimerStateHolder, currentSongSync, songResolver,
         audioMetadataTracker, playbackLauncher, transport)
     private val controllerConnection = PlayerMediaControllerConnection(shared, context, sessionToken,

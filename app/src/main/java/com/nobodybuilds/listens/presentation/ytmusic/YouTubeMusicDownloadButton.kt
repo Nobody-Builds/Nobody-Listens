@@ -1,27 +1,9 @@
 package com.nobodybuilds.listens.presentation.ytmusic
 
-import android.widget.Toast
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Download
-import androidx.compose.material.icons.rounded.DownloadDone
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,6 +11,7 @@ import com.nobodybuilds.listens.data.model.Song
 import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicDownloader
 import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicTrack
 import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicUris
+import com.nobodybuilds.listens.presentation.streaming.StreamingDownloadButton
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -71,60 +54,18 @@ fun YouTubeMusicDownloadButton(
     viewModel: YouTubeMusicSongActionsViewModel = hiltViewModel(),
 ) {
     val videoId = remember(song.contentUriString) { YouTubeMusicUris.videoIdFrom(song.contentUriString) } ?: return
-    val context = LocalContext.current
     val activeVideoId by viewModel.activeVideoId.collectAsStateWithLifecycle()
     val savedVideoIds by viewModel.savedVideoIds.collectAsStateWithLifecycle()
     val status by viewModel.status.collectAsStateWithLifecycle()
-    val downloading = activeVideoId == videoId
-    val saved = videoId in savedVideoIds
-    var confirmDelete by remember { mutableStateOf(false) }
-
-    // The YouTube Music screen shows download progress; here a short toast says how it ended.
-    // A status left over from before this screen opened is not news, so skip it.
-    val statusOnOpen = remember { status }
-    LaunchedEffect(status) {
-        val message = status?.takeIf { it != statusOnOpen } ?: return@LaunchedEffect
-        if (message.startsWith("Saved") || message.startsWith("Download failed") ||
-            message.startsWith("Removed") || message.startsWith("Could not remove")
-        ) {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    FilledIconButton(
-        modifier = Modifier.size(48.dp),
-        colors = IconButtonDefaults.filledIconButtonColors(
-            containerColor = containerColor,
-            contentColor = contentColor,
-        ),
-        enabled = !downloading,
-        onClick = { if (saved) confirmDelete = true else viewModel.download(song, videoId) },
-    ) {
-        when {
-            downloading -> CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
-                strokeWidth = 2.dp,
-                color = contentColor,
-            )
-            saved -> Icon(Icons.Rounded.DownloadDone, contentDescription = "Downloaded. Tap to remove")
-            else -> Icon(Icons.Rounded.Download, contentDescription = "Download")
-        }
-    }
-
-    if (confirmDelete) {
-        AlertDialog(
-            onDismissRequest = { confirmDelete = false },
-            title = { Text("Remove download?") },
-            text = { Text("\"${song.title}\" will be deleted from Music/Nobody Listens/YouTube Music. You can still stream it.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    confirmDelete = false
-                    viewModel.delete(song, videoId)
-                }) { Text("Remove") }
-            },
-            dismissButton = {
-                TextButton(onClick = { confirmDelete = false }) { Text("Cancel") }
-            },
-        )
-    }
+    StreamingDownloadButton(
+        song = song,
+        downloading = activeVideoId == videoId,
+        saved = videoId in savedVideoIds,
+        status = status,
+        folder = "Music/Nobody Listens/YouTube Music",
+        containerColor = containerColor,
+        contentColor = contentColor,
+        onDownload = { viewModel.download(song, videoId) },
+        onDelete = { viewModel.delete(song, videoId) },
+    )
 }

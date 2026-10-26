@@ -1,29 +1,15 @@
 package com.nobodybuilds.listens.presentation.ytmusic
 
-import android.content.Context
-import android.content.ContextWrapper
-import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Radio
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import com.nobodybuilds.listens.data.model.Song
 import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicRadio
 import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicTrack
 import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicUris
-import com.nobodybuilds.listens.presentation.viewmodel.PlayerViewModel
-import com.nobodybuilds.listens.presentation.nb.NbActionRow
+import com.nobodybuilds.listens.presentation.streaming.StreamingStartRadioAction
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,35 +39,10 @@ fun YouTubeMusicStartRadioAction(
     viewModel: YouTubeMusicRadioViewModel = hiltViewModel(),
 ) {
     val videoId = remember(song.contentUriString) { YouTubeMusicUris.videoIdFrom(song.contentUriString) } ?: return
-    val context = LocalContext.current
-    val activity = remember(context) { context.findActivity() } ?: return
-    val playerViewModel: PlayerViewModel = hiltViewModel(viewModelStoreOwner = activity)
-    val scope = rememberCoroutineScope()
-    var loading by remember(song.id) { mutableStateOf(false) }
-
-    NbActionRow(
-        text = if (loading) "Starting radio…" else "Start radio",
+    StreamingStartRadioAction(
+        song = song,
         subtitle = "Similar songs from YouTube Music",
-        icon = rememberVectorPainter(Icons.Rounded.Radio),
-        enabled = !loading,
-        onClick = {
-            scope.launch {
-                loading = true
-                val songs = runCatching { viewModel.start(song, videoId) }.getOrDefault(emptyList())
-                loading = false
-                if (songs.size <= 1) {
-                    Toast.makeText(context, "Couldn't start a radio for this song", Toast.LENGTH_SHORT).show()
-                } else {
-                    playerViewModel.playSongs(songs, songs.first(), "Radio · ${song.title}")
-                    onDismiss()
-                }
-            }
-        },
+        onDismiss = onDismiss,
+        start = { viewModel.start(song, videoId) },
     )
-}
-
-private tailrec fun Context.findActivity(): ComponentActivity? = when (this) {
-    is ComponentActivity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
 }

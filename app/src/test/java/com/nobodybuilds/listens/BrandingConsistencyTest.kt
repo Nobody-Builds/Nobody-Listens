@@ -28,8 +28,12 @@ class BrandingConsistencyTest {
             .map { it.readText() }
             .filter { "filterMode = 3" in it }
             .joinToString("\n")
-        val folders = Regex("""filterMode = 3 AND [^']*LIKE '%([^']*)'""").findAll(dao).map { it.groupValues[1] }.toList()
-        assertTrue(folders.isNotEmpty())
-        assertEquals(setOf(LibrarySourceFilter.DOWNLOADS_FOLDER_SUFFIX), folders.toSet())
+        // Each `filterMode = 3` clause must list exactly the downloads folders (YouTube Music, JioSaavn).
+        val clauses = dao.lines().filter { "filterMode = 3" in it }
+        assertTrue(clauses.isNotEmpty())
+        for (clause in clauses) {
+            val folders = Regex("""LIKE '%([^']*)'""").findAll(clause).map { it.groupValues[1] }.toSet()
+            assertEquals(LibrarySourceFilter.DOWNLOADS_FOLDER_SUFFIXES.toSet(), folders, clause.trim())
+        }
     }
 }

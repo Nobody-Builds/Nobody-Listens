@@ -99,7 +99,7 @@ internal fun buildAudioOnlyExoPlayer(
         .setUsage(C.USAGE_MEDIA)
         .build()
 
-    // YouTube streams go through a 7-day, 1 GB audio cache; everything else is read directly.
+    // YouTube and JioSaavn streams go through a 7-day, 1 GB audio cache; everything else is read directly.
     val dataSourceFactory = youTubeMusicCache.dataSourceFactory(DefaultDataSource.Factory(context))
     val resolvingFactory = ResolvingDataSource.Factory(dataSourceFactory, resolver)
     val extractorsFactory = DefaultExtractorsFactory()

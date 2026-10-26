@@ -26,7 +26,7 @@ interface MusicPagedSongQueries {
                 :filterMode = 2
                 AND source_type != 0
             )
-            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
+            OR (:filterMode = 3 AND source_type = 0 AND (parent_directory_path LIKE '%/Nobody Listens/YouTube Music' OR parent_directory_path LIKE '%/Nobody Listens/JioSaavn'))
         )
         ORDER BY
             CASE WHEN :sortOrder = 'song_default_order' THEN track_number END ASC,
@@ -66,7 +66,7 @@ interface MusicPagedSongQueries {
                 :filterMode = 2
                 AND source_type != 0
             )
-            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
+            OR (:filterMode = 3 AND source_type = 0 AND (parent_directory_path LIKE '%/Nobody Listens/YouTube Music' OR parent_directory_path LIKE '%/Nobody Listens/JioSaavn'))
         )
         ORDER BY
             CASE WHEN :sortOrder = 'song_default_order' THEN track_number END ASC,
@@ -112,7 +112,7 @@ interface MusicPagedSongQueries {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND (songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music' OR songs.parent_directory_path LIKE '%/Nobody Listens/JioSaavn'))
         )
         ORDER BY
             CASE WHEN :sortOrder = 'liked_title_az' THEN songs.title END COLLATE NOCASE ASC,
@@ -150,7 +150,7 @@ interface MusicPagedSongQueries {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND (songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music' OR songs.parent_directory_path LIKE '%/Nobody Listens/JioSaavn'))
         )
         ORDER BY songs.title COLLATE NOCASE ASC
     """)
@@ -175,7 +175,7 @@ interface MusicPagedSongQueries {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND (songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music' OR songs.parent_directory_path LIKE '%/Nobody Listens/JioSaavn'))
         )
         ORDER BY
             CASE WHEN :sortOrder = 'liked_title_az' THEN songs.title END COLLATE NOCASE ASC,
@@ -216,7 +216,7 @@ interface MusicPagedSongQueries {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND (songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music' OR songs.parent_directory_path LIKE '%/Nobody Listens/JioSaavn'))
         )
     """)
     fun getFavoriteSongCount(

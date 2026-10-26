@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nobodybuilds.listens.data.gdrive.GDriveRepository
 import com.nobodybuilds.listens.data.jellyfin.JellyfinRepository
+import com.nobodybuilds.listens.data.jiosaavn.JioSaavnRepository
 import com.nobodybuilds.listens.data.navidrome.NavidromeRepository
 import com.nobodybuilds.listens.data.netease.NeteaseRepository
 import com.nobodybuilds.listens.data.qqmusic.QqMusicRepository
@@ -30,7 +31,8 @@ enum class ExternalServiceAccount {
     QQ_MUSIC,
     NAVIDROME,
     JELLYFIN,
-    YOUTUBE_MUSIC
+    YOUTUBE_MUSIC,
+    JIOSAAVN
 }
 
 data class ExternalAccountUiModel(
@@ -56,6 +58,7 @@ class AccountsViewModel @Inject constructor(
     private val navidromeRepository: NavidromeRepository,
     private val jellyfinRepository: JellyfinRepository,
     private val youTubeMusicRepository: YouTubeMusicRepository,
+    private val jioSaavnRepository: JioSaavnRepository,
 ) : ViewModel() {
 
     private val loggingOutServices = MutableStateFlow<Set<ExternalServiceAccount>>(emptySet())
@@ -107,6 +110,9 @@ class AccountsViewModel @Inject constructor(
     private val youTubeMusicStateFlow = youTubeMusicRepository.session
         .map { session -> session.isLoggedIn to if (session.isLoggedIn) 1 else 0 }
 
+    private val jioSaavnStateFlow = jioSaavnRepository.session
+        .map { session -> session.isLoggedIn to if (session.isLoggedIn) 1 else 0 }
+
     val uiState: StateFlow<AccountsUiState> = combine(
         combine(
             listOf(
@@ -116,7 +122,8 @@ class AccountsViewModel @Inject constructor(
                 qqMusicStateFlow,
                 navidromeStateFlow,
                 jellyfinStateFlow,
-                youTubeMusicStateFlow
+                youTubeMusicStateFlow,
+                jioSaavnStateFlow
             )
         ) { it.toList() },
         loggingOutServices
@@ -128,6 +135,7 @@ class AccountsViewModel @Inject constructor(
         val (navidromeConnected, navidromePlaylistCount) = states[4] as Pair<Boolean, Int>
         val (jellyfinConnected, jellyfinPlaylistCount) = states[5] as Pair<Boolean, Int>
         val (youTubeMusicConnected, _) = states[6] as Pair<Boolean, Int>
+        val (jioSaavnConnected, _) = states[7] as Pair<Boolean, Int>
 
         val connectedAccounts = buildList {
             if (telegramConnected) {
@@ -245,6 +253,19 @@ class AccountsViewModel @Inject constructor(
                     )
                 )
             }
+            if (jioSaavnConnected) {
+                add(
+                    ExternalAccountUiModel(
+                        service = ExternalServiceAccount.JIOSAAVN,
+                        title = "JioSaavn",
+                        accountLabel = jioSaavnRepository.accountName
+                            ?.takeIf { it.isNotBlank() }
+                            ?: "JioSaavn account connected",
+                        syncedContentLabel = "Feed, library, and downloads",
+                        isLoggingOut = ExternalServiceAccount.JIOSAAVN in activeLogouts
+                    )
+                )
+            }
         }
 
         val disconnectedServices = buildList {
@@ -255,6 +276,7 @@ class AccountsViewModel @Inject constructor(
             if (!navidromeConnected) add(ExternalServiceAccount.NAVIDROME)
             if (!jellyfinConnected) add(ExternalServiceAccount.JELLYFIN)
             if (!youTubeMusicConnected) add(ExternalServiceAccount.YOUTUBE_MUSIC)
+            if (!jioSaavnConnected) add(ExternalServiceAccount.JIOSAAVN)
         }
 
         AccountsUiState(
@@ -282,6 +304,7 @@ class AccountsViewModel @Inject constructor(
                         ExternalServiceAccount.NAVIDROME -> navidromeRepository.logout()
                         ExternalServiceAccount.JELLYFIN -> jellyfinRepository.logout()
                         ExternalServiceAccount.YOUTUBE_MUSIC -> youTubeMusicRepository.logout()
+                        ExternalServiceAccount.JIOSAAVN -> jioSaavnRepository.logout()
                     }
                 }
             } finally {

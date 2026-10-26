@@ -72,3 +72,24 @@ Other behaviour:
 - **Library:** the source filter cycles All → Cloud → Phone → Downloaded. `StorageFilter.DOWNLOADED` is SQL `filterMode = 3`: phone files under `…/Nobody Listens/YouTube Music` (the path is hard-coded in `MusicDao`'s queries and `LibrarySourceFilter.DOWNLOADS_FOLDER_SUFFIX`; change both together).
 - Search, feed, play, download and video work signed out. Only the Library tab needs the account cookie.
 - `Velune/` next to this repo is the GPL-3 reference app. Do not copy its code here, because Nobody Listens is MIT.
+
+## Shared streaming screens (`data/stream`, `presentation/streaming`)
+
+YouTube Music and JioSaavn share one dashboard (`StreamingDashboardScreen` + `StreamingDashboardViewModel`), one set of Search-screen results (`StreamingSearchResults`), the now-playing download button and the "Start radio" row. Their models implement `StreamingTrack`, `StreamingCollection` and `StreamingShelf`; each service's view model only supplies its calls. Change the shared files, not a copy, when a screen should change for both.
+
+- **Import:** playlist and album pages have an Import button. It saves the tracks to `songs` (`saveAll`) and calls `StreamingPlaylists.importOrUpdate` with id `ytmusic_<id>` or `jiosaavn_<kind>_<id>`, so importing again refreshes the same Nobody Listens playlist.
+- The Downloaded filter (`filterMode = 3` in 17 `MusicDao` queries, and `LibrarySourceFilter.DOWNLOADS_FOLDER_SUFFIXES`) accepts both `…/Nobody Listens/YouTube Music` and `…/Nobody Listens/JioSaavn`. A new download folder must be added in both places.
+
+## JioSaavn (`data/jiosaavn`, `presentation/jiosaavn`)
+
+It uses JioSaavn's web API (`www.jiosaavn.com/api.php?__call=…&api_version=4&ctx=web6dot0`), the same calls jiosaavn.com makes. It is unofficial and may change.
+
+- **Streams:** `song.getDetails` gives the `encrypted_media_url`, and `song.generateAuthToken(url, bitrate, pid)` turns it into a signed `saavncdn.com` URL. **Do not decrypt the URL or rewrite `_96` to `_320` yourself.** That gets around JioSaavn's Pro paywall; the server decides what each account gets. The granted bitrate is read from the file name (`_160.mp4`) and shown in the player. Songs with only `encrypted_drm_media_url` can't be played and say so.
+- AAC in MP4. ExoPlayer plays it directly; `JioSaavnStreamProxy` (`http://127.0.0.1:<port>/jiosaavn/<id>`) keeps the player's URL stable while the signed URL expires (cached 20 minutes, signed again at the same bitrate on 403). It shares `YouTubeMusicCache`, keyed by the **granted** bitrate (`jiosaavn:<id>:<bps>`), because signing in or out can hand out a different file for the same setting and two files must never share a cache entry.
+- **The file server answers 403 unless the request carries jiosaavn.com's `Referer`/`Origin`** (`JioSaavnClients.decorateMediaRequest`). Signed out, JioSaavn granted 320 kbps in 2026-10 (checked by file size).
+- `jiosaavn://track/<id>`, `SourceType.JIOSAAVN = 8`, ids at offsets -18T/-19T/-20T. Saved on first play like YouTube (`JioSaavnLibrary`).
+- **Radio** needs `ctx=android`: `webradio.createEntityStation` with `entity_id=["<id>"]`, then `webradio.getSong` (20 at a time, keyed "0", "1", …).
+- **Sign-in** is a WebView at `/login`; the jiosaavn.com cookies are saved only after `library.getAll` accepts them. Library = `library.getAll` (+ `library.getDetails` for titles); likes = `library.add` / `library.delete` (`entity_type=song`). These were not checked against a real account when written: verify the reply shapes the first time someone signs in.
+- Text comes HTML-escaped (`&quot;`), numbers come as strings or numbers, images at 150x150 (`JioSaavnParsers.artwork` asks for 500x500). Lyrics are plain (`lyrics.getLyrics`, `<br>` lines), tried after the synced lyrics API.
+- Downloads are tagged `.m4a` (taglib) in `Music/Nobody Listens/JioSaavn`. Settings › Playback › JioSaavn has stream and download quality (320/160/96 kbps, `jiosaavn_settings`).
+- `JioSaavnLiveTest` hits JioSaavn and only runs with `JIOSAAVN_LIVE=1`.

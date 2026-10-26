@@ -127,6 +127,12 @@
             android:theme="@style/Theme.NobodyListens" />
 
         <activity
+            android:name=".presentation.jiosaavn.auth.JioSaavnLoginActivity"
+            android:exported="false"
+            android:label="JioSaavn"
+            android:theme="@style/Theme.NobodyListens" />
+
+        <activity
             android:name=".presentation.ytmusic.video.YouTubeMusicVideoActivity"
             android:autoRemoveFromRecents="true"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"

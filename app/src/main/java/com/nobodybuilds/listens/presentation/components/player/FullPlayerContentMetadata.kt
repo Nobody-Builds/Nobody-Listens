@@ -149,9 +149,14 @@ internal fun SongMetadataDisplaySection(
             }
         }
 
-        // YouTube songs only: save a tagged copy to Music/Nobody Listens/YouTube Music.
+        // YouTube and JioSaavn songs only: save a tagged copy under Music/Nobody Listens.
         song?.let { currentSong ->
             com.nobodybuilds.listens.presentation.ytmusic.YouTubeMusicDownloadButton(
+                song = currentSong,
+                containerColor = chipColor,
+                contentColor = chipContentColor,
+            )
+            com.nobodybuilds.listens.presentation.jiosaavn.JioSaavnDownloadButton(
                 song = currentSong,
                 containerColor = chipColor,
                 contentColor = chipContentColor,

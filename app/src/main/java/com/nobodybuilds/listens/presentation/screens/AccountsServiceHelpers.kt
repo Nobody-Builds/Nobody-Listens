@@ -30,6 +30,7 @@ import com.nobodybuilds.listens.presentation.jellyfin.auth.JellyfinLoginActivity
 import com.nobodybuilds.listens.presentation.navidrome.auth.NavidromeLoginActivity
 import com.nobodybuilds.listens.presentation.qqmusic.auth.QqMusicLoginActivity
 import com.nobodybuilds.listens.presentation.ytmusic.auth.YouTubeMusicLoginActivity
+import com.nobodybuilds.listens.presentation.jiosaavn.auth.JioSaavnLoginActivity
 import com.nobodybuilds.listens.presentation.telegram.auth.TelegramLoginActivity
 import com.nobodybuilds.listens.presentation.viewmodel.ExternalServiceAccount
 
@@ -66,6 +67,7 @@ private fun accountIcon(service: ExternalServiceAccount): ImageVector {
         ExternalServiceAccount.NAVIDROME -> Icons.Rounded.CloudQueue
         ExternalServiceAccount.JELLYFIN -> Icons.Rounded.CloudQueue
         ExternalServiceAccount.YOUTUBE_MUSIC -> Icons.Rounded.MusicNote
+        ExternalServiceAccount.JIOSAAVN -> Icons.Rounded.MusicNote
     }
 }
 
@@ -122,6 +124,7 @@ internal fun serviceDisplayName(service: ExternalServiceAccount): String {
         ExternalServiceAccount.NAVIDROME -> stringResource(R.string.cd_subsonic_logo)
         ExternalServiceAccount.JELLYFIN -> stringResource(R.string.auth_jellyfin_title)
         ExternalServiceAccount.YOUTUBE_MUSIC -> "YouTube Music"
+        ExternalServiceAccount.JIOSAAVN -> "JioSaavn"
     }
 }
 
@@ -133,6 +136,7 @@ internal fun openService(
     onOpenNavidromeDashboard: () -> Unit,
     onOpenJellyfinDashboard: () -> Unit,
     onOpenYouTubeMusicDashboard: () -> Unit,
+    onOpenJioSaavnDashboard: () -> Unit,
     preferNeteaseDashboard: Boolean
 ) {
     when (service) {
@@ -192,6 +196,16 @@ internal fun openService(
                 safeStartActivity(
                     context = context,
                     intent = Intent(context, YouTubeMusicLoginActivity::class.java)
+                )
+            }
+        }
+        ExternalServiceAccount.JIOSAAVN -> {
+            if (preferNeteaseDashboard) {
+                onOpenJioSaavnDashboard()
+            } else {
+                safeStartActivity(
+                    context = context,
+                    intent = Intent(context, JioSaavnLoginActivity::class.java)
                 )
             }
         }

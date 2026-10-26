@@ -248,6 +248,7 @@ abstract class PlayerViewModelTestBase {
             mockSyncManager,
             mockDualPlayerEngine,
             mockk<com.nobodybuilds.listens.data.ytmusic.YouTubeMusicRadio>(relaxed = true),
+            mockk<com.nobodybuilds.listens.data.jiosaavn.JioSaavnRadio>(relaxed = true),
             mockAppShortcutManager,
             mockTelegramCacheManagerProvider,
             mockListeningStatsTracker,

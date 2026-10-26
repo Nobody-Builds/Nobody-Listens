@@ -319,6 +319,7 @@ object AppModule {
         lyricsDao: LyricsDao,
         okHttpClient: OkHttpClient,
         youTubeMusicRepository: com.nobodybuilds.listens.data.ytmusic.YouTubeMusicRepository,
+        jioSaavnRepository: com.nobodybuilds.listens.data.jiosaavn.JioSaavnRepository,
     ): LyricsRepository {
         return LyricsRepositoryImpl(
             context = context,
@@ -326,6 +327,7 @@ object AppModule {
             lyricsDao = lyricsDao,
             okHttpClient = okHttpClient,
             youTubeLyrics = { videoId -> youTubeMusicRepository.lyrics(videoId)?.text },
+            jioSaavnLyrics = { songId -> jioSaavnRepository.lyrics(songId)?.text },
         )
     }
 
@@ -382,6 +384,7 @@ object AppModule {
         artistImageRepository: ArtistImageRepository,
         folderTreeBuilder: FolderTreeBuilder,
         youTubeMusicAccountSync: com.nobodybuilds.listens.data.ytmusic.YouTubeMusicAccountSync,
+        jioSaavnAccountSync: com.nobodybuilds.listens.data.jiosaavn.JioSaavnAccountSync,
     ): MusicRepository {
         return MusicRepositoryImpl(
             context = context,
@@ -397,7 +400,11 @@ object AppModule {
             favoritesDao = favoritesDao,
             artistImageRepository = artistImageRepository,
             folderTreeBuilder = folderTreeBuilder,
-            onFavoriteChanged = youTubeMusicAccountSync::onFavoriteChanged,
+            // Each sync ignores songs that are not its own, so both hear every like.
+            onFavoriteChanged = { songId, isFavorite ->
+                youTubeMusicAccountSync.onFavoriteChanged(songId, isFavorite)
+                jioSaavnAccountSync.onFavoriteChanged(songId, isFavorite)
+            },
         )
 
     }

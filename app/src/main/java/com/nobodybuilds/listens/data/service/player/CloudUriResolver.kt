@@ -35,6 +35,7 @@ internal class CloudUriResolver(
     private val navidromeStreamProxy: NavidromeStreamProxy,
     private val jellyfinStreamProxy: JellyfinStreamProxy,
     private val youTubeMusicStreamProxy: YouTubeMusicStreamProxy,
+    private val jioSaavnStreamProxy: com.nobodybuilds.listens.data.jiosaavn.JioSaavnStreamProxy,
     private val gdriveStreamProxy: GDriveStreamProxy,
     private val connectivityStateHolder: ConnectivityStateHolder
 ) {
@@ -43,7 +44,7 @@ internal class CloudUriResolver(
     val dataSpecResolver = object : ResolvingDataSource.Resolver {
         override fun resolveDataSpec(dataSpec: DataSpec): DataSpec {
             val uri = dataSpec.uri
-            youTubeMusicStreamProxy.rebindStaleProxyUri(uri)?.let { current ->
+            (youTubeMusicStreamProxy.rebindStaleProxyUri(uri) ?: jioSaavnStreamProxy.rebindStaleProxyUri(uri))?.let { current ->
                 return dataSpec.buildUpon().setUri(current).build()
             }
             val scheme = uri.scheme
@@ -80,7 +81,7 @@ internal class CloudUriResolver(
 
                 for (uriToResolve in itemsToPreResolve) {
                     val scheme = uriToResolve.scheme
-                    if (scheme == "telegram" || scheme == "netease" || scheme == "qqmusic" || scheme == "navidrome" || scheme == "jellyfin" || scheme == "gdrive" || scheme == "ytmusic") {
+                    if (scheme == "telegram" || scheme == "netease" || scheme == "qqmusic" || scheme == "navidrome" || scheme == "jellyfin" || scheme == "gdrive" || scheme == "ytmusic" || scheme == "jiosaavn") {
                         resolveCloudUri(uriToResolve)
                     }
                 }
@@ -101,6 +102,7 @@ internal class CloudUriResolver(
             "navidrome" -> resolveNavidromeUriAsync(uriString)
             "jellyfin" -> resolveJellyfinUriAsync(uriString)
             "ytmusic" -> resolveYouTubeMusicUriAsync(uriString)
+            "jiosaavn" -> resolveJioSaavnUriAsync(uriString)
             "gdrive" -> resolveGDriveUriAsync(uriString)
             else -> null
         }
@@ -162,6 +164,12 @@ internal class CloudUriResolver(
         if (!youTubeMusicStreamProxy.ensureReady(5_000L)) return@withContext null
         youTubeMusicStreamProxy.warmUpStreamUrl(uriString)
         youTubeMusicStreamProxy.resolveYouTubeMusicUri(uriString)?.let { Uri.parse(it) }
+    }
+
+    private suspend fun resolveJioSaavnUriAsync(uriString: String): Uri? = withContext(Dispatchers.IO) {
+        if (!jioSaavnStreamProxy.ensureReady(5_000L)) return@withContext null
+        jioSaavnStreamProxy.warmUpStreamUrl(uriString)
+        jioSaavnStreamProxy.resolveJioSaavnUri(uriString)?.let { Uri.parse(it) }
     }
 
     private suspend fun resolveGDriveUriAsync(uriString: String): Uri? = withContext(Dispatchers.IO) {

@@ -123,6 +123,8 @@ private fun YouTubeMusicLoginScreen(
     viewModel: YouTubeMusicLoginViewModel = hiltViewModel(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    // webView is null once the screen is gone, so the toast uses the app's context.
+    val appContext = androidx.compose.ui.platform.LocalContext.current.applicationContext
     val scope = rememberCoroutineScope()
     var webView by remember { mutableStateOf<WebView?>(null) }
     var webUiState by remember { mutableStateOf(YouTubeMusicWebUiState()) }
@@ -172,7 +174,7 @@ private fun YouTubeMusicLoginScreen(
                 )
             )
         }.onSuccess {
-            Toast.makeText(webView?.context, "YouTube Music connected", Toast.LENGTH_SHORT).show()
+            Toast.makeText(appContext, "YouTube Music connected", Toast.LENGTH_SHORT).show()
             onClose()
         }.onFailure { error ->
             saving = false

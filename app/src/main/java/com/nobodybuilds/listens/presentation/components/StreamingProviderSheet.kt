@@ -51,6 +51,8 @@ fun StreamingProviderSheet(
     onNavigateToJellyfinDashboard: () -> Unit = {},
     isYouTubeMusicLoggedIn: Boolean = false,
     onNavigateToYouTubeMusicDashboard: () -> Unit = {},
+    isJioSaavnLoggedIn: Boolean = false,
+    onNavigateToJioSaavnDashboard: () -> Unit = {},
     sheetState: SheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
@@ -190,6 +192,20 @@ fun StreamingProviderSheet(
                         onClick = {
                             // Search, play and download work signed out; sign-in lives on the Library tab.
                             onNavigateToYouTubeMusicDashboard()
+                            onDismissRequest()
+                        }
+                    )
+
+                    ProviderRow(
+                        iconPainter = painterResource(R.drawable.ic_music_placeholder),
+                        iconTint = Color(0xFF2BC5B4),
+                        title = "JioSaavn",
+                        subtitle = if (isJioSaavnLoggedIn) "Connected" else "Feed, library, and downloads",
+                        shape = providerSegmentItemShape,
+                        isConnected = isJioSaavnLoggedIn,
+                        onClick = {
+                            // Search, play and download work signed out; sign-in lives on the Library tab.
+                            onNavigateToJioSaavnDashboard()
                             onDismissRequest()
                         }
                     )

@@ -72,6 +72,9 @@ internal fun NavGraphBuilder.settingsDestinations(
                 },
                 onOpenYouTubeMusicDashboard = {
                     navController.navigateSafely(Screen.YouTubeMusicDashboard.route)
+                },
+                onOpenJioSaavnDashboard = {
+                    navController.navigateSafely(Screen.JioSaavnDashboard.route)
                 }
             )
         }

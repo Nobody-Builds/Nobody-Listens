@@ -11,6 +11,8 @@ import androidx.media3.datasource.TransferListener
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
+import com.nobodybuilds.listens.data.jiosaavn.JioSaavnRepository
+import com.nobodybuilds.listens.data.jiosaavn.JioSaavnUris
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,16 +24,17 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Audio cache for streamed YouTube songs, so a replay is instant and needs no data.
- * Songs not played for [MAX_IDLE_MS] are removed when the app starts, and the cache
- * never grows past [MAX_BYTES]: when full, the least recently played go first.
- * Only YouTube streams use it; local files and other sources are read as before.
+ * Audio cache for streamed YouTube and JioSaavn songs, so a replay is instant and needs
+ * no data. Songs not played for [MAX_IDLE_MS] are removed when the app starts, and the
+ * cache never grows past [MAX_BYTES]: when full, the least recently played go first.
+ * Only those streams use it; local files and other sources are read as before.
  */
 @OptIn(UnstableApi::class)
 @Singleton
 class YouTubeMusicCache @Inject constructor(
     @ApplicationContext private val context: Context,
     private val repository: YouTubeMusicRepository,
+    private val jioSaavnRepository: JioSaavnRepository,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -43,7 +46,7 @@ class YouTubeMusicCache @Inject constructor(
         ).also { created -> scope.launch { removeUnplayed(created) } }
     }
 
-    /** Wraps [upstream] so YouTube streams are read through the cache. */
+    /** Wraps [upstream] so YouTube and JioSaavn streams are read through the cache. */
     fun dataSourceFactory(upstream: DataSource.Factory): DataSource.Factory {
         val cached = CacheDataSource.Factory()
             .setCache(cache)
@@ -59,6 +62,15 @@ class YouTubeMusicCache @Inject constructor(
     /** Different qualities are different files, so each gets its own entry. */
     private fun cacheKey(uri: Uri): String? =
         YouTubeMusicUris.videoIdFromPlaybackUri(uri)?.let { "ytmusic:$it:${repository.streamQuality.value}" }
+            ?: JioSaavnUris.songIdFromPlaybackUri(uri)?.let(::jioSaavnCacheKey)
+
+    /**
+     * Keyed by the bitrate JioSaavn granted, not the one asked for: signing in or out can
+     * hand out a different file for the same setting, and two files must never share an
+     * entry. Not cached until the stream is resolved and the bitrate known.
+     */
+    private fun jioSaavnCacheKey(songId: String): String? =
+        jioSaavnRepository.knownStreamBitrate(songId)?.let { "jiosaavn:$songId:$it" }
 
     private fun removeUnplayed(cache: SimpleCache) {
         val cutoff = System.currentTimeMillis() - MAX_IDLE_MS

@@ -170,6 +170,20 @@ internal fun NavGraphBuilder.serviceDashboardDestinations(
         }
     }
     composable(
+        Screen.JioSaavnDashboard.route,
+        enterTransition = { enterTransition() },
+        exitTransition = { exitTransition() },
+        popEnterTransition = { popEnterTransition() },
+        popExitTransition = { popExitTransition() },
+    ) {
+        ScreenWrapper(navController = navController, playerViewModel = playerViewModel) {
+            com.nobodybuilds.listens.presentation.jiosaavn.dashboard.JioSaavnDashboardScreen(
+                onBack = { navController.popBackStack() },
+                playerViewModel = playerViewModel,
+            )
+        }
+    }
+    composable(
         Screen.NavidromeDashboard.route,
         enterTransition = { enterTransition() },
         exitTransition = { exitTransition() },

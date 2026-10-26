@@ -47,6 +47,15 @@ class YouTubeMusicLibrary @Inject constructor(
         runCatching { save(track) }.onFailure { Timber.w(it, "Could not save YouTube track $videoId") }
     }
 
+    /** Saves [tracks] now, for a playlist import; returns their song ids, skipping any that failed. */
+    suspend fun saveAll(tracks: List<YouTubeMusicTrack>): List<Long> = tracks.mapNotNull { track ->
+        queued.remove(track.videoId)
+        runCatching { save(track) }
+            .onFailure { Timber.w(it, "Could not save YouTube track ${track.videoId}") }
+            .map { YouTubeMusicUris.songId(track.videoId) }
+            .getOrNull()
+    }
+
     private suspend fun save(track: YouTubeMusicTrack) = withContext(Dispatchers.IO) {
         val listed = YouTubeMusicUris.toEntity(track)
         // Video results come with small 4:3 thumbnails; swap in the HD one when it exists.

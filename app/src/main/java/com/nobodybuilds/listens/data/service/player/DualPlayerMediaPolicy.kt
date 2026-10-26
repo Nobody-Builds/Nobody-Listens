@@ -5,7 +5,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 
 internal val LOCAL_MEDIA_SCHEMES = setOf("content", "file", "android.resource")
-internal val REMOTE_MEDIA_SCHEMES = setOf("http", "https", "telegram", "netease", "qqmusic", "navidrome", "jellyfin", "gdrive", "ytmusic")
+internal val REMOTE_MEDIA_SCHEMES = setOf("http", "https", "telegram", "netease", "qqmusic", "navidrome", "jellyfin", "gdrive", "ytmusic", "jiosaavn")
 
 internal fun isLikelyLocalMedia(mediaItem: MediaItem?): Boolean {
     val scheme = mediaItem?.localConfiguration?.uri?.scheme?.lowercase()

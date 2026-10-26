@@ -36,7 +36,7 @@ interface MusicArtistQueries {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND (songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music' OR songs.parent_directory_path LIKE '%/Nobody Listens/JioSaavn'))
         )
         GROUP BY artists.id
         ORDER BY
@@ -70,7 +70,7 @@ interface MusicArtistQueries {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND (songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music' OR songs.parent_directory_path LIKE '%/Nobody Listens/JioSaavn'))
         )
         GROUP BY artists.id
         ORDER BY

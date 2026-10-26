@@ -60,6 +60,7 @@ class DualPlayerEngine @Inject constructor(
     private val youTubeMusicStreamProxy: YouTubeMusicStreamProxy,
     private val youTubeMusicCache: com.nobodybuilds.listens.data.ytmusic.YouTubeMusicCache,
     private val youTubeMusicLibrary: com.nobodybuilds.listens.data.ytmusic.YouTubeMusicLibrary,
+    private val jioSaavnStreamProxy: com.nobodybuilds.listens.data.jiosaavn.JioSaavnStreamProxy,
     private val gdriveStreamProxy: com.nobodybuilds.listens.data.gdrive.GDriveStreamProxy,
     private val telegramCacheManager: com.nobodybuilds.listens.data.telegram.TelegramCacheManager,
     private val connectivityStateHolder: com.nobodybuilds.listens.presentation.viewmodel.ConnectivityStateHolder
@@ -92,6 +93,7 @@ class DualPlayerEngine @Inject constructor(
         navidromeStreamProxy,
         jellyfinStreamProxy,
         youTubeMusicStreamProxy,
+        jioSaavnStreamProxy,
         gdriveStreamProxy,
         connectivityStateHolder
     )
@@ -442,7 +444,8 @@ class DualPlayerEngine @Inject constructor(
     val streamedArtworkUpdates get() = youTubeMusicLibrary.artworkUpdates
 
     /** Bitrate a streaming source already knows for [uri], when the decoder cannot report one. */
-    fun knownStreamBitrate(uri: Uri): Int? = youTubeMusicStreamProxy.knownBitrate(uri)
+    fun knownStreamBitrate(uri: Uri): Int? =
+        youTubeMusicStreamProxy.knownBitrate(uri) ?: jioSaavnStreamProxy.knownBitrate(uri)
 
     suspend fun resolveMediaItem(mediaItem: MediaItem): MediaItem {
         val uri = mediaItem.localConfiguration?.uri ?: return mediaItem
