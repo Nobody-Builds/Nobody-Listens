@@ -6,7 +6,9 @@
 A local music player for Android 13 and newer, written in Kotlin with Jetpack Compose, with a
 Wear OS app for the watch. Part of [Nobody Builds](https://github.com/Nobody-Builds).
 
-Made by **Shaan Shoukath** ([@Shaan-Shoukath](https://github.com/Shaan-Shoukath)).
+Developers: **Shaan Shoukath** ([@Shaan-Shoukath](https://github.com/Shaan-Shoukath)) and
+**Abhiram NJ** ([@twilighty-abhi](https://github.com/twilighty-abhi)), the author of
+[LMusic](https://github.com/twilighty-abhi/lmusic-player).
 
 > **A fork of LMusic.** Nobody Listens is a fork of [LMusic](https://github.com/twilighty-abhi/lmusic-player)
 > by Abhiram NJ ([Twilight Abhi](https://github.com/twilighty-abhi)), which is itself built on

@@ -3,6 +3,7 @@ package com.nobodybuilds.listens.presentation.screens
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.DrawableRes
 import androidx.annotation.OptIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -67,7 +68,8 @@ import com.nobodybuilds.listens.presentation.nb.NbType
 
 private const val DeveloperName = "Shaan Shoukath"
 private const val DeveloperHandle = "Shaan-Shoukath"
-private const val DeveloperGitHub = "https://github.com/Shaan-Shoukath"
+private const val CoDeveloperName = "Abhiram NJ"
+private const val CoDeveloperHandle = "twilighty-abhi"
 private const val RepoUrl = "https://github.com/Nobody-Builds/Nobody-Listens"
 private const val ReleasesUrl = "$RepoUrl/releases"
 private const val IssuesUrl = "$RepoUrl/issues"
@@ -121,28 +123,33 @@ fun AboutScreen(
             )
 
             NbCard {
-                NbOverline("Developer")
+                NbOverline("Developers")
                 Spacer(Modifier.height(10.dp))
-                Row(
-                    modifier = Modifier.clip(NbShapes.md).clickable { openUrl(context, DeveloperGitHub) },
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.developer_avatar),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(52.dp).clip(NbShapes.pill)
-                    )
-                    Column(Modifier.weight(1f)) {
-                        Text(DeveloperName, style = NbType.h3, color = Nb.text)
-                        Text("@$DeveloperHandle on GitHub", style = NbType.meta, color = Nb.textMuted)
-                    }
-                }
+                DeveloperRow(
+                    name = DeveloperName,
+                    role = "Developer · @$DeveloperHandle",
+                    avatar = R.drawable.developer_avatar,
+                    onClick = { openUrl(context, "https://github.com/$DeveloperHandle") }
+                )
+                Spacer(Modifier.height(10.dp))
+                DeveloperRow(
+                    name = CoDeveloperName,
+                    role = "Developer, LMusic author · @$CoDeveloperHandle",
+                    avatar = R.drawable.developer_avatar_abhiram,
+                    onClick = { openUrl(context, "https://github.com/$CoDeveloperHandle") }
+                )
                 Spacer(Modifier.height(14.dp))
                 NbButton(
                     text = "Nobody Listens on GitHub",
                     onClick = { openUrl(context, RepoUrl) },
+                    style = NbButtonStyle.Secondary,
+                    icon = painterResource(R.drawable.github),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(8.dp))
+                NbButton(
+                    text = "LMusic on GitHub",
+                    onClick = { openUrl(context, UpstreamUrl) },
                     style = NbButtonStyle.Secondary,
                     icon = painterResource(R.drawable.github),
                     modifier = Modifier.fillMaxWidth()
@@ -186,6 +193,26 @@ fun AboutScreen(
                 color = Nb.textMuted,
                 modifier = Modifier.padding(horizontal = 4.dp)
             )
+        }
+    }
+}
+
+@Composable
+private fun DeveloperRow(name: String, role: String, @DrawableRes avatar: Int, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().clip(NbShapes.md).clickable(onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        Image(
+            painter = painterResource(avatar),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(52.dp).clip(NbShapes.pill)
+        )
+        Column(Modifier.weight(1f)) {
+            Text(name, style = NbType.h3, color = Nb.text)
+            Text(role, style = NbType.meta, color = Nb.textMuted)
         }
     }
 }
