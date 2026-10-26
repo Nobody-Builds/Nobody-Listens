@@ -14,8 +14,11 @@ class YouTubeMusicSettingsViewModel @Inject constructor(
 ) : ViewModel() {
     val streamQuality: StateFlow<YouTubeMusicAudioQuality> = repository.streamQuality
     val downloadQuality: StateFlow<YouTubeMusicAudioQuality> = repository.downloadQuality
+    val searchSuggestionsEnabled: StateFlow<Boolean> = repository.searchSuggestionsEnabled
 
     fun setStreamQuality(quality: YouTubeMusicAudioQuality) = repository.setStreamQuality(quality)
 
     fun setDownloadQuality(quality: YouTubeMusicAudioQuality) = repository.setDownloadQuality(quality)
+
+    fun setSearchSuggestionsEnabled(enabled: Boolean) = repository.setSearchSuggestionsEnabled(enabled)
 }

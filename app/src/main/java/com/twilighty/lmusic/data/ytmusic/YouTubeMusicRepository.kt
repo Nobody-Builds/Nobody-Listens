@@ -70,6 +70,16 @@ class YouTubeMusicRepository @Inject constructor(
         _downloadQuality.value = quality
     }
 
+    private val _searchSuggestionsEnabled = MutableStateFlow(settings.getBoolean(KEY_SEARCH_SUGGESTIONS, false))
+
+    /** Whether YouTube search suggestions are fetched while typing. Off until turned on in Settings. */
+    val searchSuggestionsEnabled: StateFlow<Boolean> = _searchSuggestionsEnabled.asStateFlow()
+
+    fun setSearchSuggestionsEnabled(enabled: Boolean) {
+        settings.edit().putBoolean(KEY_SEARCH_SUGGESTIONS, enabled).apply()
+        _searchSuggestionsEnabled.value = enabled
+    }
+
     private fun readQuality(key: String): YouTubeMusicAudioQuality =
         settings.getString(key, null)
             ?.let { name -> YouTubeMusicAudioQuality.entries.firstOrNull { it.name == name } }
@@ -162,7 +172,8 @@ class YouTubeMusicRepository @Inject constructor(
         YouTubeMusicParsers.parseRadio(api.next(readySession(), videoId = null, continuation = continuation))
 
     suspend fun searchSuggestions(input: String): List<String> =
-        YouTubeMusicParsers.parseSuggestions(api.searchSuggestions(readySession(), input))
+        if (!searchSuggestionsEnabled.value) emptyList()
+        else YouTubeMusicParsers.parseSuggestions(api.searchSuggestions(readySession(), input))
 
     /** Plain lyrics for a song, or null when YouTube has none. */
     suspend fun lyrics(videoId: String): YouTubeMusicLyrics? {
@@ -382,6 +393,7 @@ class YouTubeMusicRepository @Inject constructor(
         const val SETTINGS_PREFS = "ytmusic_settings"
         const val KEY_STREAM_QUALITY = "stream_quality"
         const val KEY_DOWNLOAD_QUALITY = "download_quality"
+        const val KEY_SEARCH_SUGGESTIONS = "search_suggestions"
         const val STREAM_EXPIRY_MARGIN_MS = 30L * 60 * 1000
     }
 }
