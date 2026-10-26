@@ -47,7 +47,7 @@ import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
-import com.google.android.horologist.compose.layout.ScalingLazyColumn
+import com.nobodybuilds.listens.presentation.components.WatchScalingColumn
 import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
 import com.nobodybuilds.listens.R
 import com.nobodybuilds.listens.data.TransferState
@@ -55,6 +55,7 @@ import com.nobodybuilds.listens.presentation.components.AlwaysOnScalingPositionI
 import com.nobodybuilds.listens.presentation.components.PlayingEqIcon
 import com.nobodybuilds.listens.presentation.components.WearTopTimeText
 import com.nobodybuilds.listens.presentation.theme.LocalWearPalette
+import com.nobodybuilds.listens.presentation.theme.WearTitleFont
 import com.nobodybuilds.listens.presentation.theme.screenBackgroundColor
 import com.nobodybuilds.listens.presentation.theme.surfaceContainerColor
 import com.nobodybuilds.listens.presentation.theme.surfaceContainerHighColor
@@ -84,7 +85,6 @@ fun DownloadsScreen(
     val playerState by playerViewModel.playerState.collectAsState()
     val isPhoneConnected by playerViewModel.isPhoneConnected.collectAsState()
     val palette = LocalWearPalette.current
-    val watchLibraryTitleFont = rememberWatchLibraryTitleFont()
     val columnState = rememberResponsiveColumnState()
     val context = LocalContext.current
     val audioPermission = remember {
@@ -154,9 +154,13 @@ fun DownloadsScreen(
             .fillMaxSize()
             .background(background),
     ) {
-        ScalingLazyColumn(
+        WatchScalingColumn(
             modifier = Modifier.fillMaxSize(),
             columnState = columnState,
+            // An open menu or confirmation takes the bezel.
+            rotaryActive = selectedLocalSongForMenu == null &&
+                selectedLocalSongForDeleteConfirmation == null &&
+                selectedTransferForCancelConfirmation == null,
         ) {
             item { Spacer(modifier = Modifier.height(18.dp)) }
 
@@ -164,7 +168,7 @@ fun DownloadsScreen(
                 Text(
                     text = stringResource(R.string.wear_watch_library_title),
                     style = MaterialTheme.typography.title2,
-                    fontFamily = watchLibraryTitleFont,
+                    fontFamily = WearTitleFont,
                     fontWeight = FontWeight(780),
                     color = palette.textPrimary,
                     textAlign = TextAlign.Center,
@@ -586,24 +590,4 @@ fun DownloadsScreen(
 
 private fun hasAudioLibraryPermission(context: Context, permission: String): Boolean {
     return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
-}
-
-@OptIn(ExperimentalTextApi::class)
-@Composable
-private fun rememberWatchLibraryTitleFont(): FontFamily {
-    return remember {
-        FontFamily(
-            Font(
-                resId = R.font.gflex_variable,
-                variationSettings = FontVariation.Settings(
-                    FontVariation.weight(710),
-                    FontVariation.width(132f),
-                    FontVariation.Setting("ROND", 82f),
-                    FontVariation.Setting("XTRA", 540f),
-                    FontVariation.Setting("YOPQ", 92f),
-                    FontVariation.Setting("YTLC", 512f),
-                ),
-            ),
-        )
-    }
 }

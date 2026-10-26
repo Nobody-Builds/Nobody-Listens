@@ -129,6 +129,7 @@ fun WearNobodyListensTheme(
     CompositionLocalProvider(LocalWearPalette provides palette) {
         MaterialTheme(
             colors = wearColors,
+            typography = WearTypography,
             content = content,
         )
     }

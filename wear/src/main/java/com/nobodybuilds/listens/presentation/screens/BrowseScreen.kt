@@ -27,7 +27,7 @@ import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
-import com.google.android.horologist.compose.layout.ScalingLazyColumn
+import com.nobodybuilds.listens.presentation.components.WatchScalingColumn
 import com.google.android.horologist.compose.layout.rememberResponsiveColumnState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Album
@@ -42,6 +42,7 @@ import com.nobodybuilds.listens.R
 import com.nobodybuilds.listens.presentation.components.AlwaysOnScalingPositionIndicator
 import com.nobodybuilds.listens.presentation.components.WearTopTimeText
 import com.nobodybuilds.listens.presentation.theme.LocalWearPalette
+import com.nobodybuilds.listens.presentation.theme.WearTitleFont
 import com.nobodybuilds.listens.presentation.theme.screenBackgroundColor
 import com.nobodybuilds.listens.presentation.theme.surfaceContainerColor
 
@@ -54,34 +55,22 @@ import com.nobodybuilds.listens.presentation.theme.surfaceContainerColor
 @Composable
 fun BrowseScreen(
     onCategoryClick: (browseType: String, title: String) -> Unit,
+    /** False while this is the off-screen page of the player's pager, so the bezel stays with the player. */
+    rotaryActive: Boolean = true,
 ) {
     val columnState = rememberResponsiveColumnState()
     val palette = LocalWearPalette.current
     val background = palette.screenBackgroundColor()
-    val libraryTitleFont = remember {
-        FontFamily(
-            Font(
-                resId = R.font.gflex_variable,
-                variationSettings = FontVariation.Settings(
-                    FontVariation.weight(650),
-                    FontVariation.width(146f),
-                    FontVariation.Setting("ROND", 56f),
-                    FontVariation.Setting("XTRA", 520f),
-                    FontVariation.Setting("YOPQ", 90f),
-                    FontVariation.Setting("YTLC", 505f),
-                ),
-            ),
-        )
-    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(background),
     ) {
-        ScalingLazyColumn(
+        WatchScalingColumn(
             modifier = Modifier.fillMaxSize(),
             columnState = columnState,
+            rotaryActive = rotaryActive,
         ) {
             item { Spacer(modifier = Modifier.height(2.dp)) }
 
@@ -89,7 +78,7 @@ fun BrowseScreen(
                 Text(
                     text = stringResource(R.string.wear_library_screen_title),
                     style = MaterialTheme.typography.title2,
-                    fontFamily = libraryTitleFont,
+                    fontFamily = WearTitleFont,
                     fontWeight = FontWeight(760),
                     color = palette.textPrimary,
                     textAlign = TextAlign.Center,
