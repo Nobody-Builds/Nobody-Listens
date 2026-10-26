@@ -224,6 +224,34 @@ class YouTubeMusicCoreTest {
     }
 
     @Test
+    fun `browse parser drops repeated artists and songs from the flat search list`() {
+        val artist = """
+            {
+              "musicResponsiveListItemRenderer": {
+                "flexColumns": [{ "musicResponsiveListItemFlexColumnRenderer": { "text": { "runs": [{ "text": "Ada" }] } } }],
+                "navigationEndpoint": { "browseEndpoint": {
+                  "browseId": "UC8TXnDE17HVa8j2Ko6glyAQ",
+                  "browseEndpointContextSupportedConfigs": { "browseEndpointContextMusicConfig": { "pageType": "MUSIC_PAGE_TYPE_ARTIST" } }
+                } }
+              }
+            }
+        """.trimIndent()
+        val song = """
+            {
+              "musicTwoRowItemRenderer": {
+                "title": { "runs": [{ "text": "Night Drive" }] },
+                "navigationEndpoint": { "watchEndpoint": { "videoId": "abcdefghijk" } }
+              }
+            }
+        """.trimIndent()
+        val page = YouTubeMusicParsers.parseBrowse("""{ "contents": [$artist, $song, $artist, $song] }""")
+        val playlists = page.shelves.flatMap { it.playlists }
+        val tracks = page.shelves.flatMap { it.tracks }
+        assertEquals(listOf("UC8TXnDE17HVa8j2Ko6glyAQ"), playlists.map { it.playlistId })
+        assertEquals(listOf("abcdefghijk"), tracks.map { it.videoId })
+    }
+
+    @Test
     fun `player parser keeps audio formats and duration`() {
         val payload = YouTubeMusicParsers.parsePlayer(
             """

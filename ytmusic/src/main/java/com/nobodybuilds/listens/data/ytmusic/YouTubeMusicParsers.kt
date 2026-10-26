@@ -186,8 +186,9 @@ object YouTubeMusicParsers {
         val loosePlaylists = mutableListOf<YouTubeMusicPlaylist>()
         walk(root, null, shelves, looseTracks, loosePlaylists)
         // Search now returns one flat list of mixed rows: keep songs ahead of albums and playlists.
-        if (looseTracks.isNotEmpty()) shelves += YouTubeMusicShelf(title = "", tracks = looseTracks)
-        if (loosePlaylists.isNotEmpty()) shelves += YouTubeMusicShelf(title = "", playlists = loosePlaylists)
+        // The same artist or song can appear twice in that list (top result and a later row).
+        if (looseTracks.isNotEmpty()) shelves += YouTubeMusicShelf(title = "", tracks = looseTracks.distinctBy { it.videoId })
+        if (loosePlaylists.isNotEmpty()) shelves += YouTubeMusicShelf(title = "", playlists = loosePlaylists.distinctBy { it.playlistId })
         return YouTubeMusicBrowsePage(
             shelves = shelves.filter { it.tracks.isNotEmpty() || it.playlists.isNotEmpty() },
             continuation = findContinuation(root),
@@ -444,7 +445,11 @@ object YouTubeMusicParsers {
     private class ShelfBuilder(val title: String) {
         val tracks = mutableListOf<YouTubeMusicTrack>()
         val playlists = mutableListOf<YouTubeMusicPlaylist>()
-        fun build() = YouTubeMusicShelf(title, tracks.toList(), playlists.toList())
+        fun build() = YouTubeMusicShelf(
+            title,
+            tracks.distinctBy { it.videoId },
+            playlists.distinctBy { it.playlistId },
+        )
     }
 
     private val DURATION_TEXT = Regex("""\d{1,2}:\d{2}(?::\d{2})?""")
