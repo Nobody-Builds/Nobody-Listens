@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -336,6 +337,7 @@ private fun HeaderBlock(
             text = state.songTitle.ifEmpty { "Nothing playing" },
             style = MaterialTheme.typography.body1,
             fontFamily = WearTitleFont,
+            fontWeight = FontWeight.ExtraBold, // Gilroy's open weights: below 600 would be Light
             color = palette.textPrimary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
