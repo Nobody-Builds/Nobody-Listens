@@ -92,4 +92,5 @@
     <string name="wear_play_all">Abspielen</string>
     <string name="wear_remove_playlist">Von der Uhr entfernen</string>
     <string name="wear_not_on_watch_yet">Noch nicht auf der Uhr</string>
+    <string name="wear_search_online">In %1$s suchen</string>
 </resources>

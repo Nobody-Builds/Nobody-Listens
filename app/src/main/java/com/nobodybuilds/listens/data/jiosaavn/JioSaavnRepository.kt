@@ -42,7 +42,7 @@ class JioSaavnRepository @Inject constructor(
         context.getSharedPreferences("${PREFS}_plain", Context.MODE_PRIVATE)
     }
     private val api = JioSaavnApi(okHttpClient)
-    private val media = ConcurrentHashMap<String, JioSaavnMedia>()
+    private val streamFinder = JioSaavnStreamFinder(api)
     private val streamCache = ConcurrentHashMap<String, CachedStream>()
     private val inFlightStreams = ConcurrentHashMap<String, Deferred<JioSaavnStream>>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -241,22 +241,8 @@ class JioSaavnRepository @Inject constructor(
 
     private suspend fun fetchStream(songId: String, quality: JioSaavnAudioQuality): JioSaavnStream {
         val started = System.currentTimeMillis()
-        val details = media[songId] ?: JioSaavnParsers.parseMedia(api.songDetails(session.value, listOf(songId)))[songId]
-            ?.also { media[songId] = it }
-            ?: throw IllegalStateException("This song is not on JioSaavn")
-        if (details.drmOnly) throw IllegalStateException("Only the JioSaavn app can play this song")
-        if (details.encryptedUrl.isBlank()) throw IllegalStateException("JioSaavn did not return a playable stream")
-        // Asking for 320 kbps where a song has none gets nothing, so ask for the best it has.
-        val kbps = if (quality.kbps > FREE_KBPS && !details.has320) FREE_KBPS else quality.kbps
-        val token: suspend (Int) -> JioSaavnStream? = { asked ->
-            runCatching { JioSaavnParsers.parseAuthToken(api.authToken(session.value, details.encryptedUrl, asked, songId), songId) }
-                .onFailure { Timber.w(it, "JioSaavn refused %d kbps for %s", asked, songId) }
-                .getOrNull()
-        }
-        // 320 kbps is for Pro accounts; anyone else gets the best JioSaavn allows them.
-        val stream = token(kbps) ?: (if (kbps > FREE_KBPS) token(FREE_KBPS) else null)
-            ?: throw IllegalStateException("JioSaavn did not return a playable stream")
-        Timber.d("Resolved JioSaavn %s at %d kbps (asked %d) in %d ms", songId, stream.bitrate / 1000, kbps, System.currentTimeMillis() - started)
+        val stream = streamFinder.find(session.value, songId, quality)
+        Timber.d("Resolved JioSaavn %s at %d kbps (asked %d) in %d ms", songId, stream.bitrate / 1000, quality.kbps, System.currentTimeMillis() - started)
         return stream
     }
 
@@ -279,7 +265,6 @@ class JioSaavnRepository @Inject constructor(
         private const val MAX_PLAYLIST_PAGES = 20
         private const val SONG_DETAILS_BATCH = 50
         private const val RADIO_BATCH = 20
-        private const val FREE_KBPS = 160
         // Signed stream URLs are short-lived; a refused one is fetched again by the proxy.
         private const val STREAM_TTL_MS = 20L * 60 * 1000
     }

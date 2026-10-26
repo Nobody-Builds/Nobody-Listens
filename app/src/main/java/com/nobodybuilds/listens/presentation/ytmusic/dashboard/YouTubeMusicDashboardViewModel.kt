@@ -77,7 +77,7 @@ class YouTubeMusicDashboardViewModel @Inject constructor(
 
     override suspend fun importAsPlaylist(collection: YouTubeMusicPlaylist, title: String, tracks: List<YouTubeMusicTrack>): Int {
         val songIds = library.saveAll(tracks)
-        playlists.importOrUpdate("ytmusic_${collection.playlistId}", title, songIds, source = "YTMUSIC")
+        playlists.importOrUpdate(StreamingPlaylists.youTubeMusicId(collection), title, songIds, source = "YTMUSIC")
         return songIds.size
     }
 }

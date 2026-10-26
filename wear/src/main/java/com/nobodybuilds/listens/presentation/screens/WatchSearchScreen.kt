@@ -34,6 +34,8 @@ import androidx.wear.input.wearableExtender
 import com.nobodybuilds.listens.R
 import com.nobodybuilds.listens.presentation.theme.LocalWearPalette
 import com.nobodybuilds.listens.presentation.viewmodel.WearBrowseViewModel
+import com.nobodybuilds.listens.data.WatchStreamingService
+import com.nobodybuilds.listens.presentation.viewmodel.OnlineResults
 import com.nobodybuilds.listens.presentation.viewmodel.WearSearchState
 import com.nobodybuilds.listens.presentation.viewmodel.WearSearchViewModel
 import com.nobodybuilds.listens.shared.WearBrowseRequest
@@ -76,7 +78,15 @@ fun WatchSearchScreen(
             onDeviceSong = viewModel::playDeviceSong,
             onPhoneSong = { songId -> browseViewModel.playFromContext(songId, WearBrowseRequest.SEARCH, state.query) },
         )
-        youTubeResults(state, onTrack = viewModel::playYouTubeTrack)
+        WatchStreamingService.entries.forEach { service ->
+            onlineResults(
+                query = state.query,
+                service = service,
+                results = state.online[service],
+                onSearch = { viewModel.searchOnline(service) },
+                onTrack = { key -> viewModel.playOnlineTrack(service, key) },
+            )
+        }
     }
 }
 
@@ -106,7 +116,8 @@ private fun ScalingLazyListScope.searchResults(
             WatchListChip(song.title, song.subtitle, Icons.Rounded.PhoneAndroid) { onPhoneSong(song.id) }
         }
     }
-    val foundElsewhere = onWatch || state.youTubeTracks.isNotEmpty()
+    val foundElsewhere = onWatch || state.online.values.any { it.tracks.isNotEmpty() }
+    val searchingOnline = state.online.values.any { it.searching }
     when {
         state.isSearching -> item {
             Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
@@ -117,20 +128,45 @@ private fun ScalingLazyListScope.searchResults(
         state.phoneError != null && foundElsewhere -> item {
             WatchListMessage(stringResource(R.string.wear_search_phone_offline))
         }
-        !foundElsewhere && !state.isSearchingYouTube -> item {
+        !foundElsewhere && !searchingOnline -> item {
             WatchListMessage(stringResource(R.string.wear_search_no_results))
         }
     }
 }
 
-private fun ScalingLazyListScope.youTubeResults(state: WearSearchState, onTrack: (String) -> Unit) {
-    if (state.query.isEmpty() || (state.youTubeTracks.isEmpty() && !state.isSearchingYouTube)) return
-    item { SearchSectionHeader(R.string.wear_search_youtube) }
-    items(state.youTubeTracks.size) { index ->
-        val track = state.youTubeTracks[index]
-        WatchListChip(track.title, track.artist, Icons.Rounded.Public) { onTrack(track.videoId) }
+/**
+ * One streaming service: a chip that searches it on request, then its results. The same section serves
+ * YouTube Music and JioSaavn.
+ */
+private fun ScalingLazyListScope.onlineResults(
+    query: String,
+    service: WatchStreamingService,
+    results: OnlineResults?,
+    onSearch: () -> Unit,
+    onTrack: (String) -> Unit,
+) {
+    if (query.isEmpty()) return
+    if (results == null) {
+        item {
+            WatchListChip(
+                title = stringResource(R.string.wear_search_online, service.label),
+                subtitle = "",
+                icon = Icons.Rounded.Public,
+                onClick = onSearch,
+            )
+        }
+        return
     }
-    if (state.isSearchingYouTube) item {
+    item { DownloadsSectionHeader(title = service.label, color = LocalWearPalette.current.textSecondary) }
+    if (results.tracks.isEmpty() && !results.searching) {
+        item { WatchListMessage(stringResource(R.string.wear_search_no_results)) }
+        return
+    }
+    items(results.tracks.size) { index ->
+        val track = results.tracks[index]
+        WatchListChip(track.title, track.artist, Icons.Rounded.Public) { onTrack(track.key) }
+    }
+    if (results.searching) item {
         Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(indicatorColor = LocalWearPalette.current.textSecondary)
         }

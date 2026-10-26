@@ -92,4 +92,5 @@
     <string name="wear_play_all">Spill av</string>
     <string name="wear_remove_playlist">Fjern fra klokken</string>
     <string name="wear_not_on_watch_yet">Ikke på klokken ennå</string>
+    <string name="wear_search_online">Søk i %1$s</string>
 </resources>

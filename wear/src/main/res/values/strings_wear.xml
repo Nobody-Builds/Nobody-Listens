@@ -92,5 +92,5 @@
     <string name="wear_play_all">Play</string>
     <string name="wear_remove_playlist">Remove from watch</string>
     <string name="wear_not_on_watch_yet">Not on watch yet</string>
-    <string name="wear_search_youtube" translatable="false">YouTube Music</string>
+    <string name="wear_search_online">Search %1$s</string>
 </resources>

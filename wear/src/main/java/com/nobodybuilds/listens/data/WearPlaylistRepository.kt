@@ -111,21 +111,10 @@ class WearPlaylistRepository @Inject constructor(
     private suspend fun fetchSong(songId: String): Boolean {
         val requestId = UUID.randomUUID().toString()
         transferRepository.requestTransfer(songId, requestId = requestId)
-        var seen = false
+        val watcher = SongSaveWatcher(songId, requestId)
         val saved = withTimeoutOrNull(SONG_TIMEOUT_MS) {
-            combine(transferRepository.downloadedSongIds, transferRepository.activeTransfers) { downloaded, active ->
-                val transfer = active[requestId] ?: active.values.firstOrNull {
-                    it.songId == songId && it.status == WearTransferProgress.STATUS_TRANSFERRING
-                }
-                if (transfer != null) seen = true
-                when {
-                    songId in downloaded -> true
-                    transfer?.status in ENDED_STATUSES -> false
-                    // Cancelled transfers are removed rather than marked; a finished one leaves a row.
-                    transfer == null && seen -> false
-                    else -> null
-                }
-            }.first { it != null }
+            combine(transferRepository.downloadedSongIds, transferRepository.activeTransfers, watcher::update)
+                .first { it != null }
         }
         if (saved == true) return true
         // The row can land just after the transfer entry goes away.
@@ -138,6 +127,5 @@ class WearPlaylistRepository @Inject constructor(
         const val SONG_TIMEOUT_MS = 5 * 60_000L
         const val MAX_FAILURES_IN_A_ROW = 3
         const val ROW_SETTLE_MS = 1_000L
-        val ENDED_STATUSES = setOf(WearTransferProgress.STATUS_FAILED, WearTransferProgress.STATUS_CANCELLED)
     }
 }

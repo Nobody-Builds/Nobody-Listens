@@ -28,8 +28,8 @@ class JioSaavnLiveTest {
         checkNotNull(stream) { "JioSaavn gave no stream for ${track.id}" }
         println("JioSaavn granted ${stream.bitrate / 1000} kbps signed out for ${track.title}")
 
-        val request = Request.Builder().url(stream.url)
-            .header("User-Agent", JioSaavnClients.WEB_USER_AGENT)
+        // The same headers the app and the watch send; the file server answers 403 without the Referer/Origin.
+        val request = JioSaavnClients.decorateMediaRequest(Request.Builder().url(stream.url))
             .header("Range", "bytes=0-1023")
             .build()
         http.newCall(request).execute().use { response ->

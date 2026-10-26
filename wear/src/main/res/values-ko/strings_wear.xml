@@ -92,4 +92,5 @@
     <string name="wear_play_all">재생</string>
     <string name="wear_remove_playlist">워치에서 삭제</string>
     <string name="wear_not_on_watch_yet">아직 워치에 없음</string>
+    <string name="wear_search_online">%1$s에서 검색</string>
 </resources>

@@ -11,10 +11,10 @@ import com.nobodybuilds.listens.data.WearQueueSong
 import com.nobodybuilds.listens.data.WearSearchMatcher
 import com.nobodybuilds.listens.data.WearStateRepository
 import com.nobodybuilds.listens.data.WearTransferRepository
-import com.nobodybuilds.listens.data.WearYouTubeRepository
+import com.nobodybuilds.listens.data.WatchStreamingService
+import com.nobodybuilds.listens.data.WearStreamingCatalog
 import com.nobodybuilds.listens.data.local.LocalSongEntity
-import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicFormats
-import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicTrack
+import com.nobodybuilds.listens.data.stream.StreamingTrack
 import com.nobodybuilds.listens.shared.WearBrowseRequest
 import com.nobodybuilds.listens.shared.WearLibraryItem
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,14 +36,16 @@ data class WearSearchState(
     val deviceSongs: List<WearDeviceSong> = emptyList(),
     val phoneSongs: List<WearLibraryItem> = emptyList(),
     val phoneError: String? = null,
-    /** Straight from YouTube over the watch's own connection. */
-    val youTubeTracks: List<YouTubeMusicTrack> = emptyList(),
-    val isSearchingYouTube: Boolean = false,
+    /** Streaming services searched for this query, only once asked for (offline first). */
+    val online: Map<WatchStreamingService, OnlineResults> = emptyMap(),
 )
 
+data class OnlineResults(val tracks: List<StreamingTrack> = emptyList(), val searching: Boolean = true)
+
 /**
- * Searches the watch first, so results show without the phone, then the phone's library when it's reachable,
- * and YouTube Music when the watch has internet.
+ * Searches the watch first, so results show without the phone, then the phone's library when it's reachable.
+ * Like the phone's Search, nothing goes online unless asked: a streaming service (YouTube Music, JioSaavn) is
+ * searched only when its chip is tapped, over the watch's own connection.
  */
 @HiltViewModel
 class WearSearchViewModel @Inject constructor(
@@ -52,7 +54,7 @@ class WearSearchViewModel @Inject constructor(
     private val libraryRepository: WearLibraryRepository,
     private val localPlayerRepository: WearLocalPlayerRepository,
     private val stateRepository: WearStateRepository,
-    private val youTubeRepository: WearYouTubeRepository,
+    private val streaming: WearStreamingCatalog,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(WearSearchState())
@@ -64,12 +66,8 @@ class WearSearchViewModel @Inject constructor(
         val trimmed = query.trim()
         if (trimmed.isEmpty()) return
         searchJob?.cancel()
-        _state.value = WearSearchState(query = trimmed, isSearching = true, isSearchingYouTube = true)
+        _state.value = WearSearchState(query = trimmed, isSearching = true)
         searchJob = viewModelScope.launch {
-            launch {
-                val tracks = runCatching { youTubeRepository.search(trimmed) }.getOrDefault(emptyList())
-                updateIfCurrent(trimmed) { it.copy(youTubeTracks = tracks.take(MAX_YOUTUBE_RESULTS), isSearchingYouTube = false) }
-            }
             val saved = transferRepository.localSongs.first()
                 .filter { WearSearchMatcher.matches(trimmed, it.title, it.artist, it.album) }
             // Without the audio permission the scan fails; the saved songs still show.
@@ -84,6 +82,19 @@ class WearSearchViewModel @Inject constructor(
                     phoneSongs = phone.items.filter { item -> item.type == WearLibraryItem.TYPE_SONG },
                     phoneError = phone.error,
                 )
+            }
+        }
+    }
+
+    /** Searches one streaming service for the current query; only when asked, so search stays offline first. */
+    fun searchOnline(service: WatchStreamingService) {
+        val query = _state.value.query
+        if (query.isEmpty() || _state.value.online[service]?.searching == true) return
+        _state.update { it.copy(online = it.online + (service to OnlineResults())) }
+        viewModelScope.launch {
+            val tracks = runCatching { streaming.search(service, query) }.getOrDefault(emptyList())
+            updateIfCurrent(query) {
+                it.copy(online = it.online + (service to OnlineResults(tracks.take(MAX_ONLINE_RESULTS), searching = false)))
             }
         }
     }
@@ -112,28 +123,19 @@ class WearSearchViewModel @Inject constructor(
         stateRepository.setOutputTarget(WearOutputTarget.WATCH)
     }
 
-    /** Streams the YouTube results on the watch, starting at [videoId]. */
-    fun playYouTubeTrack(videoId: String) {
-        val tracks = _state.value.youTubeTracks
-        val index = tracks.indexOfFirst { it.videoId == videoId }
+    /** Streams one service's results on the watch, starting at the track with [key]. */
+    fun playOnlineTrack(service: WatchStreamingService, key: String) {
+        val tracks = _state.value.online[service]?.tracks.orEmpty()
+        val index = tracks.indexOfFirst { it.key == key }
         if (index < 0) return
         localPlayerRepository.playUriSongs(
-            songs = tracks.map { track ->
-                WearQueueSong(
-                    songId = WearYouTubeRepository.songId(track.videoId),
-                    title = track.title,
-                    artist = track.artist,
-                    album = track.album,
-                    uri = WearYouTubeRepository.trackUri(track.videoId),
-                    artworkUrl = YouTubeMusicFormats.largeThumbnail(track.thumbnailUrl),
-                )
-            },
+            songs = tracks.map { streaming.queueSong(service, it) },
             startIndex = index,
         )
         stateRepository.setOutputTarget(WearOutputTarget.WATCH)
     }
 
     private companion object {
-        const val MAX_YOUTUBE_RESULTS = 20
+        const val MAX_ONLINE_RESULTS = 20
     }
 }

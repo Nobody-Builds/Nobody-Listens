@@ -92,4 +92,5 @@
     <string name="wear_play_all">Слушать</string>
     <string name="wear_remove_playlist">Удалить с часов</string>
     <string name="wear_not_on_watch_yet">Ещё не на часах</string>
+    <string name="wear_search_online">Искать в %1$s</string>
 </resources>

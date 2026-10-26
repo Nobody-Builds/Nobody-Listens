@@ -1,12 +1,13 @@
-// YouTube Music client shared by the phone app and the watch app: the innertube API,
-// response parsers, stream clients and format ranking. No Android UI or app storage here.
+// Streaming clients shared by the phone app and the watch app: YouTube Music (innertube API, parsers,
+// stream clients, format ranking) and JioSaavn (web API, parsers, stream lookup), plus the streaming
+// interfaces both implement. No Android UI or app storage here.
 plugins {
     alias(libs.plugins.android.library)
     kotlin("plugin.serialization")
 }
 
 android {
-    namespace = "com.nobodybuilds.listens.ytmusic"
+    namespace = "com.nobodybuilds.listens.streaming"
     compileSdk = 37
 
     defaultConfig {

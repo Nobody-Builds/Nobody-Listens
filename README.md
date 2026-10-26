@@ -13,7 +13,7 @@ Developers: **Shaan Shoukath** ([@Shaan-Shoukath](https://github.com/Shaan-Shouk
 > **A fork of LMusic.** Nobody Listens is a fork of [LMusic](https://github.com/twilighty-abhi/lmusic-player)
 > by Abhiram NJ ([Twilight Abhi](https://github.com/twilighty-abhi)), which is itself built on
 > [PixelPlayer](https://github.com/theovilardo/PixelPlayer) (the last MIT-licensed version). Most of what's
-> below was built there. This fork adds the Nobody Builds brand and "Daylight" design, YouTube Music (also
+> below was built there. This fork adds the Nobody Builds brand and "Daylight" design, JioSaavn, a standalone Galaxy Watch app, YouTube Music (also
 > contributed to LMusic) and its own fixes. It installs as its own app (`com.nobodybuilds.listens`), so it sits
 > beside LMusic: move your library over with Settings → Backup & Restore, since LMusic backups restore here.
 
@@ -53,8 +53,10 @@ crown scrolls lists and sets the volume on the player. It works without the phon
 
 - **Songs and playlists saved on the watch** play through its speaker or Bluetooth headphones. Save a song, or a
   whole phone playlist (**Save playlist to watch**), and it stays on the watch (**Library › Watch playlists**).
-- **YouTube Music**: search and stream straight from the watch over its own Wi-Fi or LTE, with covers.
-- **Search** looks through the watch first, then YouTube Music, and the phone's library when the phone is nearby.
+- **YouTube Music and JioSaavn** (up to 320 kbps): search and stream straight from the watch over its own Wi-Fi or
+  LTE, with covers.
+- **Search** looks through the watch and, when it's nearby, the phone's library. Like the phone, it stays offline
+  unless you ask: tap **Search YouTube Music** or **Search JioSaavn** to look online.
 
 With the phone nearby it is also a remote for the phone app and browses the phone's library. The watch app is
 signed with the same key as the phone app, which is how the two find each other.

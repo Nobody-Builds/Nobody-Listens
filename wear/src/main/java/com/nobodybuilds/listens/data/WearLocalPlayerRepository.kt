@@ -46,6 +46,7 @@ class WearLocalPlayerRepository @Inject constructor(
     private val application: Application,
     private val localSongDao: LocalSongDao,
     private val youTube: WearYouTubeRepository,
+    private val jioSaavn: WearJioSaavnRepository,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val json = Json { ignoreUnknownKeys = true }
@@ -107,7 +108,7 @@ class WearLocalPlayerRepository @Inject constructor(
 
     private fun getOrCreatePlayer(): ExoPlayer {
         return exoPlayer ?: ExoPlayer.Builder(application)
-            .setMediaSourceFactory(DefaultMediaSourceFactory(wearPlayerDataSourceFactory(application, youTube)))
+            .setMediaSourceFactory(DefaultMediaSourceFactory(wearPlayerDataSourceFactory(application, youTube, jioSaavn)))
             .build().also { player ->
             exoPlayer = player
             player.setAudioAttributes(
@@ -138,11 +139,12 @@ class WearLocalPlayerRepository @Inject constructor(
 
                 @androidx.annotation.OptIn(UnstableApi::class)
                 override fun onPlayerError(error: PlaybackException) {
-                    // YouTube refused the URL (not a dropped connection): the next try asks another client.
+                    // The service refused the URL (not a dropped connection): the next try gets a fresh one.
                     val code = (error.cause as? HttpDataSource.InvalidResponseCodeException)?.responseCode
                     if (code != 403 && code != 410) return
                     val uri = player.currentMediaItem?.localConfiguration?.uri ?: return
                     WearYouTubeRepository.videoIdFrom(uri)?.let(youTube::reportStreamRejected)
+                    WearJioSaavnRepository.songIdFrom(uri)?.let(jioSaavn::reportStreamRejected)
                 }
             })
             Timber.tag(TAG).d("ExoPlayer created")

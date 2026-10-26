@@ -92,4 +92,5 @@
     <string name="wear_play_all">Reproducir</string>
     <string name="wear_remove_playlist">Quitar del reloj</string>
     <string name="wear_not_on_watch_yet">Aún no está en el reloj</string>
+    <string name="wear_search_online">Buscar en %1$s</string>
 </resources>

@@ -79,7 +79,7 @@ class JioSaavnDashboardViewModel @Inject constructor(
 
     override suspend fun importAsPlaylist(collection: JioSaavnCollection, title: String, tracks: List<JioSaavnTrack>): Int {
         val songIds = library.saveAll(tracks)
-        playlists.importOrUpdate("jiosaavn_${collection.kind.name.lowercase()}_${collection.id}", title, songIds, source = "JIOSAAVN")
+        playlists.importOrUpdate(StreamingPlaylists.jioSaavnId(collection), title, songIds, source = "JIOSAAVN")
         return songIds.size
     }
 }

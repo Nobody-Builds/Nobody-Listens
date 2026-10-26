@@ -1,6 +1,8 @@
 package com.nobodybuilds.listens.data.stream
 
+import com.nobodybuilds.listens.data.jiosaavn.JioSaavnCollection
 import com.nobodybuilds.listens.data.preferences.PlaylistPreferencesRepository
+import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicPlaylist
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,5 +24,14 @@ class StreamingPlaylists @Inject constructor(
         } else {
             playlists.createPlaylist(name = name, songIds = ids, customId = id, source = source)
         }
+    }
+
+    companion object {
+        /** The playlist an imported YouTube Music playlist or album becomes; the same each time, so it refreshes. */
+        fun youTubeMusicId(playlist: YouTubeMusicPlaylist): String = "ytmusic_${playlist.playlistId}"
+
+        /** Includes the kind: a JioSaavn album and playlist can share an id. */
+        fun jioSaavnId(collection: JioSaavnCollection): String =
+            "jiosaavn_${collection.kind.name.lowercase()}_${collection.id}"
     }
 }
