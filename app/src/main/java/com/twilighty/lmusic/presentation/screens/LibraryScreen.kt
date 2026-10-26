@@ -2,15 +2,15 @@
 
 package com.twilighty.lmusic.presentation.screens
 
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuAvatar
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuArtSquare
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbIconButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbType
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbAvatar
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbArtSquare
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Add
@@ -64,9 +64,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ViewList
-import androidx.compose.material.icons.filled.Album
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.rounded.Album
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.SelectAll
@@ -92,7 +92,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.DisposableEffect
@@ -186,7 +185,6 @@ import com.twilighty.lmusic.presentation.screens.search.components.GenreTypograp
 import com.twilighty.lmusic.presentation.components.SyncProgressBar
 import com.twilighty.lmusic.presentation.viewmodel.LibraryViewModel
 import com.twilighty.lmusic.utils.formatSongCount
-import androidx.paging.compose.collectAsLazyPagingItems
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -210,7 +208,6 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
@@ -244,13 +241,11 @@ import com.twilighty.lmusic.presentation.components.PlaylistContainer
 import com.twilighty.lmusic.presentation.components.subcomps.PlayingEqIcon
 import com.twilighty.lmusic.ui.theme.GoogleSansRounded
 import java.util.Locale
-import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.ui.focus.focusModifier
 import com.twilighty.lmusic.data.model.PlaylistShapeType
 import kotlinx.coroutines.flow.first
-import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.LoadState
 import com.twilighty.lmusic.presentation.components.ExpressiveScrollBar
@@ -258,7 +253,6 @@ import com.twilighty.lmusic.presentation.components.LibrarySortBottomSheet
 import com.twilighty.lmusic.presentation.components.subcomps.EnhancedSongListItem
 import com.twilighty.lmusic.data.service.wear.PhoneWatchTransferState
 import com.twilighty.lmusic.shared.WearTransferProgress
-import java.io.File
 import kotlin.math.abs
 
 val ListExtraBottomGap = 30.dp
@@ -849,7 +843,7 @@ fun LibraryScreen(
     val currentTab = tabTitles.getOrNull(currentTabIndex)?.toLibraryTabIdOrNull() ?: currentTabId
     val currentTabTitle = currentTab.displayTitle()
 
-    // Yuyu: flat canvas header, no tinted band or gradient.
+    // Daylight: flat canvas header, no tinted band or gradient.
     val headerContainerColor = MaterialTheme.colorScheme.surface
     val tabRowState = androidx.compose.foundation.lazy.rememberLazyListState()
     LaunchedEffect(currentTabIndex, isCompactNavigation) {
@@ -893,8 +887,8 @@ fun LibraryScreen(
                         } else {
                             Text(
                                 text = stringResource(R.string.presentation_batch_d_library_title),
-                                style = YuyuType.h1,
-                                color = Yuyu.text,
+                                style = NbType.h1,
+                                color = Nb.text,
                                 maxLines = 1
                             )
                         }
@@ -906,7 +900,7 @@ fun LibraryScreen(
                             modifier = Modifier
                                 .height(36.dp)
                                 .clip(CircleShape)
-                                .background(Yuyu.muted)
+                                .background(Nb.muted)
                                 .clickable(enabled = activeWatchTransfer != null) {
                                     showWatchTransferDialog = true
                                 }
@@ -917,37 +911,37 @@ fun LibraryScreen(
                             Icon(
                                 painter = painterResource(R.drawable.rounded_watch_arrow_down_24),
                                 contentDescription = stringResource(R.string.presentation_batch_d_watch_transfer_cd),
-                                tint = Yuyu.text,
+                                tint = Nb.text,
                                 modifier = Modifier.size(18.dp)
                             )
                             Text(
                                 text = stringResource(R.string.presentation_batch_g_sync_percent, watchTransferPercent),
-                                style = YuyuType.label,
-                                color = Yuyu.text
+                                style = NbType.label,
+                                color = Nb.text
                             )
                         }
                     }
-                    YuyuIconButton(
+                    NbIconButton(
                         imageVector = Icons.Rounded.Search,
                         contentDescription = "Search",
                         onClick = { navController.navigateToTopLevelSafely(Screen.Search.route) },
-                        style = YuyuIconButtonStyle.Tonal
+                        style = NbIconButtonStyle.Tonal
                     )
-                    YuyuIconButton(
+                    NbIconButton(
                         imageVector = Icons.Rounded.Add,
                         contentDescription = "New playlist",
                         onClick = { showPlaylistCreationTypeDialog = true },
-                        style = YuyuIconButtonStyle.Tonal
+                        style = NbIconButtonStyle.Tonal
                     )
-                    YuyuIconButton(
+                    NbIconButton(
                         painter = painterResource(R.drawable.rounded_settings_24),
                         contentDescription = stringResource(R.string.presentation_batch_d_open_settings_cd),
                         onClick = { navController.navigateSafely(Screen.Settings.route) },
-                        style = YuyuIconButtonStyle.Tonal
+                        style = NbIconButtonStyle.Tonal
                     )
                 }
                 if (!isCompactNavigation) {
-                    // Yuyu pill tabs (chips): ink when selected, outlined otherwise.
+                    // Daylight pill tabs (chips): ink when selected, outlined otherwise.
                     androidx.compose.foundation.lazy.LazyRow(
                         state = tabRowState,
                         contentPadding = PaddingValues(horizontal = 16.dp),
@@ -959,7 +953,7 @@ fun LibraryScreen(
                     ) {
                         items(tabTitles.size, key = { "lib_tab_${tabTitles[it]}" }) { index ->
                             val tabId = tabTitles[index].toLibraryTabIdOrNull() ?: LibraryTabId.SONGS
-                            YuyuChip(
+                            NbChip(
                                 text = tabId.title,
                                 selected = currentTabIndex == index,
                                 onClick = {
@@ -977,14 +971,14 @@ fun LibraryScreen(
                             )
                         }
                         item(key = "lib_tab_edit") {
-                            YuyuIconButton(
-                                imageVector = Icons.Default.Edit,
+                            NbIconButton(
+                                imageVector = Icons.Rounded.Edit,
                                 contentDescription = stringResource(R.string.presentation_batch_d_reorder_tabs_cd),
                                 onClick = { showReorderTabsSheet = true },
-                                style = YuyuIconButtonStyle.Plain,
+                                style = NbIconButtonStyle.Plain,
                                 size = 36.dp,
                                 iconSize = 18.dp,
-                                tint = Yuyu.textMuted
+                                tint = Nb.textMuted
                             )
                         }
                     }
@@ -2783,10 +2777,10 @@ internal fun resolveFolderNavigationDirection(initialPath: String?, targetPath: 
     }
 
 private fun isDescendantFolderPath(ancestorPath: String, candidatePath: String): Boolean {
-    val normalizedAncestor = ancestorPath.trimEnd(File.separatorChar)
-    val normalizedCandidate = candidatePath.trimEnd(File.separatorChar)
+    val normalizedAncestor = ancestorPath.trimEnd('/')
+    val normalizedCandidate = candidatePath.trimEnd('/')
     if (normalizedAncestor == normalizedCandidate) return false
-    return normalizedCandidate.startsWith("$normalizedAncestor${File.separatorChar}")
+    return normalizedCandidate.startsWith("$normalizedAncestor/")
 }
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -3043,7 +3037,7 @@ fun FolderPlaylistItem(folder: MusicFolder, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 64.dp)
-            .clip(YuyuShapes.lg)
+            .clip(NbShapes.lg)
             .clickable(onClick = onClick)
             .padding(horizontal = 4.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -3051,11 +3045,11 @@ fun FolderPlaylistItem(folder: MusicFolder, onClick: () -> Unit) {
     ) {
         PlaylistArtCollage(
             songs = previewSongs,
-            modifier = Modifier.size(48.dp).clip(YuyuShapes.md)
+            modifier = Modifier.size(48.dp).clip(NbShapes.md)
         )
         Column(modifier = Modifier.weight(1f)) {
-            Text(folder.name, style = YuyuType.title, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(formatSongCount(folder.totalSongCount), style = YuyuType.meta, color = Yuyu.textMuted)
+            Text(folder.name, style = NbType.title, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(formatSongCount(folder.totalSongCount), style = NbType.meta, color = Nb.textMuted)
         }
     }
 }
@@ -3066,26 +3060,26 @@ fun FolderListItem(folder: MusicFolder, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 64.dp)
-            .clip(YuyuShapes.lg)
+            .clip(NbShapes.lg)
             .clickable(onClick = onClick)
             .padding(horizontal = 4.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Box(
-            modifier = Modifier.size(48.dp).clip(YuyuShapes.md).background(Yuyu.muted),
+            modifier = Modifier.size(48.dp).clip(NbShapes.md).background(Nb.muted),
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_folder),
+                painter = painterResource(id = R.drawable.rounded_folder_24),
                 contentDescription = stringResource(R.string.presentation_batch_d_cd_folder),
                 modifier = Modifier.size(24.dp),
-                tint = Yuyu.text
+                tint = Nb.text
             )
         }
         Column(Modifier.weight(1f)) {
-            Text(folder.name, style = YuyuType.title, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(formatSongCount(folder.totalSongCount), style = YuyuType.meta, color = Yuyu.textMuted)
+            Text(folder.name, style = NbType.title, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(formatSongCount(folder.totalSongCount), style = NbType.meta, color = Nb.textMuted)
         }
     }
 }
@@ -3166,8 +3160,8 @@ fun AlbumGridItemRedesigned(
     onLongPress: () -> Unit = {},
     onSelectionToggle: () -> Unit = {}
 ) {
-    // Yuyu flat album card: square art (r16), title 15/600, muted meta. No tinted background.
-    val artShape = YuyuShapes.lg
+    // Daylight flat album card: square art (r16), title 15/600, muted meta. No tinted background.
+    val artShape = NbShapes.lg
     val selectionScale by animateFloatAsState(
         targetValue = if (isSelected) 0.97f else 1f,
         animationSpec = tween(durationMillis = 220),
@@ -3201,7 +3195,7 @@ fun AlbumGridItemRedesigned(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(YuyuShapes.lg)
+                .clip(NbShapes.lg)
                 .combinedClickable(
                     onClick = {
                         if (isSelectionMode) {
@@ -3219,10 +3213,10 @@ fun AlbumGridItemRedesigned(
                     .fillMaxWidth()
                     .scale(selectionScale)
                     .then(
-                        if (isSelected) Modifier.border(2.dp, Yuyu.ink, artShape) else Modifier
+                        if (isSelected) Modifier.border(2.dp, Nb.ink, artShape) else Modifier
                     )
             ) {
-                YuyuArtSquare(
+                NbArtSquare(
                     model = album.albumArtUriString,
                     title = album.title,
                     shape = artShape,
@@ -3235,13 +3229,13 @@ fun AlbumGridItemRedesigned(
                             .align(Alignment.TopEnd)
                             .padding(8.dp)
                             .size(28.dp)
-                            .background(color = Yuyu.ink, shape = CircleShape),
+                            .background(color = Nb.ink, shape = CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = selectionIndex?.toString() ?: "✓",
-                            color = Yuyu.onInk,
-                            style = YuyuType.label.copy(fontWeight = FontWeight.Bold)
+                            color = Nb.onInk,
+                            style = NbType.label.copy(fontWeight = FontWeight.Bold)
                         )
                     }
                 }
@@ -3249,15 +3243,15 @@ fun AlbumGridItemRedesigned(
             Spacer(Modifier.height(8.dp))
             Text(
                 album.title,
-                style = YuyuType.title.copy(fontSize = 15.sp),
-                color = Yuyu.text,
+                style = NbType.title.copy(fontSize = 15.sp),
+                color = Nb.text,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 listOf(album.artist, formatSongCount(album.songCount)).filter { it.isNotBlank() }.joinToString(" · "),
-                style = YuyuType.caption,
-                color = Yuyu.textMuted,
+                style = NbType.caption,
+                color = Nb.textMuted,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -3268,12 +3262,12 @@ fun AlbumGridItemRedesigned(
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 fun ArtistListItem(artist: Artist, onClick: () -> Unit, isLoading: Boolean = false) {
-    // Yuyu artist row: round avatar (image or initials), name, muted song count.
+    // Daylight artist row: round avatar (image or initials), name, muted song count.
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 64.dp)
-            .clip(YuyuShapes.lg)
+            .clip(NbShapes.lg)
             .clickable(enabled = !isLoading, onClick = onClick)
             .padding(horizontal = 4.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -3301,15 +3295,15 @@ fun ArtistListItem(artist: Artist, onClick: () -> Unit, isLoading: Boolean = fal
                 )
             }
         } else {
-            YuyuAvatar(model = artist.effectiveImageUrl, name = artist.name, size = 52.dp)
+            NbAvatar(model = artist.effectiveImageUrl, name = artist.name, size = 52.dp)
             Column(Modifier.weight(1f)) {
-                Text(artist.name, style = YuyuType.title, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(formatSongCount(artist.songCount), style = YuyuType.meta, color = Yuyu.textMuted, maxLines = 1)
+                Text(artist.name, style = NbType.title, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(formatSongCount(artist.songCount), style = NbType.meta, color = Nb.textMuted, maxLines = 1)
             }
             Icon(
                 imageVector = Icons.Rounded.ChevronRight,
                 contentDescription = null,
-                tint = Yuyu.textMuted,
+                tint = Nb.textMuted,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -3395,8 +3389,8 @@ fun AlbumListItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 72.dp)
-                .clip(YuyuShapes.lg)
-                .then(if (isSelected) Modifier.background(Yuyu.muted) else Modifier)
+                .clip(NbShapes.lg)
+                .then(if (isSelected) Modifier.background(Nb.muted) else Modifier)
                 .combinedClickable(
                     onClick = {
                         if (isSelectionMode) {
@@ -3411,19 +3405,19 @@ fun AlbumListItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            YuyuArt(
+            NbArt(
                 model = album.albumArtUriString,
                 title = album.title,
                 size = 56.dp,
-                shape = YuyuShapes.md,
+                shape = NbShapes.md,
                 contentDescription = stringResource(R.string.cd_album_art_for_title, album.title)
             )
             Column(Modifier.weight(1f)) {
-                Text(album.title, style = YuyuType.title, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(album.title, style = NbType.title, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(
                     listOf(album.artist, formatSongCount(album.songCount)).filter { it.isNotBlank() }.joinToString(" · "),
-                    style = YuyuType.meta,
-                    color = Yuyu.textMuted,
+                    style = NbType.meta,
+                    color = Nb.textMuted,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -3432,13 +3426,13 @@ fun AlbumListItem(
                 Box(
                     modifier = Modifier
                         .size(26.dp)
-                        .background(color = Yuyu.ink, shape = CircleShape),
+                        .background(color = Nb.ink, shape = CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = selectionIndex?.toString() ?: "✓",
-                        style = YuyuType.caption.copy(fontWeight = FontWeight.Bold),
-                        color = Yuyu.onInk
+                        style = NbType.caption.copy(fontWeight = FontWeight.Bold),
+                        color = Nb.onInk
                     )
                 }
             }

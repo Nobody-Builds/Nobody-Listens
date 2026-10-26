@@ -3,9 +3,9 @@ package com.twilighty.lmusic.presentation.update
 import android.widget.Toast
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.NotificationsActive
-import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.SkipNext
+import androidx.compose.material.icons.rounded.NotificationsActive
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +40,7 @@ fun UpdateSettings(viewModel: UpdateViewModel = hiltViewModel()) {
         subtitle = "Once a week, on Wi-Fi or mobile data",
         checked = enabled,
         onCheckedChange = viewModel::setChecksEnabled,
-        leadingIcon = { Icon(Icons.Outlined.NotificationsActive, null, tint = MaterialTheme.colorScheme.secondary) }
+        leadingIcon = { Icon(Icons.Rounded.NotificationsActive, null, tint = MaterialTheme.colorScheme.secondary) }
     )
 
     val lastChecked = if (state.checkedAt > 0L) {
@@ -51,7 +51,7 @@ fun UpdateSettings(viewModel: UpdateViewModel = hiltViewModel()) {
     SettingsItem(
         title = "Check now",
         subtitle = if (isChecking) "Checking…" else lastChecked,
-        leadingIcon = { Icon(Icons.Outlined.Refresh, null, tint = MaterialTheme.colorScheme.secondary) },
+        leadingIcon = { Icon(Icons.Rounded.Refresh, null, tint = MaterialTheme.colorScheme.secondary) },
         trailingIcon = {
             if (isChecking) CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
         },
@@ -63,7 +63,7 @@ fun UpdateSettings(viewModel: UpdateViewModel = hiltViewModel()) {
         SettingsItem(
             title = "Skip this version",
             subtitle = "Stop reminders for LMusic $available",
-            leadingIcon = { Icon(Icons.Outlined.SkipNext, null, tint = MaterialTheme.colorScheme.secondary) },
+            leadingIcon = { Icon(Icons.Rounded.SkipNext, null, tint = MaterialTheme.colorScheme.secondary) },
             onClick = {
                 viewModel.skipVersion(available)
                 Toast.makeText(context, "Skipped LMusic $available", Toast.LENGTH_SHORT).show()

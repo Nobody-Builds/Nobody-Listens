@@ -121,7 +121,7 @@ fun AiMetadataSheet(
                     shape = AbsoluteSmoothCornerShape(16.dp, 60),
                     color = when {
                         isGenerating -> colors.primaryContainer
-                        isSuccess -> Color(0xFF4CAF50).copy(alpha = 0.2f)
+                        isSuccess -> com.twilighty.lmusic.presentation.nb.Nb.successSoft
                         error != null -> colors.errorContainer
                         else -> colors.secondaryContainer
                     },
@@ -138,7 +138,7 @@ fun AiMetadataSheet(
                             modifier = Modifier.size(28.dp),
                             tint = when {
                                 isGenerating -> colors.onPrimaryContainer
-                                isSuccess -> Color(0xFF4CAF50)
+                                isSuccess -> com.twilighty.lmusic.presentation.nb.Nb.successText
                                 error != null -> colors.onErrorContainer
                                 else -> colors.onSecondaryContainer
                             }

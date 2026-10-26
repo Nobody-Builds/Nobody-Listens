@@ -148,7 +148,7 @@ fun AlbumCarouselSection(
             }
     }
 
-    val corner = 20.dp // Yuyu r20 artwork
+    val corner = 20.dp // Daylight r20 artwork
 
     BoxWithConstraints(modifier = modifier) {
         val availableWidth = this.maxWidth

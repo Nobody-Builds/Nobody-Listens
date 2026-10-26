@@ -32,12 +32,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.twilighty.lmusic.data.model.Song
 import com.twilighty.lmusic.data.smart.SongSmartTags
 import com.twilighty.lmusic.presentation.viewmodel.PlayerViewModel
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuActionRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatus
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatusChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbActionRow
+import com.twilighty.lmusic.presentation.nb.NbStatus
+import com.twilighty.lmusic.presentation.nb.NbStatusChip
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbType
 import kotlinx.coroutines.launch
 
 /**
@@ -66,13 +66,13 @@ fun SmartSongActions(
     if (activity == null) return
     val playerViewModel: PlayerViewModel = hiltViewModel(viewModelStoreOwner = activity)
     val tagLine = (current.moods + current.genres).joinToString(" · ").ifBlank { null }
-    YuyuActionRow(
+    NbActionRow(
         text = if (isLoading) "Finding similar songs…" else "Play similar",
         subtitle = tagLine,
         icon = rememberVectorPainter(Icons.Rounded.Radio),
         enabled = !isLoading,
         modifier = modifier,
-        trailing = { YuyuStatusChip(text = "Smart", status = YuyuStatus.Accent) },
+        trailing = { NbStatusChip(text = "Smart", status = NbStatus.Accent) },
         onClick = {
             scope.launch {
                 isLoading = true
@@ -106,12 +106,12 @@ fun SmartTagChips(tags: SongSmartTags, modifier: Modifier = Modifier) {
         all.forEach { (label, isMood) ->
             Text(
                 label,
-                style = YuyuType.caption,
-                color = if (isMood) Yuyu.accentText else Yuyu.textSecondary,
+                style = NbType.caption,
+                color = if (isMood) Nb.accentText else Nb.textSecondary,
                 modifier = Modifier
-                    .clip(YuyuShapes.pill)
-                    .background(if (isMood) Yuyu.accentSoft else Yuyu.canvas)
-                    .then(if (isMood) Modifier else Modifier.border(1.dp, Yuyu.border, YuyuShapes.pill))
+                    .clip(NbShapes.pill)
+                    .background(if (isMood) Nb.accentSoft else Nb.canvas)
+                    .then(if (isMood) Modifier else Modifier.border(1.dp, Nb.border, NbShapes.pill))
                     .padding(horizontal = 10.dp, vertical = 4.dp)
             )
         }

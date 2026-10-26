@@ -88,9 +88,9 @@ enum class HapticEvent {
  *
  * Pick the event that describes what happened:
  * - [playPause], [skip]: transport controls.
- * - [tap]: plain button / menu item taps (YuyuButton, YuyuIconButton already call it — don't double fire).
- * - [selection]: chips, segmented controls, tabs, list choices (YuyuChip, YuyuSegmented already call it).
- * - [toggle]/[toggleOn]/[toggleOff]: switches (YuyuSwitch already calls it).
+ * - [tap]: plain button / menu item taps (NbButton, NbIconButton already call it — don't double fire).
+ * - [selection]: chips, segmented controls, tabs, list choices (NbChip, NbSegmented already call it).
+ * - [toggle]/[toggleOn]/[toggleOff]: switches (NbSwitch already calls it).
  * - [success]: a confirm dialog's positive action, playlist created, saved. [successLight] for small
  *   positive actions such as "add to queue" / "play next".
  * - [error]: something failed / was rejected.

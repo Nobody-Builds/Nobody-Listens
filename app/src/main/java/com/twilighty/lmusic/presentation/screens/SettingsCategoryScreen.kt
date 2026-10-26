@@ -29,7 +29,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -64,16 +63,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ClearAll
-import androidx.compose.material.icons.outlined.Folder
-import androidx.compose.material.icons.outlined.HealthAndSafety
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Language
-import androidx.compose.material.icons.outlined.LightMode
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.PlayCircle
-import androidx.compose.material.icons.outlined.Style
-import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material.icons.rounded.ClearAll
+import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.Folder
+import androidx.compose.material.icons.rounded.HealthAndSafety
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material.icons.rounded.LightMode
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.PlayCircle
+import androidx.compose.material.icons.rounded.Style
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.ChevronRight
@@ -406,7 +406,7 @@ fun SettingsCategoryScreen(
                                 SettingsItem(
                                     title = "Excluded subfolders",
                                     subtitle = "Skip folders inside your music folders",
-                                    leadingIcon = { Icon(Icons.Outlined.Folder, null, tint = MaterialTheme.colorScheme.secondary) },
+                                    leadingIcon = { Icon(Icons.Rounded.Folder, null, tint = MaterialTheme.colorScheme.secondary) },
                                     trailingIcon = { Icon(Icons.Rounded.ChevronRight, stringResource(R.string.cd_open), tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                                     onClick = {
                                         showExplorerSheet = true
@@ -416,14 +416,14 @@ fun SettingsCategoryScreen(
                                 SettingsItem(
                                     title = stringResource(R.string.setcat_artists_title),
                                     subtitle = stringResource(R.string.setcat_artists_subtitle),
-                                    leadingIcon = { Icon(Icons.Outlined.Person, null, tint = MaterialTheme.colorScheme.secondary) },
+                                    leadingIcon = { Icon(Icons.Rounded.Person, null, tint = MaterialTheme.colorScheme.secondary) },
                                     trailingIcon = { Icon(Icons.Rounded.ChevronRight, stringResource(R.string.cd_open), tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                                     onClick = { navController.navigateSafely(Screen.ArtistSettings.route) }
                                 )
                                 SettingsItem(
                                     title = stringResource(R.string.health_title),
                                     subtitle = stringResource(R.string.health_settings_subtitle),
-                                    leadingIcon = { Icon(Icons.Outlined.HealthAndSafety, null, tint = MaterialTheme.colorScheme.secondary) },
+                                    leadingIcon = { Icon(Icons.Rounded.HealthAndSafety, null, tint = MaterialTheme.colorScheme.secondary) },
                                     trailingIcon = { Icon(Icons.Rounded.ChevronRight, stringResource(R.string.cd_open), tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                                     onClick = { navController.navigateSafely(Screen.LibraryHealth.route) }
                                 )
@@ -497,7 +497,7 @@ fun SettingsCategoryScreen(
                                     subtitle = stringResource(R.string.setcat_auto_scan_lrc_subtitle),
                                     checked = uiState.autoScanLrcFiles,
                                     onCheckedChange = { settingsViewModel.setAutoScanLrcFiles(it) },
-                                    leadingIcon = { Icon(Icons.Outlined.Folder, null, tint = MaterialTheme.colorScheme.secondary) }
+                                    leadingIcon = { Icon(Icons.Rounded.Folder, null, tint = MaterialTheme.colorScheme.secondary) }
                                 )
                             }
 
@@ -524,7 +524,7 @@ fun SettingsCategoryScreen(
                                 SettingsItem(
                                     title = stringResource(R.string.setcat_reset_imported_lyrics_title),
                                     subtitle = stringResource(R.string.setcat_reset_imported_lyrics_subtitle),
-                                    leadingIcon = { Icon(Icons.Outlined.ClearAll, null, tint = MaterialTheme.colorScheme.secondary) },
+                                    leadingIcon = { Icon(Icons.Rounded.ClearAll, null, tint = MaterialTheme.colorScheme.secondary) },
                                     onClick = { showClearLyricsDialog = true }
                                 )
                             }
@@ -532,8 +532,9 @@ fun SettingsCategoryScreen(
                         SettingsCategory.APPEARANCE -> {
                             val useSmoothCorners by settingsViewModel.useSmoothCorners.collectAsStateWithLifecycle()
                             val appColorStyle by settingsViewModel.appColorStyle.collectAsStateWithLifecycle()
-                            val yuyuHomeSettings: com.twilighty.lmusic.presentation.yuyu.YuyuHomeSettingsViewModel = hiltViewModel()
-                            val showClassicHomeSections by yuyuHomeSettings.showClassicSections.collectAsStateWithLifecycle()
+                            val appPitchBlack by settingsViewModel.appPitchBlack.collectAsStateWithLifecycle()
+                            val nbHomeSettings: com.twilighty.lmusic.presentation.nb.NbHomeSettingsViewModel = hiltViewModel()
+                            val showClassicHomeSections by nbHomeSettings.showClassicSections.collectAsStateWithLifecycle()
 
                             SettingsSubsection(title = stringResource(R.string.setcat_global_theme)) {
                                 ThemeSelectorItem(
@@ -545,7 +546,7 @@ fun SettingsCategoryScreen(
                                         settingsViewModel.setAppLanguage(it)
                                         (context as? Activity)?.recreate()
                                     },
-                                    leadingIcon = { Icon(Icons.Outlined.Language, null, tint = MaterialTheme.colorScheme.secondary) }
+                                    leadingIcon = { Icon(Icons.Rounded.Language, null, tint = MaterialTheme.colorScheme.secondary) }
                                 )
                                 ThemeSelectorItem(
                                     label = stringResource(R.string.setcat_app_theme_label),
@@ -557,18 +558,27 @@ fun SettingsCategoryScreen(
                                     ),
                                     selectedKey = uiState.appThemeMode,
                                     onSelectionChanged = { settingsViewModel.setAppThemeMode(it) },
-                                    leadingIcon = { Icon(Icons.Outlined.LightMode, null, tint = MaterialTheme.colorScheme.secondary) }
+                                    leadingIcon = { Icon(Icons.Rounded.LightMode, null, tint = MaterialTheme.colorScheme.secondary) }
                                 )
+                                if (uiState.appThemeMode != AppThemeMode.LIGHT) {
+                                    SwitchSettingItem(
+                                        title = stringResource(R.string.lmusic_pitch_black_title),
+                                        subtitle = stringResource(R.string.lmusic_pitch_black_subtitle),
+                                        checked = appPitchBlack,
+                                        onCheckedChange = settingsViewModel::setAppPitchBlack,
+                                        leadingIcon = { Icon(Icons.Rounded.DarkMode, null, tint = MaterialTheme.colorScheme.secondary) }
+                                    )
+                                }
                                 ThemeSelectorItem(
                                     label = stringResource(R.string.lmusic_color_style_label),
                                     description = stringResource(R.string.lmusic_color_style_desc),
                                     options = mapOf(
-                                        com.twilighty.lmusic.data.preferences.AppColorStyle.YUYU to stringResource(R.string.lmusic_color_style_yuyu),
+                                        com.twilighty.lmusic.data.preferences.AppColorStyle.DAYLIGHT to stringResource(R.string.lmusic_color_style_daylight),
                                         com.twilighty.lmusic.data.preferences.AppColorStyle.MATERIAL_YOU to stringResource(R.string.lmusic_color_style_material_you)
                                     ),
                                     selectedKey = appColorStyle,
                                     onSelectionChanged = { settingsViewModel.setAppColorStyle(it) },
-                                    leadingIcon = { Icon(Icons.Outlined.Style, null, tint = MaterialTheme.colorScheme.secondary) }
+                                    leadingIcon = { Icon(Icons.Rounded.Style, null, tint = MaterialTheme.colorScheme.secondary) }
                                 )
                                 SwitchSettingItem(
                                     title = stringResource(R.string.setcat_smooth_corners_title),
@@ -589,7 +599,7 @@ fun SettingsCategoryScreen(
                                     ),
                                     selectedKey = uiState.playerThemePreference,
                                     onSelectionChanged = { settingsViewModel.setPlayerThemePreference(it) },
-                                    leadingIcon = { Icon(Icons.Outlined.PlayCircle, null, tint = MaterialTheme.colorScheme.secondary) }
+                                    leadingIcon = { Icon(Icons.Rounded.PlayCircle, null, tint = MaterialTheme.colorScheme.secondary) }
                                 )
                                 SwitchSettingItem(
                                     title = stringResource(R.string.setcat_show_player_file_info_title),
@@ -601,7 +611,7 @@ fun SettingsCategoryScreen(
                                 SettingsItem(
                                     title = stringResource(R.string.setcat_album_art_palette_title),
                                     subtitle = stringResource(R.string.setcat_album_art_palette_subtitle, uiState.albumArtPaletteStyle.label),
-                                    leadingIcon = { Icon(Icons.Outlined.Style, null, tint = MaterialTheme.colorScheme.secondary) },
+                                    leadingIcon = { Icon(Icons.Rounded.Style, null, tint = MaterialTheme.colorScheme.secondary) },
                                     trailingIcon = { Icon(Icons.Rounded.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                                     onClick = { navController.navigateSafely(Screen.PaletteStyle.route) }
                                 )
@@ -632,7 +642,7 @@ fun SettingsCategoryScreen(
                                     title = "Show classic Home sections",
                                     subtitle = "Album collage and Daily Mix below Your mix",
                                     checked = showClassicHomeSections,
-                                    onCheckedChange = { yuyuHomeSettings.setShowClassicSections(it) },
+                                    onCheckedChange = { nbHomeSettings.setShowClassicSections(it) },
                                     leadingIcon = { Icon(painterResource(R.drawable.rounded_view_column_24), null, tint = MaterialTheme.colorScheme.secondary) }
                                 )
                                 ThemeSelectorItem(
@@ -664,7 +674,7 @@ fun SettingsCategoryScreen(
                                     ),
                                     selectedKey = uiState.navBarStyle,
                                     onSelectionChanged = { settingsViewModel.setNavBarStyle(it) },
-                                    leadingIcon = { Icon(Icons.Outlined.Style, null, tint = MaterialTheme.colorScheme.secondary) }
+                                    leadingIcon = { Icon(Icons.Rounded.Style, null, tint = MaterialTheme.colorScheme.secondary) }
                                 )
                                 SwitchSettingItem(
                                     title = stringResource(R.string.setcat_compact_mode_title),
@@ -859,7 +869,7 @@ fun SettingsCategoryScreen(
                                     checked = uiState.hiFiModeEnabled,
                                     onCheckedChange = { settingsViewModel.setHiFiModeEnabled(it) },
                                     enabled = uiState.hiFiModeDeviceSupported,
-                                    leadingIcon = { Icon(painterResource(R.drawable.outline_high_quality_24), null, tint = MaterialTheme.colorScheme.secondary) }
+                                    leadingIcon = { Icon(painterResource(R.drawable.rounded_high_quality_24), null, tint = MaterialTheme.colorScheme.secondary) }
                                 )
                                 SwitchSettingItem(
                                     title = stringResource(R.string.setcat_persistent_shuffle_title),
@@ -1160,7 +1170,7 @@ fun SettingsCategoryScreen(
                                     ),
                                     icon = {
                                         Icon(
-                                            painter = painterResource(R.drawable.outline_save_24),
+                                            painter = painterResource(R.drawable.rounded_save_24),
                                             contentDescription = null,
                                             tint = MaterialTheme.colorScheme.secondary
                                         )
@@ -1239,7 +1249,7 @@ fun SettingsCategoryScreen(
                                     } else {
                                         stringResource(R.string.setcat_force_palette_subtitle)
                                     },
-                                    icon = { Icon(Icons.Outlined.Style, null, tint = MaterialTheme.colorScheme.secondary) },
+                                    icon = { Icon(Icons.Rounded.Style, null, tint = MaterialTheme.colorScheme.secondary) },
                                     primaryActionLabel = if (isPaletteBulkRegenerateRunning) stringResource(R.string.setcat_regenerating) else stringResource(R.string.setcat_regenerate_all),
                                     onPrimaryAction = { showRegenerateAllPalettesDialog = true },
                                     secondaryActionLabel = stringResource(R.string.setcat_choose_song),
@@ -1255,7 +1265,7 @@ fun SettingsCategoryScreen(
                                 SettingsItem(
                                     title = stringResource(R.string.setcat_trigger_crash_title),
                                     subtitle = stringResource(R.string.setcat_trigger_crash_subtitle),
-                                    leadingIcon = { Icon(Icons.Outlined.Warning, null, tint = MaterialTheme.colorScheme.error) },
+                                    leadingIcon = { Icon(Icons.Rounded.Warning, null, tint = MaterialTheme.colorScheme.error) },
                                     onClick = { settingsViewModel.triggerTestCrash() }
                                 )
                             }
@@ -1271,7 +1281,7 @@ fun SettingsCategoryScreen(
                                 SettingsItem(
                                     title = stringResource(R.string.setcat_about_lmusic_title),
                                     subtitle = stringResource(R.string.setcat_about_lmusic_subtitle),
-                                    leadingIcon = { Icon(Icons.Outlined.Info, null, tint = MaterialTheme.colorScheme.secondary) },
+                                    leadingIcon = { Icon(Icons.Rounded.Info, null, tint = MaterialTheme.colorScheme.secondary) },
                                     trailingIcon = { Icon(Icons.Rounded.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                                     onClick = { navController.navigateSafely("about") }
                                 )
@@ -1407,7 +1417,7 @@ fun SettingsCategoryScreen(
         AlertDialog(
             icon = {
                 Icon(
-                    Icons.Outlined.Style,
+                    Icons.Rounded.Style,
                     null,
                     tint = if (isPaletteBulkRegenerateRunning) {
                         MaterialTheme.colorScheme.primary
@@ -1526,7 +1536,7 @@ fun SettingsCategoryScreen(
      // Dialogs logic (copied)
     if (showClearLyricsDialog) {
         AlertDialog(
-            icon = { Icon(Icons.Outlined.Warning, null) },
+            icon = { Icon(Icons.Rounded.Warning, null) },
             title = { Text(stringResource(R.string.dialog_reset_lyrics_title)) },
             text = { Text(stringResource(R.string.dialog_cannot_undo)) },
             onDismissRequest = { showClearLyricsDialog = false },
@@ -1538,7 +1548,7 @@ fun SettingsCategoryScreen(
     
     if (showRebuildDatabaseWarning) {
         AlertDialog(
-            icon = { Icon(Icons.Outlined.Warning, null, tint = MaterialTheme.colorScheme.error) },
+            icon = { Icon(Icons.Rounded.Warning, null, tint = MaterialTheme.colorScheme.error) },
             title = { Text(stringResource(R.string.dialog_rebuild_database_title)) },
             text = { Text(stringResource(R.string.dialog_rebuild_database_message)) },
             onDismissRequest = { showRebuildDatabaseWarning = false },
@@ -1871,7 +1881,7 @@ private fun BackupSectionSelectionDialog(
                                             )
                                         ) {
                                             Icon(
-                                                painter = painterResource(R.drawable.baseline_deselect_24),
+                                                painter = painterResource(R.drawable.rounded_deselect_24),
                                                 contentDescription = stringResource(R.string.cd_clear_selection)
                                             )
                                         }
@@ -1910,7 +1920,7 @@ private fun BackupSectionSelectionDialog(
                                                 Icon(
                                                     painter = painterResource(
                                                         if (operation == BackupOperationType.EXPORT) {
-                                                            R.drawable.outline_save_24
+                                                            R.drawable.rounded_save_24
                                                         } else {
                                                             R.drawable.rounded_upload_file_24
                                                         }
@@ -2681,7 +2691,7 @@ private fun PaletteRegenerateSongSheetContent(
                         onClick = onClearSearch,
                         enabled = !isRunning
                     ) {
-                        Icon(Icons.Outlined.ClearAll, contentDescription = stringResource(R.string.cd_clear_search))
+                        Icon(Icons.Rounded.ClearAll, contentDescription = stringResource(R.string.cd_clear_search))
                     }
                 }
             },

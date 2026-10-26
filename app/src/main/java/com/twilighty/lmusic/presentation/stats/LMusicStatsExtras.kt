@@ -99,7 +99,7 @@ fun StatsCustomRangeDialog(
     }
 }
 
-/** Skip rate and first-time listens for the selected period (Yuyu-style bordered card). */
+/** Skip rate and first-time listens for the selected period (Daylight-style bordered card). */
 @Composable
 fun LMusicInsightsCard(
     summary: PlaybackStatsSummary?,

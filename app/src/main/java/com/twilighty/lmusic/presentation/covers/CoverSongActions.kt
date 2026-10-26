@@ -15,7 +15,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.twilighty.lmusic.data.model.Song
 import com.twilighty.lmusic.presentation.health.LibraryHealthAnalyzer
-import com.twilighty.lmusic.presentation.yuyu.YuyuActionRow
+import com.twilighty.lmusic.presentation.nb.NbActionRow
 
 /**
  * "Make a cover" row for the song options sheet. Shows only for a song on this device
@@ -25,9 +25,9 @@ import com.twilighty.lmusic.presentation.yuyu.YuyuActionRow
 fun CoverSongActions(song: Song) {
     if (!song.albumArtUriString.isNullOrBlank() || !LibraryHealthAnalyzer.isLocal(song)) return
     var open by rememberSaveable(song.id) { mutableStateOf(false) }
-    YuyuActionRow(
+    NbActionRow(
         text = "Make a cover",
-        subtitle = "Pattern artwork in Yuyu colours",
+        subtitle = "Pattern artwork in Daylight colours",
         icon = rememberVectorPainter(Icons.Rounded.Palette),
         onClick = { open = true }
     )

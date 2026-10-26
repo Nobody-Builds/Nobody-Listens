@@ -1,4 +1,4 @@
-package com.twilighty.lmusic.presentation.yuyu
+package com.twilighty.lmusic.presentation.nb
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -42,28 +42,28 @@ data class MadeForYouMix(
     val songs: List<Song>,
 )
 
-private val Context.yuyuHomeDataStore: DataStore<Preferences> by preferencesDataStore(name = "lmusic_home")
+private val Context.nbHomeDataStore: DataStore<Preferences> by preferencesDataStore(name = "lmusic_home")
 
 /** Small Home-only preferences (kept out of UserPreferencesRepository). */
 @Singleton
-class YuyuHomePreferences @Inject constructor(
+class NbHomePreferences @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
     private val showClassicSectionsKey = booleanPreferencesKey("show_classic_home_sections")
 
     /** When on, Home also shows the old album collage and the Daily Mix section. Default off. */
     val showClassicSections: Flow<Boolean> =
-        context.yuyuHomeDataStore.data.map { it[showClassicSectionsKey] ?: false }
+        context.nbHomeDataStore.data.map { it[showClassicSectionsKey] ?: false }
 
     suspend fun setShowClassicSections(enabled: Boolean) {
-        context.yuyuHomeDataStore.edit { it[showClassicSectionsKey] = enabled }
+        context.nbHomeDataStore.edit { it[showClassicSectionsKey] = enabled }
     }
 }
 
 /** Used by Settings › Appearance for the "Show classic Home sections" switch. */
 @HiltViewModel
-class YuyuHomeSettingsViewModel @Inject constructor(
-    private val preferences: YuyuHomePreferences,
+class NbHomeSettingsViewModel @Inject constructor(
+    private val preferences: NbHomePreferences,
 ) : ViewModel() {
     val showClassicSections: StateFlow<Boolean> = preferences.showClassicSections
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
@@ -74,7 +74,7 @@ class YuyuHomeSettingsViewModel @Inject constructor(
 }
 
 /** A top artist resolved to a library artist (so Home can open the artist page). */
-data class YuyuHomeArtist(
+data class NbHomeArtist(
     val id: Long,
     val name: String,
     val imageModel: String?,
@@ -82,10 +82,10 @@ data class YuyuHomeArtist(
 )
 
 @HiltViewModel
-class YuyuHomeViewModel @Inject constructor(
+class NbHomeViewModel @Inject constructor(
     private val musicRepository: MusicRepository,
     private val playbackStatsRepository: PlaybackStatsRepository,
-    preferences: YuyuHomePreferences,
+    preferences: NbHomePreferences,
     private val smartRepository: com.twilighty.lmusic.data.smart.SmartRepository,
     private val libraryStateHolder: com.twilighty.lmusic.presentation.viewmodel.LibraryStateHolder,
 ) : ViewModel() {
@@ -117,8 +117,8 @@ class YuyuHomeViewModel @Inject constructor(
     private val _forgottenFavourites = MutableStateFlow<List<Song>>(emptyList())
     val forgottenFavourites: StateFlow<List<Song>> = _forgottenFavourites.asStateFlow()
 
-    private val _topArtists = MutableStateFlow<List<YuyuHomeArtist>>(emptyList())
-    val topArtists: StateFlow<List<YuyuHomeArtist>> = _topArtists.asStateFlow()
+    private val _topArtists = MutableStateFlow<List<NbHomeArtist>>(emptyList())
+    val topArtists: StateFlow<List<NbHomeArtist>> = _topArtists.asStateFlow()
 
     private var lastRefreshAt = 0L
     private var refreshJob: Job? = null
@@ -200,7 +200,7 @@ class YuyuHomeViewModel @Inject constructor(
                     runCatching {
                         val id = musicRepository.getArtistIdByName(name) ?: return@runCatching null
                         val artist: Artist? = musicRepository.getArtistById(id).first()
-                        YuyuHomeArtist(
+                        NbHomeArtist(
                             id = id,
                             name = artist?.name ?: name,
                             imageModel = artist?.customImageUri?.takeIf { it.isNotBlank() }
@@ -224,4 +224,4 @@ class YuyuHomeViewModel @Inject constructor(
 }
 
 /** Same DataStore for the backup module (data/backup/module/FeatureDataStores.kt). */
-internal val Context.backupHomeDataStore: DataStore<Preferences> get() = yuyuHomeDataStore
+internal val Context.backupHomeDataStore: DataStore<Preferences> get() = nbHomeDataStore

@@ -60,27 +60,27 @@ import com.twilighty.lmusic.data.lofi.LofiSettings
 import com.twilighty.lmusic.data.lofi.LofiSource
 import com.twilighty.lmusic.data.lofi.LofiState
 import com.twilighty.lmusic.presentation.haptics.LocalLMusicHaptics
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuDialog
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuSectionHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuSegmented
-import com.twilighty.lmusic.presentation.yuyu.YuyuSettingRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatus
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatusChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuSwitch
-import com.twilighty.lmusic.presentation.yuyu.YuyuTextField
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbDialog
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbIconButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbSectionHeader
+import com.twilighty.lmusic.presentation.nb.NbSegmented
+import com.twilighty.lmusic.presentation.nb.NbSettingRow
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbStatus
+import com.twilighty.lmusic.presentation.nb.NbStatusChip
+import com.twilighty.lmusic.presentation.nb.NbSwitch
+import com.twilighty.lmusic.presentation.nb.NbTextField
+import com.twilighty.lmusic.presentation.nb.NbTopBar
+import com.twilighty.lmusic.presentation.nb.NbType
 import kotlin.math.roundToInt
 
 private enum class LofiTab(val label: String) { Generate("Generate"), Radio("Radio"), Ambience("Ambience") }
@@ -98,14 +98,14 @@ fun LofiScreen(
     val browse by viewModel.browse.collectAsStateWithLifecycle()
     val favourites by viewModel.favourites.collectAsStateWithLifecycle()
 
-    Box(Modifier.fillMaxSize().background(Yuyu.canvas)) {
+    Box(Modifier.fillMaxSize().background(Nb.canvas)) {
         LazyColumn(
             modifier = Modifier.fillMaxSize().statusBarsPadding(),
             contentPadding = PaddingValues(bottom = bottomInset + 120.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             item(key = "top") {
-                YuyuTopBar(
+                NbTopBar(
                     title = "Lofi",
                     kicker = when {
                         state.source == LofiSource.Radio && state.isPlaying -> "Playing ${state.station?.name ?: "radio"}"
@@ -113,17 +113,17 @@ fun LofiScreen(
                         else -> "Beats to relax to"
                     },
                     navigationIcon = {
-                        YuyuIconButton(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = onBack)
+                        NbIconButton(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = onBack)
                     },
                     actions = {
                         if (state.source != null) {
-                            YuyuIconButton(imageVector = Icons.Rounded.Stop, contentDescription = "Stop lofi", onClick = viewModel::stop, style = YuyuIconButtonStyle.Tonal)
+                            NbIconButton(imageVector = Icons.Rounded.Stop, contentDescription = "Stop lofi", onClick = viewModel::stop, style = NbIconButtonStyle.Tonal)
                         }
                     }
                 )
             }
             item(key = "tabs") {
-                YuyuSegmented(
+                NbSegmented(
                     options = LofiTab.entries.map { it.label },
                     selectedIndex = tab.ordinal,
                     onSelect = { tab = LofiTab.entries[it] },
@@ -132,7 +132,7 @@ fun LofiScreen(
             }
             state.error?.let { err ->
                 item(key = "error") {
-                    YuyuStatusChip(text = err, status = YuyuStatus.Danger, modifier = Modifier.padding(horizontal = 16.dp))
+                    NbStatusChip(text = err, status = NbStatus.Danger, modifier = Modifier.padding(horizontal = 16.dp))
                 }
             }
             when (tab) {
@@ -151,7 +151,7 @@ private fun LazyListScope.generateItems(settings: LofiSettings, state: LofiState
     item(key = "hero") { GeneratorHero(settings, state, playing, vm) }
     item(key = "moods") {
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            YuyuSectionHeader("Mood")
+            NbSectionHeader("Mood")
             val moods = LofiMood.entries
             for (row in moods.chunked(2)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -178,14 +178,14 @@ private fun LazyListScope.generateItems(settings: LofiSettings, state: LofiState
                 valueRange = 0f..LofiSettings.MAX_SWING,
                 valueText = "${(settings.swing * 100).roundToInt()}%",
             )
-            Text("Key", style = YuyuType.label, color = Yuyu.text)
+            Text("Key", style = NbType.label, color = Nb.text)
             Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 LofiSettings.KEY_NAMES.forEachIndexed { i, name ->
-                    YuyuChip(text = name, selected = settings.key == i, onClick = { vm.update { it.copy(key = i) } })
+                    NbChip(text = name, selected = settings.key == i, onClick = { vm.update { it.copy(key = i) } })
                 }
             }
-            Text("Chord colour", style = YuyuType.label, color = Yuyu.text)
-            YuyuSegmented(
+            Text("Chord colour", style = NbType.label, color = Nb.text)
+            NbSegmented(
                 options = ChordColour.entries.map { it.label },
                 selectedIndex = settings.chordColour.ordinal,
                 onSelect = { i -> vm.update { it.copy(chordColour = ChordColour.entries[i]) } },
@@ -208,7 +208,7 @@ private fun LazyListScope.generateItems(settings: LofiSettings, state: LofiState
             LofiSlider("Café", settings.cafe, { v -> vm.update { it.copy(cafe = v) } })
             LofiSlider("Tape wobble", settings.wobble, { v -> vm.update { it.copy(wobble = v) } })
             LofiSlider("Warmth", settings.warmth, { v -> vm.update { it.copy(warmth = v) } })
-            YuyuDivider(Modifier.padding(vertical = 4.dp))
+            NbDivider(Modifier.padding(vertical = 4.dp))
             LofiSlider("Volume", settings.masterVolume, { v -> vm.update { it.copy(masterVolume = v) } })
         }
     }
@@ -219,21 +219,21 @@ private fun LazyListScope.generateItems(settings: LofiSettings, state: LofiState
 @Composable
 private fun GeneratorHero(settings: LofiSettings, state: LofiState, playing: Boolean, vm: LofiViewModel) {
     val haptics = LocalLMusicHaptics.current
-    YuyuCard(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(), background = Yuyu.subtle, contentPadding = PaddingValues(16.dp)) {
+    NbCard(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(), background = Nb.subtle, contentPadding = PaddingValues(16.dp)) {
         Box(Modifier.fillMaxWidth().aspectRatio(1.35f), contentAlignment = Alignment.Center) {
             LofiVisualizer(meters = vm::meters, active = playing, modifier = Modifier.fillMaxSize())
             Box(
                 Modifier
                     .size(76.dp)
-                    .clip(YuyuShapes.pill)
-                    .background(Yuyu.ink)
+                    .clip(NbShapes.pill)
+                    .background(Nb.ink)
                     .clickable(role = Role.Button) { haptics.playPause(); vm.toggleGenerator() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = if (playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                     contentDescription = if (playing) "Pause" else "Play",
-                    tint = Yuyu.onInk,
+                    tint = Nb.onInk,
                     modifier = Modifier.size(38.dp)
                 )
             }
@@ -241,23 +241,23 @@ private fun GeneratorHero(settings: LofiSettings, state: LofiState, playing: Boo
         Spacer(Modifier.height(10.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text(settings.mood.label, style = YuyuType.h3, color = Yuyu.text)
+                Text(settings.mood.label, style = NbType.h3, color = Nb.text)
                 Text(
                     "${settings.keyName} · ${settings.tempoBpm} BPM · ${settings.chordColour.label.lowercase()} chords",
-                    style = YuyuType.meta, color = Yuyu.textMuted
+                    style = NbType.meta, color = Nb.textMuted
                 )
             }
-            YuyuButton(
+            NbButton(
                 text = "New tune",
                 onClick = vm::newTune,
-                style = YuyuButtonStyle.Secondary,
-                size = YuyuButtonSize.Small,
+                style = NbButtonStyle.Secondary,
+                size = NbButtonSize.Small,
                 icon = rememberVectorPainter(Icons.Rounded.Refresh)
             )
         }
         if (state.source == LofiSource.Radio && state.isPlaying) {
             Spacer(Modifier.height(8.dp))
-            Text("Radio is playing — press play to switch to the generator.", style = YuyuType.caption, color = Yuyu.textMuted)
+            Text("Radio is playing — press play to switch to the generator.", style = NbType.caption, color = Nb.textMuted)
         }
     }
 }
@@ -268,31 +268,31 @@ private fun MoodCard(mood: LofiMood, selected: Boolean, onClick: () -> Unit, mod
     val (bg, icon) = moodLook(mood)
     Column(
         modifier
-            .clip(YuyuShapes.lg)
+            .clip(NbShapes.lg)
             .background(bg)
-            .border(if (selected) 2.dp else 1.dp, if (selected) Yuyu.ink else Yuyu.border, YuyuShapes.lg)
+            .border(if (selected) 2.dp else 1.dp, if (selected) Nb.ink else Nb.border, NbShapes.lg)
             .clickable(role = Role.RadioButton) { haptics.selection(); onClick() }
             .padding(14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Icon(icon, contentDescription = null, tint = Yuyu.text, modifier = Modifier.size(22.dp))
-        Text(mood.label, style = YuyuType.title, color = Yuyu.text)
-        Text(mood.blurb, style = YuyuType.caption, color = Yuyu.textMuted, maxLines = 2)
+        Icon(icon, contentDescription = null, tint = Nb.text, modifier = Modifier.size(22.dp))
+        Text(mood.label, style = NbType.title, color = Nb.text)
+        Text(mood.blurb, style = NbType.caption, color = Nb.textMuted, maxLines = 2)
     }
 }
 
 @Composable
 private fun moodLook(mood: LofiMood): Pair<Color, ImageVector> = when (mood) {
-    LofiMood.Dreamy -> Yuyu.tintLavender to Icons.Rounded.NightsStay
-    LofiMood.Rainy -> Yuyu.tintMint to Icons.Rounded.WaterDrop
-    LofiMood.Jazzy -> Yuyu.tintPeach to Icons.Rounded.Piano
-    LofiMood.Sunny -> Yuyu.warningSoft to Icons.Rounded.WbSunny
+    LofiMood.Dreamy -> Nb.tintLavender to Icons.Rounded.NightsStay
+    LofiMood.Rainy -> Nb.tintMint to Icons.Rounded.WaterDrop
+    LofiMood.Jazzy -> Nb.tintPeach to Icons.Rounded.Piano
+    LofiMood.Sunny -> Nb.warningSoft to Icons.Rounded.WbSunny
 }
 
 @Composable
 private fun ControlsCard(title: String, content: @Composable () -> Unit) {
-    YuyuCard(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()) {
-        YuyuOverline(title)
+    NbCard(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()) {
+        NbOverline(title)
         Spacer(Modifier.height(8.dp))
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) { content() }
     }
@@ -301,8 +301,8 @@ private fun ControlsCard(title: String, content: @Composable () -> Unit) {
 @Composable
 private fun LayerToggle(title: String, checked: Boolean, onChange: (Boolean) -> Unit) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(title, style = YuyuType.title, color = Yuyu.text, modifier = Modifier.weight(1f))
-        YuyuSwitch(checked = checked, onCheckedChange = onChange)
+        Text(title, style = NbType.title, color = Nb.text, modifier = Modifier.weight(1f))
+        NbSwitch(checked = checked, onCheckedChange = onChange)
     }
 }
 
@@ -327,13 +327,13 @@ private fun SleepTimerCard(state: LofiState, vm: LofiViewModel) {
                 !active -> "Start lofi to set a timer"
                 else -> "Stop lofi after a while, with a slow fade"
             },
-            style = YuyuType.meta, color = Yuyu.textMuted
+            style = NbType.meta, color = Nb.textMuted
         )
         Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            YuyuChip(text = "Off", selected = state.sleepTimerEndsAt == null, onClick = { vm.setSleepTimer(null) },
+            NbChip(text = "Off", selected = state.sleepTimerEndsAt == null, onClick = { vm.setSleepTimer(null) },
                 icon = rememberVectorPainter(Icons.Rounded.Close))
             for (m in listOf(15, 30, 45, 60, 90)) {
-                YuyuChip(
+                NbChip(
                     text = "$m min",
                     selected = false,
                     onClick = { if (active) vm.setSleepTimer(m) },
@@ -351,48 +351,48 @@ private fun PresetsCard(vm: LofiViewModel) {
     var toDelete by remember { mutableStateOf<LofiPreset?>(null) }
     ControlsCard(title = "Presets") {
         if (presets.isEmpty()) {
-            Text("Save the sound you like and come back to it. Presets keep the tune too.", style = YuyuType.meta, color = Yuyu.textMuted)
+            Text("Save the sound you like and come back to it. Presets keep the tune too.", style = NbType.meta, color = Nb.textMuted)
         } else {
             for (p in presets) {
-                YuyuSettingRow(
+                NbSettingRow(
                     title = p.name,
                     subtitle = "${p.settings.mood.label} · ${p.settings.keyName} · ${p.settings.tempoBpm} BPM",
                     onClick = { vm.loadPreset(p) },
                     trailing = {
-                        YuyuIconButton(imageVector = Icons.Rounded.Close, contentDescription = "Delete ${p.name}", onClick = { toDelete = p }, size = 36.dp, iconSize = 18.dp)
+                        NbIconButton(imageVector = Icons.Rounded.Close, contentDescription = "Delete ${p.name}", onClick = { toDelete = p }, size = 36.dp, iconSize = 18.dp)
                     }
                 )
             }
         }
-        YuyuButton(
+        NbButton(
             text = "Save preset",
             onClick = { showSave = true },
-            style = YuyuButtonStyle.Secondary,
-            size = YuyuButtonSize.Small,
+            style = NbButtonStyle.Secondary,
+            size = NbButtonSize.Small,
             icon = rememberVectorPainter(Icons.Rounded.Save)
         )
     }
     if (showSave) {
         var name by remember { mutableStateOf("") }
-        YuyuDialog(
+        NbDialog(
             onDismissRequest = { showSave = false },
             title = "Save preset",
             body = "Saves every control and the current tune.",
             actions = {
-                YuyuButton("Cancel", onClick = { showSave = false }, style = YuyuButtonStyle.Secondary)
-                YuyuButton("Save", onClick = { vm.savePreset(name); showSave = false }, enabled = name.isNotBlank())
+                NbButton("Cancel", onClick = { showSave = false }, style = NbButtonStyle.Secondary)
+                NbButton("Save", onClick = { vm.savePreset(name); showSave = false }, enabled = name.isNotBlank())
             }
         ) {
-            YuyuTextField(value = name, onValueChange = { name = it.take(40) }, label = "Name", placeholder = "Late night study")
+            NbTextField(value = name, onValueChange = { name = it.take(40) }, label = "Name", placeholder = "Late night study")
         }
     }
     toDelete?.let { p ->
-        YuyuDialog(
+        NbDialog(
             onDismissRequest = { toDelete = null },
             title = "Delete “${p.name}”?",
             actions = {
-                YuyuButton("Cancel", onClick = { toDelete = null }, style = YuyuButtonStyle.Secondary)
-                YuyuButton("Delete", onClick = { vm.deletePreset(p); toDelete = null }, style = YuyuButtonStyle.Danger)
+                NbButton("Cancel", onClick = { toDelete = null }, style = NbButtonStyle.Secondary)
+                NbButton("Delete", onClick = { vm.deletePreset(p); toDelete = null }, style = NbButtonStyle.Danger)
             }
         )
     }

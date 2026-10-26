@@ -21,13 +21,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.twilighty.lmusic.data.update.UpdateNotifier
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbType
 
 /** Small dismissible "Update available" banner for Home. Renders nothing when there's no update. */
 @Composable
@@ -45,27 +45,27 @@ fun UpdateBanner(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .background(Yuyu.accentSoft, YuyuShapes.lg)
+            .background(Nb.accentSoft, NbShapes.lg)
             .padding(start = 14.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Icon(Icons.Rounded.SystemUpdate, contentDescription = null, tint = Yuyu.accentText, modifier = Modifier.size(20.dp))
+        Icon(Icons.Rounded.SystemUpdate, contentDescription = null, tint = Nb.accentText, modifier = Modifier.size(20.dp))
         Text(
             "Update available · LMusic $version",
-            style = YuyuType.label,
-            color = Yuyu.text,
+            style = NbType.label,
+            color = Nb.text,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
         )
-        YuyuButton(
+        NbButton(
             text = "Open",
             onClick = { runCatching { context.startActivity(UpdateNotifier.openReleaseIntent(url)) } },
-            style = YuyuButtonStyle.Primary,
-            size = YuyuButtonSize.Small
+            style = NbButtonStyle.Primary,
+            size = NbButtonSize.Small
         )
-        YuyuIconButton(
+        NbIconButton(
             imageVector = Icons.Rounded.Close,
             contentDescription = "Dismiss",
             onClick = { viewModel.dismissBanner(version) },

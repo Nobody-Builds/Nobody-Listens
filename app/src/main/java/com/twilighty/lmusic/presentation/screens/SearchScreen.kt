@@ -6,16 +6,16 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.unit.sp
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuAvatar
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuEmptyState
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuSectionHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbAvatar
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbEmptyState
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbIconButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbSectionHeader
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbType
 import com.twilighty.lmusic.presentation.navigation.navigateSafely
 import com.twilighty.lmusic.presentation.navigation.navigateSafelyReplacing
 
@@ -262,7 +262,7 @@ fun SearchScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Yuyu header: "Search" h1 + settings, then the rounded muted search field.
+            // Daylight header: "Search" h1 + settings, then the rounded muted search field.
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -275,18 +275,18 @@ fun SearchScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.search),
-                        style = YuyuType.h1,
-                        color = Yuyu.text,
+                        style = NbType.h1,
+                        color = Nb.text,
                         modifier = Modifier.weight(1f)
                     )
-                    YuyuIconButton(
+                    NbIconButton(
                         painter = painterResource(R.drawable.rounded_settings_24),
                         contentDescription = stringResource(R.string.presentation_batch_d_open_settings_cd),
                         onClick = { navController.navigateSafely(Screen.Settings.route) },
-                        style = YuyuIconButtonStyle.Tonal
+                        style = NbIconButtonStyle.Tonal
                     )
                 }
-                YuyuSearchField(
+                NbSearchField(
                     query = searchQuery,
                     onQueryChange = {
                         searchQuery = it
@@ -329,7 +329,7 @@ fun SearchScreen(
                     val recentSearches = searchUiState.searchHistory
                     if (recentSearches.isNotEmpty()) {
                         Column(Modifier.padding(top = 10.dp)) {
-                            YuyuSectionHeader(
+                            NbSectionHeader(
                                 title = stringResource(R.string.recent_searches),
                                 actionLabel = stringResource(R.string.clear_all),
                                 onAction = { playerViewModel.clearSearchHistory() },
@@ -341,7 +341,7 @@ fun SearchScreen(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 items(recentSearches, key = { "recent_${it.id ?: it.query}" }) { item ->
-                                    YuyuRecentSearchChip(
+                                    NbRecentSearchChip(
                                         text = item.query,
                                         onClick = {
                                             searchQuery = item.query
@@ -534,7 +534,7 @@ fun SearchScreen(
 
 @Composable
 fun SearchResultSectionHeader(title: String) {
-    YuyuSectionHeader(
+    NbSectionHeader(
         title = title,
         modifier = Modifier.padding(top = 12.dp, bottom = 6.dp)
     )
@@ -627,7 +627,7 @@ fun SearchHistoryListItem(
 
 @Composable
 fun EmptySearchResults(searchQuery: String, colorScheme: ColorScheme) {
-    YuyuEmptyState(
+    NbEmptyState(
         title = if (searchQuery.isNotBlank()) {
             stringResource(R.string.search_no_results_for_query, searchQuery)
         } else {
@@ -879,18 +879,18 @@ fun SearchResultAlbumItem(
     onOpenClick: () -> Unit,
     onPlayClick: () -> Unit
 ) {
-    YuyuSearchResultRow(
+    NbSearchResultRow(
         title = album.title,
         subtitle = listOf("Album", album.artist).filter { it.isNotBlank() }.joinToString(" · "),
         onOpenClick = onOpenClick,
         onPlayClick = onPlayClick,
         playContentDescription = stringResource(R.string.cd_play_album),
         leading = {
-            YuyuArt(
+            NbArt(
                 model = album.albumArtUriString,
                 title = album.title,
                 size = 56.dp,
-                shape = YuyuShapes.md,
+                shape = NbShapes.md,
                 contentDescription = "Album art: ${album.title}"
             )
         }
@@ -903,14 +903,14 @@ fun SearchResultArtistItem(
     onOpenClick: () -> Unit,
     onPlayClick: () -> Unit
 ) {
-    YuyuSearchResultRow(
+    NbSearchResultRow(
         title = artist.name,
         subtitle = "Artist · ${formatSongCount(artist.songCount)}",
         onOpenClick = onOpenClick,
         onPlayClick = onPlayClick,
         playContentDescription = "Play artist",
         accentPlay = true,
-        leading = { YuyuAvatar(model = artist.effectiveImageUrl, name = artist.name, size = 56.dp) }
+        leading = { NbAvatar(model = artist.effectiveImageUrl, name = artist.name, size = 56.dp) }
     )
 }
 
@@ -921,7 +921,7 @@ fun SearchResultPlaylistItem(
     onOpenClick: () -> Unit,
     onPlayClick: () -> Unit
 ) {
-    YuyuSearchResultRow(
+    NbSearchResultRow(
         title = playlist.name,
         subtitle = "Playlist · ${formatSongCount(playlist.songIds.size)}",
         onOpenClick = onOpenClick,
@@ -937,9 +937,9 @@ fun SearchResultPlaylistItem(
     )
 }
 
-/** Flat Yuyu result row: leading art, title, muted meta, round play button. */
+/** Flat Daylight result row: leading art, title, muted meta, round play button. */
 @Composable
-private fun YuyuSearchResultRow(
+private fun NbSearchResultRow(
     title: String,
     subtitle: String,
     onOpenClick: () -> Unit,
@@ -952,7 +952,7 @@ private fun YuyuSearchResultRow(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 64.dp)
-            .clip(YuyuShapes.lg)
+            .clip(NbShapes.lg)
             .clickable(onClick = onOpenClick)
             .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -960,14 +960,14 @@ private fun YuyuSearchResultRow(
     ) {
         leading()
         Column(Modifier.weight(1f)) {
-            Text(title, style = YuyuType.title, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(subtitle, style = YuyuType.meta, color = Yuyu.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(title, style = NbType.title, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(subtitle, style = NbType.meta, color = Nb.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
-        YuyuIconButton(
+        NbIconButton(
             imageVector = Icons.Rounded.PlayArrow,
             contentDescription = playContentDescription,
             onClick = onPlayClick,
-            style = if (accentPlay) YuyuIconButtonStyle.Accent else YuyuIconButtonStyle.Tonal,
+            style = if (accentPlay) NbIconButtonStyle.Accent else NbIconButtonStyle.Tonal,
             size = 40.dp,
             iconSize = 22.dp
         )
@@ -976,7 +976,7 @@ private fun YuyuSearchResultRow(
 
 /** Rounded (16dp) muted search field with a search icon and a clear button. */
 @Composable
-private fun YuyuSearchField(
+private fun NbSearchField(
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
@@ -984,13 +984,13 @@ private fun YuyuSearchField(
     placeholder: String,
     focusRequester: FocusRequester,
 ) {
-    val textColor = Yuyu.text
+    val textColor = Nb.text
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 52.dp)
-            .clip(YuyuShapes.lg)
-            .background(Yuyu.muted)
+            .clip(NbShapes.lg)
+            .background(Nb.muted)
             .padding(start = 14.dp, end = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -998,19 +998,19 @@ private fun YuyuSearchField(
         Icon(
             imageVector = Icons.Rounded.Search,
             contentDescription = stringResource(R.string.cd_search_icon),
-            tint = Yuyu.textMuted,
+            tint = Nb.textMuted,
             modifier = Modifier.size(20.dp)
         )
         Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
             if (query.isEmpty()) {
-                Text(placeholder, style = YuyuType.body.copy(fontSize = 16.sp), color = Yuyu.textMuted, maxLines = 1)
+                Text(placeholder, style = NbType.body.copy(fontSize = 16.sp), color = Nb.textMuted, maxLines = 1)
             }
             androidx.compose.foundation.text.BasicTextField(
                 value = query,
                 onValueChange = onQueryChange,
                 singleLine = true,
-                textStyle = YuyuType.body.copy(fontSize = 16.sp, color = textColor),
-                cursorBrush = androidx.compose.ui.graphics.SolidColor(Yuyu.ink),
+                textStyle = NbType.body.copy(fontSize = 16.sp, color = textColor),
+                cursorBrush = androidx.compose.ui.graphics.SolidColor(Nb.ink),
                 keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
                 keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = { onSearch(query) }),
                 modifier = Modifier
@@ -1019,7 +1019,7 @@ private fun YuyuSearchField(
             )
         }
         if (query.isNotEmpty()) {
-            YuyuIconButton(
+            NbIconButton(
                 imageVector = Icons.Rounded.Close,
                 contentDescription = stringResource(R.string.cd_clear_search_query),
                 onClick = onClear,
@@ -1030,22 +1030,22 @@ private fun YuyuSearchField(
     }
 }
 
-/** Recent search as a Yuyu chip; the small x removes it from history. */
+/** Recent search as a Daylight chip; the small x removes it from history. */
 @Composable
-private fun YuyuRecentSearchChip(text: String, onClick: () -> Unit, onRemove: () -> Unit) {
+private fun NbRecentSearchChip(text: String, onClick: () -> Unit, onRemove: () -> Unit) {
     Row(
         modifier = Modifier
             .heightIn(min = 36.dp)
-            .clip(YuyuShapes.pill)
-            .background(Yuyu.canvas)
-            .border(1.dp, Yuyu.borderStrong, YuyuShapes.pill)
+            .clip(NbShapes.pill)
+            .background(Nb.canvas)
+            .border(1.dp, Nb.borderStrong, NbShapes.pill)
             .clickable(onClick = onClick)
             .padding(start = 12.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Icon(Icons.Rounded.History, contentDescription = null, tint = Yuyu.textMuted, modifier = Modifier.size(16.dp))
-        Text(text, style = YuyuType.label, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 180.dp))
+        Icon(Icons.Rounded.History, contentDescription = null, tint = Nb.textMuted, modifier = Modifier.size(16.dp))
+        Text(text, style = NbType.label, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 180.dp))
         Box(
             modifier = Modifier
                 .size(28.dp)
@@ -1056,7 +1056,7 @@ private fun YuyuRecentSearchChip(text: String, onClick: () -> Unit, onRemove: ()
             Icon(
                 Icons.Rounded.Close,
                 contentDescription = stringResource(R.string.cd_delete_search_history_item),
-                tint = Yuyu.textMuted,
+                tint = Nb.textMuted,
                 modifier = Modifier.size(14.dp)
             )
         }
@@ -1071,7 +1071,7 @@ fun SearchFilterChip(
     playerViewModel: PlayerViewModel,
     modifier: Modifier = Modifier
 ) {
-    YuyuChip(
+    NbChip(
         text = filterType.name.lowercase().replaceFirstChar { it.titlecase() },
         selected = filterType == currentFilter,
         onClick = { playerViewModel.updateSearchFilter(filterType) },
@@ -1097,14 +1097,14 @@ private fun SearchSourceChips(
             com.twilighty.lmusic.data.model.StorageFilter.ONLINE to "Cloud",
             com.twilighty.lmusic.data.model.StorageFilter.ALL to "All"
         ).forEach { (filter, label) ->
-            YuyuChip(
+            NbChip(
                 text = label,
                 selected = !youTubeSelected && current == filter,
                 onClick = { if (youTubeSelected || current != filter) onSelect(filter) }
             )
         }
         // Online search, only while chosen: library results stay offline by default.
-        YuyuChip(
+        NbChip(
             text = "YouTube",
             selected = youTubeSelected,
             onClick = onYouTube

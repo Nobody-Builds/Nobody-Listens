@@ -76,8 +76,8 @@ private fun renderShareCard(context: Context, layout: GardenLayout, dark: Boolea
     }
     canvas.restore()
 
-    val display = runCatching { ResourcesCompat.getFont(context, R.font.bricolage_variable) }.getOrNull()
-    val body = runCatching { ResourcesCompat.getFont(context, R.font.figtree_variable) }.getOrNull()
+    val display = runCatching { ResourcesCompat.getFont(context, R.font.gilroy_extrabold) }.getOrNull()
+    val body = runCatching { ResourcesCompat.getFont(context, R.font.gflex_variable) }.getOrNull()
     val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ink.toArgb()
         textSize = 68f

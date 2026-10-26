@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Lyrics
 import androidx.compose.material.icons.rounded.TextFormat
@@ -156,7 +156,7 @@ fun LyricsFloatingToolbar(
             onClick = onMoreClick
         ) {
             Icon(
-                imageVector = Icons.Filled.MoreVert,
+                imageVector = Icons.Rounded.MoreVert,
                 contentDescription = stringResource(R.string.presentation_batch_g_lyrics_cd_options),
                 tint = onBackgroundColor
             )

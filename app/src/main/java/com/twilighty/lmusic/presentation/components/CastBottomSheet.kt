@@ -55,9 +55,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cast
-import androidx.compose.material.icons.filled.Devices
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.rounded.Cast
+import androidx.compose.material.icons.rounded.Devices
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Bluetooth
 import androidx.compose.material.icons.rounded.BluetoothDisabled
 import androidx.compose.material.icons.rounded.BatteryFull
@@ -299,7 +299,7 @@ fun CastBottomSheet(
                 MediaRouter.RouteInfo.DEVICE_TYPE_TV -> Icons.Rounded.Tv
                 MediaRouter.RouteInfo.DEVICE_TYPE_REMOTE_SPEAKER, MediaRouter.RouteInfo.DEVICE_TYPE_BUILTIN_SPEAKER -> Icons.Rounded.Speaker
                 MediaRouter.RouteInfo.DEVICE_TYPE_BLUETOOTH_A2DP -> Icons.Rounded.Bluetooth
-                else -> Icons.Filled.Cast
+                else -> Icons.Rounded.Cast
             },
             isConnecting = isCastConnecting,
             volume = routeVolume.toFloat().coerceAtLeast(0f),
@@ -483,7 +483,7 @@ private fun CastPermissionStep(
         Card(
             shape = RoundedCornerShape(26.dp),
             colors = CardDefaults.cardColors(containerColor = colors.surfaceContainerHigh),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -631,7 +631,7 @@ private fun CastSheetContent(
             ) {
                 BadgeChip(
                     text = stringResource(R.string.presentation_batch_g_cast_scanning_nearby),
-                    iconVector = Icons.Filled.Refresh,
+                    iconVector = Icons.Rounded.Refresh,
                     contentColor = MaterialTheme.colorScheme.primary
                 )
             }
@@ -736,7 +736,7 @@ private fun CastSheetContent(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        Icons.Filled.Devices,
+                        Icons.Rounded.Devices,
                         contentDescription = stringResource(R.string.presentation_batch_g_cast_tab_devices),
                         modifier = Modifier.padding(horizontal = 4.dp)
                     )
@@ -800,7 +800,7 @@ private fun CastControlsTabContent(
                     )
                 }
                 IconButton(onClick = onRefresh) {
-                    Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.presentation_batch_g_cast_cd_refresh_connections))
+                    Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.presentation_batch_g_cast_cd_refresh_connections))
                 }
             }
             QuickSettingsRow(
@@ -1228,7 +1228,7 @@ private fun CollapsibleCastTopBar(
             ) {
                 BadgeChip(
                     text = stringResource(R.string.presentation_batch_g_cast_scanning_nearby),
-                    iconVector = Icons.Filled.Refresh,
+                    iconVector = Icons.Rounded.Refresh,
                     contentColor = MaterialTheme.colorScheme.primary
                 )
             }
@@ -1280,7 +1280,7 @@ private fun DeviceSectionHeader(
             ),
             modifier = Modifier.clip(RoundedCornerShape(16.dp))
         ) {
-            Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.presentation_batch_g_cast_cd_refresh_devices))
+            Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.presentation_batch_g_cast_cd_refresh_devices))
         }
     }
 }
@@ -1318,7 +1318,7 @@ private fun ActiveDeviceHero(
         colors = CardDefaults.cardColors(
             containerColor = if (device.isRemote) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.tertiaryContainer
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -1511,7 +1511,7 @@ private fun EmptyDeviceState() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
-                imageVector = Icons.Filled.Devices,
+                imageVector = Icons.Rounded.Devices,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(36.dp)
@@ -1568,7 +1568,7 @@ private fun CastDeviceRow(
         MediaRouter.RouteInfo.DEVICE_TYPE_TV -> Icons.Rounded.Tv
         MediaRouter.RouteInfo.DEVICE_TYPE_REMOTE_SPEAKER, MediaRouter.RouteInfo.DEVICE_TYPE_BUILTIN_SPEAKER -> Icons.Rounded.Speaker
         MediaRouter.RouteInfo.DEVICE_TYPE_BLUETOOTH_A2DP -> Icons.Rounded.Bluetooth
-        else -> Icons.Filled.Cast
+        else -> Icons.Rounded.Cast
     }
 
     Surface(
@@ -1904,7 +1904,7 @@ private fun WifiOffIllustration(
         modifier = Modifier.fillMaxWidth(),
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier

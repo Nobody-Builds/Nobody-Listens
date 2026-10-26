@@ -31,7 +31,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Restore
@@ -213,7 +213,7 @@ fun BackupModuleSelectionDialog(
                                             )
                                         ) {
                                             Icon(
-                                                painter = painterResource(R.drawable.baseline_deselect_24),
+                                                painter = painterResource(R.drawable.rounded_deselect_24),
                                                 contentDescription = stringResource(R.string.presentation_batch_g_backup_cd_clear_selection)
                                             )
                                         }
@@ -389,7 +389,7 @@ fun BackupModuleSelectionDialog(
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             Icon(
-                                                imageVector = Icons.Outlined.Warning,
+                                                imageVector = Icons.Rounded.Warning,
                                                 contentDescription = null,
                                                 tint = MaterialTheme.colorScheme.error,
                                                 modifier = Modifier.size(18.dp)

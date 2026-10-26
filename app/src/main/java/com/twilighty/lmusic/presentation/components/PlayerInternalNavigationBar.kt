@@ -422,9 +422,10 @@ private fun PlayerInternalNavigationItemsRow(
             val isSelected = currentRoute != null && currentRoute == item.screen.route
             // While dragging, the tab under the finger takes the selected look (changes per tab only).
             val isHighlighted = if (dragActive) index == dragHover else isSelected
-            val selectedColor = MaterialTheme.colorScheme.onSurface
+            // Daylight: Sky indicator (secondaryContainer) with ink icon, as in Material 3.
+            val selectedColor = MaterialTheme.colorScheme.onSecondaryContainer
             val unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
-            val indicatorColorFromTheme = MaterialTheme.colorScheme.surfaceContainerHigh
+            val indicatorColorFromTheme = MaterialTheme.colorScheme.secondaryContainer
 
             val iconPainterResId = if (isHighlighted && item.selectedIconResId != null && item.selectedIconResId != 0) {
                 item.selectedIconResId

@@ -7,12 +7,10 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
@@ -21,10 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
 import com.twilighty.lmusic.presentation.viewmodel.ColorSchemePair
-import androidx.core.graphics.ColorUtils
-import androidx.compose.ui.unit.dp
 
 val LocalLMusicDarkTheme = staticCompositionLocalOf { false }
 
@@ -51,176 +48,158 @@ fun LMusicStatusBarStyle(
     }
 }
 
-val DarkColorScheme = darkColorScheme(
-    primary = LMusicPurplePrimary,
-    secondary = LMusicPink,
-    tertiary = LMusicOrange,
-    background = LMusicPurpleDark,
-    surface = LMusicSurface,
-    onPrimary = LMusicWhite,
-    onSecondary = LMusicWhite,
-    onTertiary = LMusicWhite,
-    onBackground = LMusicWhite,
-    onSurface = LMusicLightPurple, // Texto sobre superficies
-    error = Color(0xFFFF5252),
-    onError = LMusicWhite
+/**
+ * Daylight light scheme: Paper canvas, white panels, Blueprint does the work. Hard Hat
+ * yellow is only a fill (tertiaryFixed) — never text on Paper — so `tertiary`, which the
+ * app uses for accent text, is the text-safe accent ink.
+ */
+val DaylightLightColorScheme: ColorScheme = Daylight.Light.let { t ->
+    lightColorScheme(
+        primary = t.accent,
+        onPrimary = t.onAccent,
+        primaryContainer = t.accentSoft,
+        onPrimaryContainer = t.ink,
+        inversePrimary = Daylight.Dark.accent,
+        secondary = t.muted,
+        onSecondary = t.bg,
+        secondaryContainer = t.info,
+        onSecondaryContainer = t.onInfo,
+        tertiary = t.accentInk,
+        onTertiary = t.onAccent,
+        tertiaryContainer = t.emphasisSoft,
+        onTertiaryContainer = t.ink,
+        background = t.bg,
+        onBackground = t.ink,
+        surface = t.bg,
+        onSurface = t.ink,
+        surfaceVariant = t.surface,
+        onSurfaceVariant = t.muted,
+        surfaceTint = Color.Transparent,
+        inverseSurface = t.ink,
+        inverseOnSurface = t.bg,
+        error = t.danger,
+        onError = t.onDanger,
+        errorContainer = Color(0xFFFDECEC),
+        onErrorContainer = t.danger,
+        outline = t.outline,
+        outlineVariant = t.line,
+        scrim = Daylight.NightShift,
+        surfaceBright = t.panel,
+        surfaceDim = t.hover,
+        surfaceContainerLowest = t.panel,
+        surfaceContainerLow = Color(0xFFF0F3F9),
+        surfaceContainer = t.surface,
+        surfaceContainerHigh = t.hover,
+        surfaceContainerHighest = Color(0xFFDCE2EC),
+    ).withDaylightFixedRoles(false)
+}
+
+/** Daylight dark scheme: Night Shift navy (no black), surfaces stepped toward blue-grey. */
+val DaylightDarkColorScheme: ColorScheme = Daylight.Dark.let { t ->
+    darkColorScheme(
+        primary = t.accent,
+        onPrimary = t.onAccent,
+        primaryContainer = t.accentSoft,
+        onPrimaryContainer = t.accentInk,
+        inversePrimary = Daylight.Light.accent,
+        secondary = t.muted,
+        onSecondary = t.bg,
+        secondaryContainer = t.infoSoft,
+        onSecondaryContainer = t.infoInk,
+        tertiary = t.accentInk,
+        onTertiary = t.onAccent,
+        tertiaryContainer = t.emphasisSoft,
+        onTertiaryContainer = t.ink,
+        background = t.bg,
+        onBackground = t.ink,
+        surface = t.bg,
+        onSurface = t.ink,
+        surfaceVariant = t.surface,
+        onSurfaceVariant = t.muted,
+        surfaceTint = Color.Transparent,
+        inverseSurface = t.ink,
+        inverseOnSurface = t.bg,
+        error = t.danger,
+        onError = t.onDanger,
+        errorContainer = Color(0xFF3B2425),
+        onErrorContainer = t.danger,
+        outline = t.outline,
+        outlineVariant = t.line,
+        scrim = Daylight.NightShift,
+        surfaceBright = t.hover,
+        surfaceDim = t.sidebar,
+        surfaceContainerLowest = t.sidebar,
+        surfaceContainerLow = t.surface,
+        surfaceContainer = t.panel,
+        surfaceContainerHigh = t.hover,
+        surfaceContainerHighest = Color(0xFF33425F),
+    ).withDaylightFixedRoles(true)
+}
+
+/**
+ * Opt-in pitch black for OLED screens: the canvas goes to #000000 and raised layers step up
+ * through Night Shift, so cards and sheets still read as Daylight navy. Accents and text are
+ * the dark scheme's own.
+ */
+val DaylightPitchBlackColorScheme: ColorScheme = DaylightDarkColorScheme.copy(
+    background = Color.Black,
+    surface = Color.Black,
+    surfaceDim = Color.Black,
+    surfaceVariant = Color(0xFF111826),
+    surfaceContainerLowest = Color.Black,
+    surfaceContainerLow = Color(0xFF0B1019),
+    surfaceContainer = Color(0xFF111826),
+    surfaceContainerHigh = Daylight.NightShift,
+    surfaceContainerHighest = Daylight.Dark.surface,
+    surfaceBright = Daylight.Dark.panel,
 )
 
-val LightColorScheme = lightColorScheme(
-    primary = LightPrimary,
-    onPrimary = LMusicWhite,
-    primaryContainer = LightPrimaryContainer,
-    onPrimaryContainer = LightOnPrimaryContainer,
-    secondary = LMusicPink,
-    onSecondary = LMusicWhite,
-    secondaryContainer = LMusicPink.copy(alpha = 0.15f),
-    onSecondaryContainer = LMusicPink.copy(alpha = 0.85f),
-    tertiary = LMusicOrange,
-    onTertiary = LMusicBlack,
-    background = LightBackground,
-    onBackground = LightOnSurface,
-    surface = LightSurface,
-    onSurface = LightOnSurface,
-    surfaceVariant = LightSurfaceVariant,
-    onSurfaceVariant = LightOnSurfaceVariant,
-    outline = LightOutline,
-    outlineVariant = LightOutline.copy(alpha = 0.6f),
-    surfaceTint = LightPrimary,
-    error = Color(0xFFD32F2F),
-    onError = LMusicWhite
+/** Pitch black over any dark scheme (Material You): only the canvas layers turn black. */
+fun ColorScheme.withPitchBlackCanvas(): ColorScheme = copy(
+    background = Color.Black,
+    surface = Color.Black,
+    surfaceDim = Color.Black,
+    surfaceContainerLowest = Color.Black,
 )
 
-/** Yuyu light scheme — ink primary, paper surfaces, Ember accent as tertiary. */
-val YuyuLightColorScheme = lightColorScheme(
-    primary = YuyuColors.Text,
-    onPrimary = YuyuColors.BgCanvas,
-    primaryContainer = YuyuColors.BgEmphasis,
-    onPrimaryContainer = YuyuColors.Text,
-    inversePrimary = YuyuColors.DarkText,
-    secondary = YuyuColors.TextSecondary,
-    onSecondary = YuyuColors.BgCanvas,
-    secondaryContainer = YuyuColors.BgMuted,
-    onSecondaryContainer = YuyuColors.Text,
-    tertiary = YuyuColors.Accent,
-    onTertiary = Color.White,
-    tertiaryContainer = YuyuColors.AccentSoft,
-    onTertiaryContainer = YuyuColors.AccentText,
-    background = YuyuColors.BgCanvas,
-    onBackground = YuyuColors.Text,
-    surface = YuyuColors.BgCanvas,
-    onSurface = YuyuColors.Text,
-    surfaceVariant = YuyuColors.BgMuted,
-    onSurfaceVariant = YuyuColors.TextMuted,
-    surfaceTint = YuyuColors.Text,
-    inverseSurface = YuyuColors.Text,
-    inverseOnSurface = YuyuColors.DarkText,
-    error = YuyuColors.DangerFg,
-    onError = Color.White,
-    errorContainer = YuyuColors.DangerBg,
-    onErrorContainer = YuyuColors.DangerFg,
-    outline = YuyuColors.BorderStrong,
-    outlineVariant = YuyuColors.Border,
-    scrim = Color.Black,
-    surfaceBright = YuyuColors.BgCanvas,
-    surfaceDim = YuyuColors.BgMuted,
-    surfaceContainerLowest = YuyuColors.BgCanvas,
-    surfaceContainerLow = YuyuColors.BgSubtle,
-    surfaceContainer = YuyuColors.BgMuted,
-    surfaceContainerHigh = YuyuColors.BgEmphasis,
-    surfaceContainerHighest = YuyuColors.Border,
-)
-
-/** Yuyu dark scheme — inverted ink, near-black surfaces, lightened Ember for text. */
-val YuyuDarkColorScheme = darkColorScheme(
-    primary = YuyuColors.DarkText,
-    onPrimary = YuyuColors.Text,
-    primaryContainer = YuyuColors.DarkBgEmphasis,
-    onPrimaryContainer = YuyuColors.DarkText,
-    inversePrimary = YuyuColors.Text,
-    secondary = YuyuColors.DarkTextSecondary,
-    onSecondary = YuyuColors.Text,
-    secondaryContainer = YuyuColors.DarkBgMuted,
-    onSecondaryContainer = YuyuColors.DarkText,
-    tertiary = YuyuColors.DarkAccentText,
-    onTertiary = YuyuColors.Text,
-    tertiaryContainer = YuyuColors.DarkAccentSoft,
-    onTertiaryContainer = YuyuColors.DarkAccentText,
-    background = YuyuColors.DarkBgCanvas,
-    onBackground = YuyuColors.DarkText,
-    surface = YuyuColors.DarkBgCanvas,
-    onSurface = YuyuColors.DarkText,
-    surfaceVariant = YuyuColors.DarkBgMuted,
-    onSurfaceVariant = YuyuColors.DarkTextMuted,
-    surfaceTint = YuyuColors.DarkText,
-    inverseSurface = YuyuColors.DarkText,
-    inverseOnSurface = YuyuColors.Text,
-    error = YuyuColors.DarkDangerFg,
-    onError = YuyuColors.Text,
-    errorContainer = YuyuColors.DarkDangerBg,
-    onErrorContainer = YuyuColors.DarkDangerFg,
-    outline = YuyuColors.DarkBorderStrong,
-    outlineVariant = YuyuColors.DarkBgEmphasis,
-    scrim = Color.Black,
-    surfaceBright = YuyuColors.DarkBgEmphasis,
-    surfaceDim = YuyuColors.DarkBgCanvas,
-    surfaceContainerLowest = Color(0xFF0C0C0E),
-    surfaceContainerLow = YuyuColors.DarkBgSubtle,
-    surfaceContainer = YuyuColors.DarkBgInverse,
-    surfaceContainerHigh = YuyuColors.DarkBgMuted,
-    surfaceContainerHighest = YuyuColors.DarkBgEmphasis,
-)
-
-// Built once so the scheme instance stays stable across recompositions.
-private val YuyuLightAppScheme: ColorScheme by lazy { YuyuLightColorScheme.withYuyuFixedRoles(false) }
-private val YuyuDarkAppScheme: ColorScheme by lazy { YuyuDarkColorScheme.withYuyuFixedRoles(true) }
+// Older code (album-art fallbacks, lava lamp) still asks for these by name.
+val LightColorScheme: ColorScheme get() = DaylightLightColorScheme
+val DarkColorScheme: ColorScheme get() = DaylightDarkColorScheme
 
 @Composable
 fun LMusicTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     colorSchemePairOverride: ColorSchemePair? = null,
-    useYuyuColors: Boolean = true,
+    useBrandColors: Boolean = true,
+    pitchBlack: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
+    val daylightDark = if (pitchBlack) DaylightPitchBlackColorScheme else DaylightDarkColorScheme
     val finalColorScheme = when {
-        // LMusic default: the Yuyu palette app-wide. The now-playing screen still takes its
-        // colors from the album art through colorSchemePairOverride.
-        colorSchemePairOverride == null && useYuyuColors -> {
-            if (darkTheme) YuyuDarkAppScheme else YuyuLightAppScheme
-        }
-        colorSchemePairOverride == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            // Tema dinámico del sistema como prioridad si no hay override
-            try {
-                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-            } catch (e: Exception) {
-                // Fallback a los defaults si dynamic colors falla (raro, pero posible en algunos dispositivos)
-                if (darkTheme) DarkColorScheme else LightColorScheme
-            }
-        }
-        colorSchemePairOverride != null -> {
-            // Usar el esquema del álbum si se proporciona
+        // The album-art scheme (now-playing, detail screens) wins when one is passed.
+        colorSchemePairOverride != null ->
             if (darkTheme) colorSchemePairOverride.dark else colorSchemePairOverride.light
-        }
-        // Fallback final a los defaults si no hay override ni dynamic colors aplicables
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        // LMusic default: Daylight app-wide.
+        useBrandColors -> if (darkTheme) daylightDark else DaylightLightColorScheme
+        // Material You: the wallpaper colours (Android 12+, always true at minSdk 33).
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> runCatching {
+            if (darkTheme) {
+                dynamicDarkColorScheme(context).let { if (pitchBlack) it.withPitchBlackCanvas() else it }
+            } else {
+                dynamicLightColorScheme(context)
+            }
+        }.getOrElse { if (darkTheme) daylightDark else DaylightLightColorScheme }
+        darkTheme -> daylightDark
+        else -> DaylightLightColorScheme
     }
 
-    val statusBarElevation = if (darkTheme) 4.dp else 12.dp
-    val elevatedSurface = finalColorScheme.surfaceColorAtElevation(statusBarElevation)
-    val defaultStatusBarColor = Color(
-        ColorUtils.blendARGB(
-            finalColorScheme.background.toArgb(),
-            elevatedSurface.toArgb(),
-            0.35f
-        )
-    )
-
-    LMusicStatusBarStyle(color = defaultStatusBarColor)
+    // Flat status bar in the canvas colour (Daylight has no shadows or tonal tints).
+    LMusicStatusBarStyle(color = finalColorScheme.background)
 
     CompositionLocalProvider(
         LocalLMusicDarkTheme provides darkTheme,
-        LocalUseYuyuColors provides (useYuyuColors && colorSchemePairOverride == null)
+        LocalUseBrandColors provides (useBrandColors && colorSchemePairOverride == null)
     ) {
         MaterialTheme(
             colorScheme = finalColorScheme,

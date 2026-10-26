@@ -51,7 +51,8 @@ class ExternalPlayerActivity : ComponentActivity() {
                 AppThemeMode.LIGHT -> false
                 else -> systemDarkTheme
             }
-            LMusicTheme(darkTheme = useDarkTheme) {
+            val appPitchBlack by themePreferencesRepository.appPitchBlackFlow.collectAsStateWithLifecycle(initialValue = false)
+            LMusicTheme(darkTheme = useDarkTheme, pitchBlack = appPitchBlack) {
                 ExternalPlayerOverlay(
                     playerViewModel = playerViewModel,
                     onDismiss = { finish() },

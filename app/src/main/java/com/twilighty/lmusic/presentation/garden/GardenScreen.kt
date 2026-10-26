@@ -57,18 +57,18 @@ import com.twilighty.lmusic.data.garden.GardenGrowth
 import com.twilighty.lmusic.data.garden.GardenSnapshot
 import com.twilighty.lmusic.data.garden.GardenStage
 import com.twilighty.lmusic.presentation.haptics.LocalLMusicHaptics
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuMeter
-import com.twilighty.lmusic.presentation.yuyu.YuyuSectionHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatTile
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbMeter
+import com.twilighty.lmusic.presentation.nb.NbSectionHeader
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbStatTile
+import com.twilighty.lmusic.presentation.nb.NbTopBar
+import com.twilighty.lmusic.presentation.nb.NbType
 import java.time.LocalDate
 import kotlinx.coroutines.launch
 
@@ -118,14 +118,14 @@ fun GardenScreen(
         scope.launch { shareGarden(context, l, dark, title, subtitle, name) }
     }
 
-    Box(Modifier.fillMaxSize().background(Yuyu.canvas)) {
+    Box(Modifier.fillMaxSize().background(Nb.canvas)) {
         LazyColumn(
             modifier = Modifier.fillMaxSize().statusBarsPadding(),
             contentPadding = PaddingValues(bottom = bottomInset + 120.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item(key = "top") {
-                YuyuTopBar(
+                NbTopBar(
                     title = "Garden",
                     kicker = when {
                         s == null -> " "
@@ -133,11 +133,11 @@ fun GardenScreen(
                         else -> "Listen for 5 minutes to plant it"
                     },
                     navigationIcon = {
-                        YuyuIconButton(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = onBack)
+                        NbIconButton(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = onBack)
                     },
                     actions = {
                         if (s != null && layout != null) {
-                            YuyuIconButton(
+                            NbIconButton(
                                 imageVector = Icons.Rounded.IosShare,
                                 contentDescription = "Share garden",
                                 onClick = {
@@ -158,8 +158,8 @@ fun GardenScreen(
                     Modifier
                         .padding(horizontal = 16.dp)
                         .fillMaxWidth()
-                        .clip(YuyuShapes.xxl)
-                        .background(Yuyu.tintMint),
+                        .clip(NbShapes.xxl)
+                        .background(Nb.tintMint),
                     contentAlignment = Alignment.Center
                 ) {
                     if (layout != null) {
@@ -184,8 +184,8 @@ fun GardenScreen(
                 item(key = "stage") { StageSection(s) }
                 item(key = "stats") {
                     Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        YuyuStatTile(label = "Listening days", value = s.growth.listeningDays.toString(), modifier = Modifier.weight(1f))
-                        YuyuStatTile(
+                        NbStatTile(label = "Listening days", value = s.growth.listeningDays.toString(), modifier = Modifier.weight(1f))
+                        NbStatTile(
                             label = "Focus rounds",
                             value = s.growth.focusRounds.toString(),
                             supporting = "Each adds a little growth",
@@ -195,7 +195,7 @@ fun GardenScreen(
                 }
                 item(key = "calendar") { CalendarSection(s, dark) }
                 item(key = "milestones_header") {
-                    YuyuSectionHeader(title = "Milestones", modifier = Modifier.padding(horizontal = 16.dp))
+                    NbSectionHeader(title = "Milestones", modifier = Modifier.padding(horizontal = 16.dp))
                 }
                 MILESTONE_INFO.forEach { info ->
                     item(key = "milestone_${info.days}") {
@@ -216,8 +216,8 @@ fun GardenScreen(
                 item(key = "note") {
                     Text(
                         "Your garden never wilts. Missed days are fine — it simply waits for you.",
-                        style = YuyuType.caption,
-                        color = Yuyu.textMuted,
+                        style = NbType.caption,
+                        color = Nb.textMuted,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
@@ -277,11 +277,11 @@ fun GardenSceneView(layout: GardenLayout, dark: Boolean, growKey: Int, modifier:
 @Composable
 private fun StageSection(s: GardenSnapshot) {
     Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(s.growth.stage.title, style = YuyuType.h2, color = Yuyu.text)
-        Text("Listening days: ${s.growth.listeningDays}", style = YuyuType.body, color = Yuyu.textMuted)
+        Text(s.growth.stage.title, style = NbType.h2, color = Nb.text)
+        Text("Listening days: ${s.growth.listeningDays}", style = NbType.body, color = Nb.textMuted)
         Spacer(Modifier.height(4.dp))
-        YuyuMeter(progress = s.growth.stageProgress, color = leafColor())
-        Text(GardenGrowth.nextStageHint(s.growth), style = YuyuType.meta, color = Yuyu.textSecondary)
+        NbMeter(progress = s.growth.stageProgress, color = leafColor())
+        Text(GardenGrowth.nextStageHint(s.growth), style = NbType.meta, color = Nb.textSecondary)
     }
 }
 
@@ -294,13 +294,13 @@ private fun CalendarSection(s: GardenSnapshot, dark: Boolean) {
     val weeks = remember(s.today) { GardenGrowth.calendarWeeks(s.today, 8) }
     val filled = if (dark) GardenPalette.Dark.leaf else GardenPalette.Light.leaf
     Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        YuyuSectionHeader(title = "Last 8 weeks")
-        YuyuCard(modifier = Modifier.fillMaxWidth()) {
+        NbSectionHeader(title = "Last 8 weeks")
+        NbCard(modifier = Modifier.fillMaxWidth()) {
             val dayLabels = listOf("M", "T", "W", "T", "F", "S", "S")
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 for (row in 0 until 7) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(dayLabels[row], style = YuyuType.caption, color = Yuyu.textMuted, modifier = Modifier.widthIn(min = 20.dp))
+                        Text(dayLabels[row], style = NbType.caption, color = Nb.textMuted, modifier = Modifier.widthIn(min = 20.dp))
                         Row(Modifier.weight(1f), horizontalArrangement = Arrangement.SpaceBetween) {
                             weeks.forEach { week ->
                                 CalendarDot(date = week[row], today = s.today, listened = week[row]?.let { it in s.listeningDays } == true, filled = filled)
@@ -312,8 +312,8 @@ private fun CalendarSection(s: GardenSnapshot, dark: Boolean) {
             Spacer(Modifier.height(10.dp))
             Text(
                 "Filled dots are days you listened for 5 minutes or more.",
-                style = YuyuType.caption,
-                color = Yuyu.textMuted
+                style = NbType.caption,
+                color = Nb.textMuted
             )
         }
     }
@@ -326,42 +326,42 @@ private fun CalendarDot(date: LocalDate?, today: LocalDate, listened: Boolean, f
         date == null -> Spacer(base)
         listened -> Box(
             base.clip(CircleShape).background(filled)
-                .then(if (date == today) Modifier.border(2.dp, Yuyu.ink, CircleShape) else Modifier)
+                .then(if (date == today) Modifier.border(2.dp, Nb.ink, CircleShape) else Modifier)
         )
         else -> Box(
-            base.clip(CircleShape).background(Yuyu.emphasis)
-                .then(if (date == today) Modifier.border(1.5.dp, Yuyu.borderStrong, CircleShape) else Modifier)
+            base.clip(CircleShape).background(Nb.emphasis)
+                .then(if (date == today) Modifier.border(1.5.dp, Nb.borderStrong, CircleShape) else Modifier)
         )
     }
 }
 
 @Composable
 private fun MilestoneCard(info: MilestoneInfo, reached: Boolean, onShare: () -> Unit) {
-    YuyuCard(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()) {
+    NbCard(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Box(
                 Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(if (reached) info.color.copy(alpha = 0.18f) else Yuyu.muted),
+                    .background(if (reached) info.color.copy(alpha = 0.18f) else Nb.muted),
                 contentAlignment = Alignment.Center
             ) {
-                Box(Modifier.size(16.dp).clip(CircleShape).background(if (reached) info.color else Yuyu.emphasis))
+                Box(Modifier.size(16.dp).clip(CircleShape).background(if (reached) info.color else Nb.emphasis))
             }
             Column(Modifier.weight(1f)) {
                 Text(
                     "${info.days} listening days · ${info.name}",
-                    style = YuyuType.title,
-                    color = if (reached) Yuyu.text else Yuyu.textMuted
+                    style = NbType.title,
+                    color = if (reached) Nb.text else Nb.textMuted
                 )
-                Text(if (reached) info.reachedLine else info.waitingLine, style = YuyuType.meta, color = Yuyu.textMuted)
+                Text(if (reached) info.reachedLine else info.waitingLine, style = NbType.meta, color = Nb.textMuted)
             }
             if (reached) {
-                YuyuButton(
+                NbButton(
                     text = "Share",
                     onClick = onShare,
-                    style = YuyuButtonStyle.Secondary,
-                    size = YuyuButtonSize.Small,
+                    style = NbButtonStyle.Secondary,
+                    size = NbButtonSize.Small,
                     icon = rememberVectorPainter(Icons.Rounded.IosShare),
                     modifier = Modifier.heightIn(min = 36.dp)
                 )

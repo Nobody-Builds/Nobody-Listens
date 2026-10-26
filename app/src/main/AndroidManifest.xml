@@ -249,7 +249,7 @@
                 android:resource="@xml/garden_widget_2x2_info" />
         </receiver>
 
-        <!-- v1.4 widgets (Yuyu): now playing, album art, queue, lofi & focus, stats, recently played, lock screen. -->
+        <!-- v1.4 widgets (Daylight): now playing, album art, queue, lofi & focus, stats, recently played, lock screen. -->
         <receiver
             android:name=".ui.glancewidget.NowPlayingWidget2x1Receiver"
             android:exported="false">
@@ -377,10 +377,6 @@
             android:name=".data.service.wear.WatchTransferForegroundService"
             android:foregroundServiceType="dataSync"
             android:exported="false" />
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
-
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="com.twilighty.lmusic.data.service.cast.CastOptionsProvider" />

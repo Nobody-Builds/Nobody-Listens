@@ -43,12 +43,12 @@ import com.twilighty.lmusic.data.screensaver.ScreensaverPreferences
 import com.twilighty.lmusic.data.screensaver.ScreensaverSettings
 import com.twilighty.lmusic.data.screensaver.ScreensaverTrigger
 import com.twilighty.lmusic.presentation.viewmodel.PlayerViewModel
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
@@ -188,13 +188,13 @@ fun ScreensaverOfferHost(
 
 @Composable
 private fun ScreensaverOfferCard(onStart: () -> Unit, onNotNow: () -> Unit, onDontAsk: () -> Unit) {
-    YuyuCard(modifier = Modifier.fillMaxWidth(), borderColor = Yuyu.borderStrong) {
+    NbCard(modifier = Modifier.fillMaxWidth(), borderColor = Nb.borderStrong) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text("Turn on screensaver?", style = YuyuType.h3, color = Yuyu.text)
+            Text("Turn on screensaver?", style = NbType.h3, color = Nb.text)
             Text(
                 "A dim clock with what's playing, made for a phone on its charger.",
-                style = YuyuType.meta,
-                color = Yuyu.textMuted
+                style = NbType.meta,
+                color = Nb.textMuted
             )
         }
         Spacer(Modifier.padding(top = 12.dp))
@@ -203,10 +203,10 @@ private fun ScreensaverOfferCard(onStart: () -> Unit, onNotNow: () -> Unit, onDo
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            YuyuButton(text = "Don't ask again", onClick = onDontAsk, style = YuyuButtonStyle.Quiet, size = YuyuButtonSize.Small)
+            NbButton(text = "Don't ask again", onClick = onDontAsk, style = NbButtonStyle.Quiet, size = NbButtonSize.Small)
             Spacer(Modifier.weight(1f))
-            YuyuButton(text = "Not now", onClick = onNotNow, style = YuyuButtonStyle.Secondary, size = YuyuButtonSize.Small)
-            YuyuButton(text = "Start", onClick = onStart, style = YuyuButtonStyle.Primary, size = YuyuButtonSize.Small)
+            NbButton(text = "Not now", onClick = onNotNow, style = NbButtonStyle.Secondary, size = NbButtonSize.Small)
+            NbButton(text = "Start", onClick = onStart, style = NbButtonStyle.Primary, size = NbButtonSize.Small)
         }
     }
 }

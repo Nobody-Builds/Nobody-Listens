@@ -2,14 +2,14 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/yuyu_widget_tile">
+    android:background="@drawable/nb_widget_tile">
     <ImageView
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_gravity="center"
         android:contentDescription="@null"
         android:src="@drawable/ic_music_placeholder"
-        android:tint="@color/yuyu_widget_text_muted" />
+        android:tint="@color/nb_widget_text_muted" />
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
             android:contentDescription="@null"
             android:padding="7dp"
             android:src="@drawable/rounded_skip_previous_24"
-            android:tint="@color/yuyu_widget_on_accent" />
+            android:tint="@color/nb_widget_on_accent" />
         <ImageView
             android:layout_width="36dp"
             android:layout_height="36dp"
@@ -36,7 +36,7 @@
             android:contentDescription="@null"
             android:padding="7dp"
             android:src="@drawable/rounded_play_arrow_24"
-            android:tint="@color/yuyu_widget_on_accent" />
+            android:tint="@color/nb_widget_on_accent" />
         <ImageView
             android:layout_width="36dp"
             android:layout_height="36dp"
@@ -45,6 +45,6 @@
             android:contentDescription="@null"
             android:padding="7dp"
             android:src="@drawable/rounded_skip_next_24"
-            android:tint="@color/yuyu_widget_on_accent" />
+            android:tint="@color/nb_widget_on_accent" />
     </LinearLayout>
 </FrameLayout>

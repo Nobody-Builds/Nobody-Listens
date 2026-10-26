@@ -221,7 +221,7 @@ fun SelectionCountPill(
         Surface(
             shape = pillShape,
             color = MaterialTheme.colorScheme.primaryContainer,
-            shadowElevation = 6.dp,
+            shadowElevation = 0.dp,
             tonalElevation = 2.dp,
             modifier = Modifier.padding(8.dp)
         ) {

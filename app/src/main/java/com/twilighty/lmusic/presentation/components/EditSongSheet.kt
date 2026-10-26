@@ -8,21 +8,21 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCallout
-import com.twilighty.lmusic.presentation.yuyu.YuyuDialog
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatus
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatusChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuTextField
-import com.twilighty.lmusic.presentation.yuyu.YuyuToast
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCallout
+import com.twilighty.lmusic.presentation.nb.NbDialog
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbStatus
+import com.twilighty.lmusic.presentation.nb.NbStatusChip
+import com.twilighty.lmusic.presentation.nb.NbTextField
+import com.twilighty.lmusic.presentation.nb.NbToast
+import com.twilighty.lmusic.presentation.nb.NbType
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,7 +37,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Album
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CalendarMonth
@@ -45,7 +45,6 @@ import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.Piano
 import androidx.compose.material.icons.rounded.Category
 import androidx.compose.material.icons.rounded.FormatListNumbered
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Notes
@@ -379,12 +378,12 @@ private fun EditSongContent(
 
     // --- Info dialog ---
     if (showInfoDialog) {
-        YuyuDialog(
+        NbDialog(
             onDismissRequest = { showInfoDialog = false },
             title = stringResource(R.string.edit_song_info_dialog_title),
             body = stringResource(R.string.edit_song_info_dialog_body),
             actions = {
-                YuyuButton(
+                NbButton(
                     text = stringResource(R.string.edit_song_got_it),
                     onClick = { showInfoDialog = false }
                 )
@@ -414,33 +413,33 @@ private fun EditSongContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Yuyu.canvas)
+                    .background(Nb.canvas)
                     .statusBarsPadding()
                     .heightIn(min = 60.dp)
                     .padding(horizontal = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                YuyuIconButton(
+                NbIconButton(
                     imageVector = Icons.Rounded.Close,
                     contentDescription = stringResource(R.string.cancel),
                     onClick = onDismiss
                 )
                 Text(
                     text = stringResource(R.string.edit_song_toolbar_title),
-                    style = YuyuType.h2,
-                    color = Yuyu.text,
+                    style = NbType.h2,
+                    color = Nb.text,
                     modifier = Modifier.weight(1f),
                     maxLines = 1
                 )
-                YuyuButton(
+                NbButton(
                     text = stringResource(R.string.lmusic_autofill),
                     onClick = { showAutofill = true },
-                    style = YuyuButtonStyle.Secondary,
-                    size = YuyuButtonSize.Small,
+                    style = NbButtonStyle.Secondary,
+                    size = NbButtonSize.Small,
                     icon = rememberVectorPainter(Icons.Rounded.AutoAwesome)
                 )
-                YuyuIconButton(
+                NbIconButton(
                     imageVector = Icons.Rounded.Info,
                     contentDescription = stringResource(R.string.cd_show_metadata_info),
                     onClick = { showInfoDialog = true },
@@ -450,14 +449,14 @@ private fun EditSongContent(
         },
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data ->
-                YuyuToast(
+                NbToast(
                     text = data.visuals.message,
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    icon = { Icon(Icons.Rounded.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp)) }
+                    icon = { Icon(Icons.Rounded.Check, contentDescription = null, tint = MaterialTheme.colorScheme.inverseOnSurface, modifier = Modifier.size(18.dp)) }
                 )
             }
         },
-        containerColor = Yuyu.canvas,
+        containerColor = Nb.canvas,
         modifier = Modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets.statusBars
     ) { innerPadding ->
@@ -507,7 +506,7 @@ private fun EditSongContent(
 
                 if (tagsMostlyMissing && autofilledFields.isEmpty()) {
                     item {
-                        YuyuCallout(
+                        NbCallout(
                             boldText = "Most tags are missing.",
                             text = "Autofill can suggest them.",
                             icon = rememberVectorPainter(Icons.Rounded.Info),
@@ -518,7 +517,7 @@ private fun EditSongContent(
                 }
 
                 item {
-                    YuyuTextField(
+                    NbTextField(
                         value = title,
                         onValueChange = { title = it },
                         label = stringResource(R.string.song_field_title),
@@ -527,7 +526,7 @@ private fun EditSongContent(
                     )
                 }
                 item {
-                    YuyuTextField(
+                    NbTextField(
                         value = artist,
                         onValueChange = { artist = it },
                         label = stringResource(R.string.song_field_artist),
@@ -537,7 +536,7 @@ private fun EditSongContent(
                     )
                 }
                 item {
-                    YuyuTextField(
+                    NbTextField(
                         value = album,
                         onValueChange = { album = it },
                         label = stringResource(R.string.song_field_album),
@@ -547,7 +546,7 @@ private fun EditSongContent(
                     )
                 }
                 item {
-                    YuyuTextField(
+                    NbTextField(
                         value = albumArtist,
                         onValueChange = { albumArtist = it },
                         label = stringResource(R.string.lmusic_field_album_artist),
@@ -558,7 +557,7 @@ private fun EditSongContent(
                 }
                 item {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        YuyuTextField(
+                        NbTextField(
                             value = year,
                             onValueChange = { input -> year = input.filter { it.isDigit() || it == '-' }.take(10) },
                             label = stringResource(R.string.lmusic_field_year),
@@ -567,7 +566,7 @@ private fun EditSongContent(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.weight(1f)
                         )
-                        YuyuTextField(
+                        NbTextField(
                             value = trackNumber,
                             onValueChange = { trackNumber = it },
                             label = stringResource(R.string.song_field_track_number),
@@ -579,14 +578,14 @@ private fun EditSongContent(
                 }
                 item {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        YuyuTextField(
+                        NbTextField(
                             value = genre,
                             onValueChange = { genre = it },
                             label = stringResource(R.string.song_field_genre),
                             highlighted = hl(com.twilighty.lmusic.data.autofill.AutofillField.GENRE),
                             modifier = Modifier.weight(1f)
                         )
-                        YuyuTextField(
+                        NbTextField(
                             value = discNumber,
                             onValueChange = { discNumber = it },
                             label = stringResource(R.string.song_field_disc_number),
@@ -597,7 +596,7 @@ private fun EditSongContent(
                     }
                 }
                 item {
-                    YuyuTextField(
+                    NbTextField(
                         value = composer,
                         onValueChange = { composer = it },
                         label = stringResource(R.string.lmusic_field_composer),
@@ -608,7 +607,7 @@ private fun EditSongContent(
                 }
                 item {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        YuyuTextField(
+                        NbTextField(
                             value = replayGainTrackGainDb,
                             onValueChange = { replayGainTrackGainDb = it },
                             label = stringResource(R.string.song_field_replaygain_track_db),
@@ -616,7 +615,7 @@ private fun EditSongContent(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                             modifier = Modifier.weight(1f)
                         )
-                        YuyuTextField(
+                        NbTextField(
                             value = replayGainAlbumGainDb,
                             onValueChange = { replayGainAlbumGainDb = it },
                             label = stringResource(R.string.song_field_replaygain_album_db),
@@ -627,7 +626,7 @@ private fun EditSongContent(
                     }
                 }
                 item {
-                    YuyuTextField(
+                    NbTextField(
                         value = lyrics,
                         onValueChange = { lyrics = it },
                         label = stringResource(R.string.lyrics),
@@ -636,7 +635,7 @@ private fun EditSongContent(
                         minLines = 5,
                         maxLines = 10,
                         trailing = {
-                            YuyuIconButton(
+                            NbIconButton(
                                 painter = painterResource(id = R.drawable.rounded_search_24),
                                 contentDescription = stringResource(R.string.cd_search_lyrics_lrclib),
                                 onClick = {
@@ -663,24 +662,24 @@ private fun EditSongContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Yuyu.canvas)
+                        .background(Nb.canvas)
                         .navigationBarsPadding()
                 ) {
-                    YuyuDivider()
+                    NbDivider()
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 6.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        YuyuButton(
+                        NbButton(
                             text = stringResource(R.string.cancel),
                             onClick = onDismiss,
-                            style = YuyuButtonStyle.Secondary,
-                            size = YuyuButtonSize.Large,
+                            style = NbButtonStyle.Secondary,
+                            size = NbButtonSize.Large,
                             modifier = Modifier.weight(1f)
                         )
-                        YuyuButton(
+                        NbButton(
                             text = "Save to file",
                             onClick = {
                                 val resolvedTrackNumber = trackNumber.toIntOrNull() ?: song.trackNumber
@@ -720,8 +719,8 @@ private fun EditSongContent(
                                     editedCoverArt
                                 )
                             },
-                            style = YuyuButtonStyle.Primary,
-                            size = YuyuButtonSize.Large,
+                            style = NbButtonStyle.Primary,
+                            size = NbButtonSize.Large,
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -732,11 +731,11 @@ private fun EditSongContent(
                         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Rounded.Lock, contentDescription = null, tint = Yuyu.textMuted, modifier = Modifier.size(14.dp))
+                        Icon(Icons.Rounded.Lock, contentDescription = null, tint = Nb.textMuted, modifier = Modifier.size(14.dp))
                         Text(
                             "Android asks once to let LMusic change this file.",
-                            style = YuyuType.caption,
-                            color = Yuyu.textMuted
+                            style = NbType.caption,
+                            color = Nb.textMuted
                         )
                     }
                 }
@@ -752,7 +751,7 @@ private fun autofillBadge(show: Boolean): (@Composable () -> Unit)? = if (show) 
         Icon(
             Icons.Rounded.AutoAwesome,
             contentDescription = "Autofilled",
-            tint = Yuyu.accentText,
+            tint = Nb.accentText,
             modifier = Modifier.padding(end = 6.dp).size(18.dp)
         )
     }
@@ -780,8 +779,8 @@ private fun CoverArtEditorCard(
         Box(
             modifier = Modifier
                 .size(92.dp)
-                .clip(YuyuShapes.lg)
-                .background(Yuyu.muted),
+                .clip(NbShapes.lg)
+                .background(Nb.muted),
             contentAlignment = Alignment.Center
         ) {
             when {
@@ -790,7 +789,7 @@ private fun CoverArtEditorCard(
                         painter = painterResource(id = R.drawable.rounded_music_note_24),
                         contentDescription = null,
                         modifier = Modifier.size(32.dp),
-                        tint = Yuyu.textMuted
+                        tint = Nb.textMuted
                     )
                 }
                 preview != null -> {
@@ -802,11 +801,11 @@ private fun CoverArtEditorCard(
                     )
                 }
                 else -> {
-                    YuyuArt(
+                    NbArt(
                         model = albumArtUri,
                         title = artKey,
                         size = 92.dp,
-                        shape = YuyuShapes.lg,
+                        shape = NbShapes.lg,
                         contentDescription = stringResource(R.string.cd_current_song_cover_art)
                     )
                 }
@@ -817,46 +816,46 @@ private fun CoverArtEditorCard(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             if (isAutofilled) {
-                YuyuStatusChip(
+                NbStatusChip(
                     text = "New cover",
-                    status = YuyuStatus.Accent,
+                    status = NbStatus.Accent,
                     icon = rememberVectorPainter(Icons.Rounded.AutoAwesome)
                 )
             } else if (fileName != null) {
                 Text(
                     text = fileName,
-                    style = YuyuType.caption,
-                    color = Yuyu.textMuted,
+                    style = NbType.caption,
+                    color = Nb.textMuted,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                YuyuButton(
+                NbButton(
                     text = if (albumArtUri != null || preview != null) "Change" else "Add cover",
                     onClick = onPickNewArt,
-                    style = YuyuButtonStyle.Secondary,
-                    size = YuyuButtonSize.Small,
+                    style = NbButtonStyle.Secondary,
+                    size = NbButtonSize.Small,
                     icon = rememberVectorPainter(Icons.Rounded.Image)
                 )
                 if (preview != null || isDeleted) {
-                    YuyuButton(
+                    NbButton(
                         text = stringResource(R.string.action_reset),
                         onClick = onReset,
-                        style = YuyuButtonStyle.Quiet,
-                        size = YuyuButtonSize.Small
+                        style = NbButtonStyle.Quiet,
+                        size = NbButtonSize.Small
                     )
                 } else if (albumArtUri != null) {
-                    YuyuButton(
+                    NbButton(
                         text = "Remove",
                         onClick = onDelete,
-                        style = YuyuButtonStyle.DangerQuiet,
-                        size = YuyuButtonSize.Small
+                        style = NbButtonStyle.DangerQuiet,
+                        size = NbButtonSize.Small
                     )
                 }
             }
             if (formatLine.isNotBlank()) {
-                Text(formatLine, style = YuyuType.caption, color = Yuyu.textMuted, maxLines = 1)
+                Text(formatLine, style = NbType.caption, color = Nb.textMuted, maxLines = 1)
             }
         }
     }

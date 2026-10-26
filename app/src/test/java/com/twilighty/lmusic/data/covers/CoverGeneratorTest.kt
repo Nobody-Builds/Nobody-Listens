@@ -69,7 +69,7 @@ class CoverGeneratorTest {
     @Test
     fun `cover uses at most three colours`() {
         CoverStyle.entries.forEach { style ->
-            val design = CoverGenerator.design(CoverRequest(key = "Homogenic", style = style, palette = CoverPaletteChoice.EMBER))
+            val design = CoverGenerator.design(CoverRequest(key = "Homogenic", style = style, palette = CoverPaletteChoice.BRICK))
             val used = design.shapes.map { it.color }.toSet() + design.palette.background
             assertTrue(used.size <= 3, "style $style used ${used.size} colours")
             assertTrue(used.all { it in design.palette.colors })
@@ -90,35 +90,38 @@ class CoverGeneratorTest {
 
     @Test
     fun `text colour follows the cover background`() {
-        val design = CoverGenerator.design(CoverRequest(key = "Ok", style = CoverStyle.WAVES, palette = CoverPaletteChoice.INK))
-        assertEquals(YuyuCoverColors.PAPER, design.text!!.color)
-        val light = CoverGenerator.design(CoverRequest(key = "Ok", style = CoverStyle.WAVES, palette = CoverPaletteChoice.PEACH))
-        assertEquals(YuyuCoverColors.INK, light.text!!.color)
+        val design = CoverGenerator.design(CoverRequest(key = "Ok", style = CoverStyle.WAVES, palette = CoverPaletteChoice.NIGHT_SHIFT))
+        assertEquals(NbCoverColors.PAPER, design.text!!.color)
+        val light = CoverGenerator.design(CoverRequest(key = "Ok", style = CoverStyle.WAVES, palette = CoverPaletteChoice.BUTTER))
+        assertEquals(NbCoverColors.NIGHT_SHIFT, light.text!!.color)
     }
 }
 
 class CoverPaletteContrastTest {
 
     @Test
-    fun `ink on light backgrounds, paper on dark ones`() {
-        assertEquals(YuyuCoverColors.PAPER, CoverContrast.textColorOn(YuyuCoverColors.INK))
-        assertEquals(YuyuCoverColors.INK, CoverContrast.textColorOn(YuyuCoverColors.PAPER))
-        assertEquals(YuyuCoverColors.INK, CoverContrast.textColorOn(YuyuCoverColors.PAPER_WARM))
-        assertEquals(YuyuCoverColors.INK, CoverContrast.textColorOn(YuyuCoverColors.LAVENDER))
-        assertEquals(YuyuCoverColors.INK, CoverContrast.textColorOn(YuyuCoverColors.MINT))
-        assertEquals(YuyuCoverColors.INK, CoverContrast.textColorOn(YuyuCoverColors.PEACH))
-        assertEquals(YuyuCoverColors.PAPER, CoverContrast.textColorOn(YuyuCoverColors.EMBER))
+    fun `night shift on light backgrounds, paper on dark ones`() {
+        assertEquals(NbCoverColors.PAPER, CoverContrast.textColorOn(NbCoverColors.NIGHT_SHIFT))
+        assertEquals(NbCoverColors.PAPER, CoverContrast.textColorOn(NbCoverColors.BLUEPRINT))
+        assertEquals(NbCoverColors.NIGHT_SHIFT, CoverContrast.textColorOn(NbCoverColors.PAPER))
+        assertEquals(NbCoverColors.NIGHT_SHIFT, CoverContrast.textColorOn(NbCoverColors.WHITE))
+        assertEquals(NbCoverColors.NIGHT_SHIFT, CoverContrast.textColorOn(NbCoverColors.SKY))
+        assertEquals(NbCoverColors.NIGHT_SHIFT, CoverContrast.textColorOn(NbCoverColors.GREEN))
+        assertEquals(NbCoverColors.NIGHT_SHIFT, CoverContrast.textColorOn(NbCoverColors.BUTTER))
+        assertEquals(NbCoverColors.NIGHT_SHIFT, CoverContrast.textColorOn(NbCoverColors.HARD_HAT))
+        // Brick takes Night Shift (5.43:1), as in the kit's on-warn token.
+        assertEquals(NbCoverColors.NIGHT_SHIFT, CoverContrast.textColorOn(NbCoverColors.BRICK))
     }
 
     @Test
     fun `picked text colour is never the weaker choice`() {
-        val backgrounds = YuyuCoverColors.ART_PALETTE + listOf(
-            YuyuCoverColors.INK, YuyuCoverColors.PAPER, YuyuCoverColors.EMBER, YuyuCoverColors.LAVENDER,
-            YuyuCoverColors.MINT, YuyuCoverColors.PEACH, YuyuCoverColors.HIGHLIGHT_MINT, YuyuCoverColors.HIGHLIGHT_LAVENDER,
+        val backgrounds = NbCoverColors.ART_PALETTE + listOf(
+            NbCoverColors.NIGHT_SHIFT, NbCoverColors.PAPER, NbCoverColors.BRICK, NbCoverColors.SKY,
+            NbCoverColors.GREEN, NbCoverColors.BUTTER, NbCoverColors.HARD_HAT, NbCoverColors.ACCENT_SOFT,
         )
         backgrounds.forEach { bg ->
             val picked = CoverContrast.textColorOn(bg)
-            val other = if (picked == YuyuCoverColors.INK) YuyuCoverColors.PAPER else YuyuCoverColors.INK
+            val other = if (picked == NbCoverColors.NIGHT_SHIFT) NbCoverColors.PAPER else NbCoverColors.NIGHT_SHIFT
             assertTrue(CoverContrast.ratio(picked, bg) >= CoverContrast.ratio(other, bg))
             assertTrue(CoverContrast.ratio(picked, bg) >= 3.0, "bg ${Integer.toHexString(bg)} too low")
         }
@@ -127,14 +130,14 @@ class CoverPaletteContrastTest {
     @Test
     fun `contrast ratio of black on white is 21`() {
         assertEquals(21.0, CoverContrast.ratio(0xFF000000.toInt(), 0xFFFFFFFF.toInt()), 0.01)
-        assertEquals(1.0, CoverContrast.ratio(YuyuCoverColors.EMBER, YuyuCoverColors.EMBER), 0.0001)
+        assertEquals(1.0, CoverContrast.ratio(NbCoverColors.BRICK, NbCoverColors.BRICK), 0.0001)
     }
 
     @Test
-    fun `cover palette matches the YuyuArt placeholder colour`() {
+    fun `cover palette matches the NbArt placeholder colour`() {
         val key = "Fetch the Bolt Cutters"
         val palette = CoverPalettes.resolve(CoverPaletteChoice.COVER, key)
-        assertEquals(YuyuCoverColors.ART_PALETTE[(key.hashCode() and 0x7fffffff) % 8], palette.background)
+        assertEquals(NbCoverColors.ART_PALETTE[(key.hashCode() and 0x7fffffff) % 8], palette.background)
     }
 
     @Test

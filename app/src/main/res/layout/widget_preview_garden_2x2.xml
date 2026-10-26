@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Day 12"
-        android:textColor="@color/yuyu_widget_text"
+        android:textColor="@color/nb_widget_text"
         android:textSize="14sp"
         android:textStyle="bold" />
 

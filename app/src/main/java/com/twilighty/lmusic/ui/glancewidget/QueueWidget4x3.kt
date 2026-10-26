@@ -39,7 +39,7 @@ class QueueWidget4x3 : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val info = currentState<PlayerInfo>().forDisplay()
-            GlanceTheme(colors = YuyuGlanceColors) { Content(context, info) }
+            GlanceTheme(colors = NbGlanceColors) { Content(context, info) }
         }
     }
 
@@ -54,11 +54,11 @@ class QueueWidget4x3 : GlanceAppWidget() {
             modifier = GlanceModifier
                 .fillMaxSize()
                 .background(GlanceTheme.colors.surface)
-                .cornerRadius(YuyuWidget.Radius)
+                .cornerRadius(NbWidget.Radius)
                 .padding(16.dp),
         ) {
             Row(
-                modifier = GlanceModifier.fillMaxWidth().clickable(YuyuWidget.openApp()),
+                modifier = GlanceModifier.fillMaxWidth().clickable(NbWidget.openApp()),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 AlbumArtImage(
@@ -67,7 +67,7 @@ class QueueWidget4x3 : GlanceAppWidget() {
                     albumArtUri = info.albumArtUri,
                     size = 56.dp,
                     context = context,
-                    cornerRadius = YuyuWidget.InnerRadius,
+                    cornerRadius = NbWidget.InnerRadius,
                 )
                 Spacer(GlanceModifier.width(12.dp))
                 Column(modifier = GlanceModifier.defaultWeight()) {
@@ -89,7 +89,7 @@ class QueueWidget4x3 : GlanceAppWidget() {
             Spacer(GlanceModifier.height(4.dp))
             if (queue.isEmpty()) {
                 Box(
-                    modifier = GlanceModifier.fillMaxWidth().defaultWeight().clickable(YuyuWidget.openApp()),
+                    modifier = GlanceModifier.fillMaxWidth().defaultWeight().clickable(NbWidget.openApp()),
                     contentAlignment = Alignment.CenterStart,
                 ) {
                     WidgetMeta(if (WidgetPlaybackLiveness.serviceAlive) "Nothing queued" else "Tap play to pick up where you left off")
@@ -109,7 +109,7 @@ class QueueWidget4x3 : GlanceAppWidget() {
             modifier = GlanceModifier
                 .fillMaxWidth()
                 .height(rowHeight)
-                .cornerRadius(YuyuWidget.InnerRadius)
+                .cornerRadius(NbWidget.InnerRadius)
                 .clickable(musicServiceAction(context, PlayerActions.PLAY_FROM_QUEUE, item.id)),
             verticalAlignment = Alignment.CenterVertically,
         ) {

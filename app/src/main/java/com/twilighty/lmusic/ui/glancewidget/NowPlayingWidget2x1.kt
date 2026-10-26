@@ -35,7 +35,7 @@ class NowPlayingWidget2x1 : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val info = currentState<PlayerInfo>().forDisplay()
-            GlanceTheme(colors = YuyuGlanceColors) { Content(context, info) }
+            GlanceTheme(colors = NbGlanceColors) { Content(context, info) }
         }
     }
 
@@ -47,9 +47,9 @@ class NowPlayingWidget2x1 : GlanceAppWidget() {
             modifier = GlanceModifier
                 .fillMaxSize()
                 .background(GlanceTheme.colors.surface)
-                .cornerRadius(YuyuWidget.Radius)
+                .cornerRadius(NbWidget.Radius)
                 .padding(8.dp)
-                .clickable(YuyuWidget.openApp()),
+                .clickable(NbWidget.openApp()),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AlbumArtImage(
@@ -58,7 +58,7 @@ class NowPlayingWidget2x1 : GlanceAppWidget() {
                 albumArtUri = info.albumArtUri,
                 size = inner,
                 context = context,
-                cornerRadius = YuyuWidget.InnerRadius,
+                cornerRadius = NbWidget.InnerRadius,
             )
             Spacer(GlanceModifier.width(8.dp))
             Column(modifier = GlanceModifier.defaultWeight()) {

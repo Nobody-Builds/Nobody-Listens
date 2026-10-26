@@ -41,9 +41,9 @@ object ThemePreference {
     const val GLOBAL = "global"
 }
 
-/** App-wide color source. LMusic defaults to the Yuyu design system. */
+/** App-wide color source. LMusic defaults to the Daylight design system. */
 object AppColorStyle {
-    const val YUYU = "yuyu"
+    const val DAYLIGHT = "yuyu" // stored value kept from before the Daylight revamp
     const val MATERIAL_YOU = "material_you"
 }
 

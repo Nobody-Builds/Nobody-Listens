@@ -40,11 +40,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AutoGraph
-import androidx.compose.material.icons.outlined.Bolt
-import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.Hearing
-import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.rounded.AutoGraph
+import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.Hearing
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.runtime.derivedStateOf
@@ -128,10 +128,10 @@ import androidx.compose.ui.unit.sp
 import androidx.annotation.StringRes
 import androidx.compose.ui.res.stringResource
 import com.twilighty.lmusic.presentation.stats.displayNameRes
-import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.rounded.Album
 import com.twilighty.lmusic.utils.shapes.RoundedStarShape
-import androidx.compose.material.icons.outlined.MusicNote
-import androidx.compose.material.icons.outlined.PlayCircleOutline
+import androidx.compose.material.icons.rounded.MusicNote
+import androidx.compose.material.icons.rounded.PlayCircleOutline
 import com.twilighty.lmusic.ui.theme.ExpTitleTypography
 
 private const val PULL_TO_REFRESH_MIN_DURATION_MS = 3500L
@@ -196,7 +196,7 @@ fun StatsScreen(
 
     @Suppress("UNUSED_VARIABLE")
     val currentTopBarHeightDp = with(density) { topBarHeight.value.toDp() }
-    val yuyuHeaderHeight = statusBarHeight + 76.dp + 52.dp
+    val nbHeaderHeight = statusBarHeight + 76.dp + 52.dp
     val tabsHeight = 62.dp
     val showRangeTabIndicator = false
     val tabIndicatorExtraSpacing = if (showRangeTabIndicator) 8.dp else 0.dp
@@ -264,7 +264,7 @@ fun StatsScreen(
                 isRefreshing = isPullRefreshAnimating,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = yuyuHeaderHeight + 4.dp)
+                    .padding(top = nbHeaderHeight + 4.dp)
             )
         }
     ) {
@@ -285,7 +285,7 @@ fun StatsScreen(
                     modifier = Modifier
                         .fillMaxSize(),
                     contentPadding = PaddingValues(
-                        top = yuyuHeaderHeight + 12.dp,
+                        top = nbHeaderHeight + 12.dp,
                         bottom = (if (showBackButton) WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() else bottomInset) + MiniPlayerHeight + 16.dp
                     ),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -386,12 +386,12 @@ fun StatsScreen(
                         .background(MaterialTheme.colorScheme.surface)
                         .statusBarsPadding()
                 ) {
-                    com.twilighty.lmusic.presentation.yuyu.YuyuTopBar(
+                    com.twilighty.lmusic.presentation.nb.NbTopBar(
                         title = stringResource(R.string.presentation_batch_g_stats_title),
                         kicker = "Your listening",
                         navigationIcon = if (showBackButton) {
                             {
-                                com.twilighty.lmusic.presentation.yuyu.YuyuIconButton(
+                                com.twilighty.lmusic.presentation.nb.NbIconButton(
                                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                                     contentDescription = "Back",
                                     onClick = { navController.popBackStack() }
@@ -400,12 +400,12 @@ fun StatsScreen(
                         } else null,
                         modifier = Modifier.height(76.dp),
                         actions = {
-                            com.twilighty.lmusic.presentation.yuyu.YuyuIconButton(
+                            com.twilighty.lmusic.presentation.nb.NbIconButton(
                                 imageVector = Icons.Rounded.Refresh,
                                 contentDescription = stringResource(R.string.presentation_batch_g_stats_cd_refresh),
                                 onClick = statsViewModel::requestStatsRefresh,
                                 enabled = !uiState.isLoading && !uiState.isRefreshing && !isPullRefreshAnimating,
-                                style = com.twilighty.lmusic.presentation.yuyu.YuyuIconButtonStyle.Tonal
+                                style = com.twilighty.lmusic.presentation.nb.NbIconButtonStyle.Tonal
                             )
                         }
                     )
@@ -423,7 +423,7 @@ fun StatsScreen(
                             } else {
                                 stringResource(range.displayNameRes())
                             }
-                            com.twilighty.lmusic.presentation.yuyu.YuyuChip(
+                            com.twilighty.lmusic.presentation.nb.NbChip(
                                 text = label,
                                 selected = selected,
                                 onClick = {
@@ -437,7 +437,7 @@ fun StatsScreen(
                         }
                     }
                     if (isScrolled) {
-                        com.twilighty.lmusic.presentation.yuyu.YuyuDivider()
+                        com.twilighty.lmusic.presentation.nb.NbDivider()
                     }
                 }
             }
@@ -775,7 +775,7 @@ private fun ListeningHabitsCard(
             )
             if (summary == null) {
                 StatsEmptyState(
-                    icon = Icons.Outlined.History,
+                    icon = Icons.Rounded.History,
                     title = stringResource(R.string.presentation_batch_g_stats_empty_no_habits_title),
                     subtitle = stringResource(R.string.presentation_batch_g_stats_empty_no_habits_subtitle)
                 )
@@ -786,17 +786,17 @@ private fun ListeningHabitsCard(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     HabitMetric(
-                        icon = Icons.Outlined.History,
+                        icon = Icons.Rounded.History,
                         label = stringResource(R.string.presentation_batch_g_stats_habit_total_sessions),
                         value = summary.totalSessions.toString()
                     )
                     HabitMetric(
-                        icon = Icons.Outlined.Hearing,
+                        icon = Icons.Rounded.Hearing,
                         label = stringResource(R.string.presentation_batch_g_stats_habit_avg_session),
                         value = formatListeningDurationCompact(summary.averageSessionDurationMs)
                     )
                     HabitMetric(
-                        icon = Icons.Outlined.Bolt,
+                        icon = Icons.Rounded.Bolt,
                         label = stringResource(R.string.presentation_batch_g_stats_habit_longest_session),
                         value = if (summary.longestSessionDurationMs > 0L) {
                             formatListeningDurationCompact(summary.longestSessionDurationMs)
@@ -805,7 +805,7 @@ private fun ListeningHabitsCard(
                         }
                     )
                     HabitMetric(
-                        icon = Icons.Outlined.AutoGraph,
+                        icon = Icons.Rounded.AutoGraph,
                         label = stringResource(R.string.presentation_batch_g_stats_habit_sessions_per_day),
                         value = String.format(Locale.US, "%.1f", summary.averageSessionsPerDay)
                     )
@@ -819,14 +819,14 @@ private fun ListeningHabitsCard(
                     } else {
                         stringResource(R.string.presentation_batch_g_stats_habit_no_playback_yet)
                     },
-                    icon = Icons.Outlined.CalendarMonth
+                    icon = Icons.Rounded.CalendarMonth
                 )
                 summary.peakTimeline?.let { peak ->
                     HighlightRow(
                         title = stringResource(R.string.presentation_batch_g_stats_habit_peak_timeline_slot),
                         value = peak.label,
                         supporting = formatListeningDurationCompact(peak.totalDurationMs),
-                        icon = Icons.Outlined.AutoGraph
+                        icon = Icons.Rounded.AutoGraph
                     )
                 }
             }
@@ -1157,7 +1157,7 @@ private fun ListeningTimelineSection(
 
         if (!hasTimeline) {
             StatsEmptyState(
-                icon = Icons.Outlined.PlayCircleOutline,
+                icon = Icons.Rounded.PlayCircleOutline,
                 title = stringResource(R.string.presentation_batch_g_stats_empty_no_timeline_title),
                 subtitle = stringResource(R.string.presentation_batch_g_stats_empty_no_timeline_subtitle)
             )
@@ -1236,7 +1236,7 @@ private fun ListeningTimelineSection(
                             formatListeningDurationCompact(average)
                         }
                     },
-                    icon = Icons.Outlined.AutoGraph
+                    icon = Icons.Rounded.AutoGraph
                 )
             }
         }
@@ -1361,7 +1361,7 @@ private fun CategoryMetricsSection(
 
         if (entries.isEmpty()) {
             StatsEmptyState(
-                icon = Icons.Outlined.MusicNote,
+                icon = Icons.Rounded.MusicNote,
                 title = stringResource(R.string.presentation_batch_g_stats_empty_no_category_title),
                 subtitle = stringResource(R.string.presentation_batch_g_stats_empty_no_category_subtitle)
             )
@@ -1909,7 +1909,7 @@ private fun TopArtistsCard(
             val artists = summary?.topArtists.orEmpty()
             if (artists.isEmpty()) {
                 StatsEmptyState(
-                    icon = Icons.Outlined.MusicNote,
+                    icon = Icons.Rounded.MusicNote,
                     title = stringResource(R.string.presentation_batch_g_stats_empty_no_artists_title),
                     subtitle = stringResource(R.string.presentation_batch_g_stats_empty_no_artists_subtitle)
                 )
@@ -2026,7 +2026,7 @@ private fun TopAlbumsCard(
             val albums = summary?.topAlbums.orEmpty()
             if (albums.isEmpty()) {
                 StatsEmptyState(
-                    icon = Icons.Outlined.Album,
+                    icon = Icons.Rounded.Album,
                     title = stringResource(R.string.presentation_batch_g_stats_empty_no_albums_title),
                     subtitle = stringResource(R.string.presentation_batch_g_stats_empty_no_albums_subtitle)
                 )
@@ -2134,7 +2134,7 @@ private fun SongStatsCard(
 
             if (songs.isEmpty()) {
                 StatsEmptyState(
-                    icon = Icons.Outlined.MusicNote,
+                    icon = Icons.Rounded.MusicNote,
                     title = stringResource(R.string.presentation_batch_g_stats_empty_no_tracks_title),
                     subtitle = stringResource(R.string.presentation_batch_g_stats_empty_no_tracks_subtitle)
                 )
@@ -2294,7 +2294,7 @@ private fun TrackConcentrationCard(
 
             if (songs.isEmpty()) {
                 StatsEmptyState(
-                    icon = Icons.Outlined.AutoGraph,
+                    icon = Icons.Rounded.AutoGraph,
                     title = stringResource(R.string.presentation_batch_g_stats_empty_no_concentration_title),
                     subtitle = stringResource(R.string.presentation_batch_g_stats_empty_no_concentration_subtitle)
                 )

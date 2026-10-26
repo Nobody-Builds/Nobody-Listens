@@ -49,15 +49,15 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.twilighty.lmusic.R
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuEmptyState
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbEmptyState
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbType
 import java.io.File
 import java.io.FileOutputStream
 import java.time.Instant
@@ -78,27 +78,27 @@ fun RecapEntryCard(onOpen: (RecapPeriod) -> Unit, modifier: Modifier = Modifier)
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(YuyuShapes.xl)
-            .background(Yuyu.tintPeach)
+            .clip(NbShapes.xl)
+            .background(Nb.tintPeach)
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Text(stringResource(R.string.recap_overline).uppercase(), style = YuyuType.overline, color = Yuyu.accentText)
-        Text(stringResource(R.string.recap_entry_title), style = YuyuType.h3, color = Yuyu.text)
-        Text(stringResource(R.string.recap_entry_body), style = YuyuType.meta, color = Yuyu.textMuted)
+        Text(stringResource(R.string.recap_overline).uppercase(), style = NbType.overline, color = Nb.accentText)
+        Text(stringResource(R.string.recap_entry_title), style = NbType.h3, color = Nb.text)
+        Text(stringResource(R.string.recap_entry_body), style = NbType.meta, color = Nb.textMuted)
         Spacer(Modifier.height(6.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            YuyuButton(
+            NbButton(
                 text = stringResource(R.string.recap_weekly),
                 onClick = { onOpen(RecapPeriod.WEEK) },
-                style = YuyuButtonStyle.Primary,
-                size = YuyuButtonSize.Small
+                style = NbButtonStyle.Primary,
+                size = NbButtonSize.Small
             )
-            YuyuButton(
+            NbButton(
                 text = stringResource(R.string.recap_monthly),
                 onClick = { onOpen(RecapPeriod.MONTH) },
-                style = YuyuButtonStyle.Secondary,
-                size = YuyuButtonSize.Small
+                style = NbButtonStyle.Secondary,
+                size = NbButtonSize.Small
             )
         }
     }
@@ -116,12 +116,12 @@ fun RecapScreen(
     Box(
         Modifier
             .fillMaxSize()
-            .background(Yuyu.canvas)
+            .background(Nb.canvas)
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
         when (val s = state) {
-            RecapUiState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center).size(32.dp), color = Yuyu.ink, strokeWidth = 2.5.dp)
+            RecapUiState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center).size(32.dp), color = Nb.ink, strokeWidth = 2.5.dp)
             RecapUiState.Failed -> EmptyRecap(period, onClose, failed = true)
             is RecapUiState.Ready -> if (s.data.hasListening) RecapPager(s.data, onClose) else EmptyRecap(period, onClose, failed = false)
         }
@@ -132,10 +132,10 @@ fun RecapScreen(
 private fun EmptyRecap(period: RecapPeriod, onClose: () -> Unit, failed: Boolean) {
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            YuyuIconButton(imageVector = Icons.Rounded.Close, contentDescription = stringResource(R.string.recap_close), onClick = onClose)
+            NbIconButton(imageVector = Icons.Rounded.Close, contentDescription = stringResource(R.string.recap_close), onClick = onClose)
         }
         Spacer(Modifier.weight(1f))
-        YuyuEmptyState(
+        NbEmptyState(
             title = stringResource(if (failed) R.string.recap_failed_title else R.string.recap_empty_title),
             body = stringResource(
                 if (failed) R.string.recap_failed_body
@@ -189,12 +189,12 @@ private fun RecapPager(data: RecapData, onClose: () -> Unit) {
                     Modifier
                         .weight(1f)
                         .height(4.dp)
-                        .clip(YuyuShapes.pill)
-                        .background(if (index <= pagerState.currentPage) Yuyu.ink else Yuyu.emphasis)
+                        .clip(NbShapes.pill)
+                        .background(if (index <= pagerState.currentPage) Nb.ink else Nb.emphasis)
                 )
             }
             Spacer(Modifier.width(4.dp))
-            YuyuIconButton(imageVector = Icons.Rounded.Close, contentDescription = stringResource(R.string.recap_close), onClick = onClose)
+            NbIconButton(imageVector = Icons.Rounded.Close, contentDescription = stringResource(R.string.recap_close), onClick = onClose)
         }
 
         HorizontalPager(
@@ -217,11 +217,11 @@ private fun RecapPager(data: RecapData, onClose: () -> Unit) {
                 }
                 Spacer(Modifier.height(12.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    YuyuButton(
+                    NbButton(
                         text = stringResource(R.string.recap_share),
                         icon = rememberVectorPainter(Icons.Rounded.IosShare),
-                        style = YuyuButtonStyle.Secondary,
-                        size = YuyuButtonSize.Medium,
+                        style = NbButtonStyle.Secondary,
+                        size = NbButtonSize.Medium,
                         onClick = {
                             scope.launch { shareLayer(context, layer, "recap_${data.period.routeValue}_${pages[index].name.lowercase()}", shareTitle) }
                         }
@@ -262,13 +262,13 @@ private data class CardColors(val background: Color, val text: Color, val muted:
 
 @Composable
 private fun colorsFor(page: RecapPage): CardColors = when (page) {
-    RecapPage.TIME, RecapPage.SUMMARY -> CardColors(Yuyu.accent, Yuyu.onAccent, Yuyu.onAccent.copy(alpha = 0.78f))
-    RecapPage.PLAYS, RecapPage.STREAK -> CardColors(Yuyu.tintLavender, Yuyu.text, Yuyu.textMuted)
-    RecapPage.TOP_SONG, RecapPage.TOP_ALBUM -> CardColors(Yuyu.ink, Yuyu.onInk, Yuyu.onInk.copy(alpha = 0.7f))
-    RecapPage.TOP_SONGS, RecapPage.SKIPS -> CardColors(Yuyu.tintPeach, Yuyu.text, Yuyu.textMuted)
-    RecapPage.TOP_ARTIST, RecapPage.DISCOVERY -> CardColors(Yuyu.tintMint, Yuyu.text, Yuyu.textMuted)
-    RecapPage.RHYTHM -> CardColors(Yuyu.muted, Yuyu.text, Yuyu.textMuted)
-    RecapPage.MOODS -> CardColors(Yuyu.tintLavender, Yuyu.text, Yuyu.textMuted)
+    RecapPage.TIME, RecapPage.SUMMARY -> CardColors(Nb.accent, Nb.onAccent, Nb.onAccent.copy(alpha = 0.78f))
+    RecapPage.PLAYS, RecapPage.STREAK -> CardColors(Nb.tintLavender, Nb.text, Nb.textMuted)
+    RecapPage.TOP_SONG, RecapPage.TOP_ALBUM -> CardColors(Nb.ink, Nb.onInk, Nb.onInk.copy(alpha = 0.7f))
+    RecapPage.TOP_SONGS, RecapPage.SKIPS -> CardColors(Nb.tintPeach, Nb.text, Nb.textMuted)
+    RecapPage.TOP_ARTIST, RecapPage.DISCOVERY -> CardColors(Nb.tintMint, Nb.text, Nb.textMuted)
+    RecapPage.RHYTHM -> CardColors(Nb.muted, Nb.text, Nb.textMuted)
+    RecapPage.MOODS -> CardColors(Nb.tintLavender, Nb.text, Nb.textMuted)
 }
 
 @Composable
@@ -277,11 +277,11 @@ private fun RecapCard(page: RecapPage, data: RecapData) {
     Column(
         Modifier
             .fillMaxSize()
-            .clip(YuyuShapes.xxl)
+            .clip(NbShapes.xxl)
             .background(colors.background)
             .padding(24.dp)
     ) {
-        Text(periodLabel(data).uppercase(), style = YuyuType.overline, color = colors.muted)
+        Text(periodLabel(data).uppercase(), style = NbType.overline, color = colors.muted)
         Spacer(Modifier.height(16.dp))
         Column(Modifier.weight(1f).fillMaxWidth()) {
             when (page) {
@@ -299,7 +299,7 @@ private fun RecapCard(page: RecapPage, data: RecapData) {
                 RecapPage.SUMMARY -> SummaryCard(data, colors)
             }
         }
-        Text(stringResource(R.string.recap_watermark), style = YuyuType.caption, color = colors.muted)
+        Text(stringResource(R.string.recap_watermark), style = NbType.caption, color = colors.muted)
     }
 }
 
@@ -315,17 +315,17 @@ private fun periodLabel(data: RecapData): String {
 
 @Composable
 private fun BigNumber(text: String, color: Color, size: Int = 64) {
-    Text(text, style = YuyuType.display(size.sp), color = color, maxLines = 2, overflow = TextOverflow.Ellipsis)
+    Text(text, style = NbType.display(size.sp), color = color, maxLines = 2, overflow = TextOverflow.Ellipsis)
 }
 
 @Composable
 private fun Kicker(text: String, color: Color) {
-    Text(text, style = YuyuType.h3, color = color)
+    Text(text, style = NbType.h3, color = color)
 }
 
 @Composable
 private fun Body(text: String, color: Color) {
-    Text(text, style = YuyuType.bodyLarge, color = color)
+    Text(text, style = NbType.bodyLarge, color = color)
 }
 
 @Composable
@@ -368,11 +368,11 @@ private fun ColumnScope.TopSongCard(data: RecapData, colors: CardColors) {
     Spacer(Modifier.height(20.dp))
     BoxWithConstraints(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
         val side = minOf(maxWidth, maxHeight)
-        YuyuArt(model = song.albumArtUri, title = song.title, size = side, shape = YuyuShapes.xl)
+        NbArt(model = song.albumArtUri, title = song.title, size = side, shape = NbShapes.xl)
     }
     Spacer(Modifier.height(20.dp))
-    Text(song.title, style = YuyuType.h2, color = colors.text, maxLines = 2, overflow = TextOverflow.Ellipsis)
-    Text(song.artist, style = YuyuType.title, color = colors.muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    Text(song.title, style = NbType.h2, color = colors.text, maxLines = 2, overflow = TextOverflow.Ellipsis)
+    Text(song.artist, style = NbType.title, color = colors.muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
     Spacer(Modifier.height(6.dp))
     Body(stringResource(R.string.recap_song_stat, song.playCount, formatDuration(song.totalDurationMs)), colors.muted)
 }
@@ -384,11 +384,11 @@ private fun RankRow(rank: Int, title: String, subtitle: String, art: String?, ar
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Text(rank.toString(), style = YuyuType.h2, color = colors.text, modifier = Modifier.width(26.dp))
-        YuyuArt(model = art, title = artKey, size = 52.dp, shape = YuyuShapes.md)
+        Text(rank.toString(), style = NbType.h2, color = colors.text, modifier = Modifier.width(26.dp))
+        NbArt(model = art, title = artKey, size = 52.dp, shape = NbShapes.md)
         Column(Modifier.weight(1f)) {
-            Text(title, style = YuyuType.title, color = colors.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(subtitle, style = YuyuType.meta, color = colors.muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(title, style = NbType.title, color = colors.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(subtitle, style = NbType.meta, color = colors.muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }
@@ -409,21 +409,21 @@ private fun ColumnScope.TopArtistCard(data: RecapData, colors: CardColors) {
     Kicker(stringResource(R.string.recap_top_artist_kicker), colors.text)
     Spacer(Modifier.height(16.dp))
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        YuyuArt(model = data.topArtistArt, title = top.artist, size = 96.dp, shape = androidx.compose.foundation.shape.CircleShape)
+        NbArt(model = data.topArtistArt, title = top.artist, size = 96.dp, shape = androidx.compose.foundation.shape.CircleShape)
         Column(Modifier.weight(1f)) {
-            Text(top.artist, style = YuyuType.h1, color = colors.text, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            Text(stringResource(R.string.recap_artist_stat, top.playCount, formatDuration(top.totalDurationMs)), style = YuyuType.meta, color = colors.muted)
+            Text(top.artist, style = NbType.h1, color = colors.text, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(stringResource(R.string.recap_artist_stat, top.playCount, formatDuration(top.totalDurationMs)), style = NbType.meta, color = colors.muted)
         }
     }
     Spacer(Modifier.weight(1f))
     if (data.topArtists.size > 1) {
-        Text(stringResource(R.string.recap_top_artists_label).uppercase(), style = YuyuType.overline, color = colors.muted)
+        Text(stringResource(R.string.recap_top_artists_label).uppercase(), style = NbType.overline, color = colors.muted)
         Spacer(Modifier.height(4.dp))
         data.topArtists.forEachIndexed { index, artist ->
             Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text((index + 1).toString(), style = YuyuType.h3, color = colors.text, modifier = Modifier.width(28.dp))
-                Text(artist.artist, style = YuyuType.title, color = colors.text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-                Text(formatDuration(artist.totalDurationMs), style = YuyuType.meta, color = colors.muted)
+                Text((index + 1).toString(), style = NbType.h3, color = colors.text, modifier = Modifier.width(28.dp))
+                Text(artist.artist, style = NbType.title, color = colors.text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                Text(formatDuration(artist.totalDurationMs), style = NbType.meta, color = colors.muted)
             }
         }
     }
@@ -436,10 +436,10 @@ private fun ColumnScope.TopAlbumCard(data: RecapData, colors: CardColors) {
     Spacer(Modifier.height(20.dp))
     BoxWithConstraints(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
         val side = minOf(maxWidth, maxHeight)
-        YuyuArt(model = album.albumArtUri, title = album.album, size = side, shape = YuyuShapes.xl)
+        NbArt(model = album.albumArtUri, title = album.album, size = side, shape = NbShapes.xl)
     }
     Spacer(Modifier.height(20.dp))
-    Text(album.album, style = YuyuType.h2, color = colors.text, maxLines = 2, overflow = TextOverflow.Ellipsis)
+    Text(album.album, style = NbType.h2, color = colors.text, maxLines = 2, overflow = TextOverflow.Ellipsis)
     Body(stringResource(R.string.recap_album_stat, album.uniqueSongs, formatDuration(album.totalDurationMs)), colors.muted)
 }
 
@@ -448,7 +448,7 @@ private fun ColumnScope.RhythmCard(data: RecapData, colors: CardColors) {
     Kicker(stringResource(R.string.recap_rhythm_kicker), colors.text)
     Spacer(Modifier.weight(1f))
     data.busiestDay?.let { day ->
-        Text(stringResource(R.string.recap_busiest_day).uppercase(), style = YuyuType.overline, color = colors.muted)
+        Text(stringResource(R.string.recap_busiest_day).uppercase(), style = NbType.overline, color = colors.muted)
         BigNumber(day.format(DateTimeFormatter.ofPattern("EEEE", Locale.getDefault())), colors.text, 48)
         Body(
             stringResource(R.string.recap_busiest_day_stat, day.format(DateTimeFormatter.ofPattern("MMM d", Locale.getDefault())), formatDuration(data.busiestDayDurationMs)),
@@ -457,7 +457,7 @@ private fun ColumnScope.RhythmCard(data: RecapData, colors: CardColors) {
         Spacer(Modifier.height(24.dp))
     }
     data.peakHour?.let { hour ->
-        Text(stringResource(R.string.recap_peak_time).uppercase(), style = YuyuType.overline, color = colors.muted)
+        Text(stringResource(R.string.recap_peak_time).uppercase(), style = NbType.overline, color = colors.muted)
         BigNumber(stringResource(partOfDay(hour)), colors.text, 48)
         Body(stringResource(R.string.recap_peak_hour, formatHour(hour)), colors.muted)
     }
@@ -512,8 +512,8 @@ private fun ColumnScope.MoodsCard(data: RecapData, colors: CardColors) {
     Spacer(Modifier.height(20.dp))
     moods.drop(1).forEach { (mood, share) ->
         androidx.compose.foundation.layout.Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-            Text(mood, style = YuyuType.title, color = colors.text, modifier = Modifier.weight(1f))
-            Text("${(share * 100).roundToInt()}%", style = YuyuType.title, color = colors.muted)
+            Text(mood, style = NbType.title, color = colors.text, modifier = Modifier.weight(1f))
+            Text("${(share * 100).roundToInt()}%", style = NbType.title, color = colors.muted)
         }
     }
     data.genres?.takeIf { it.isNotEmpty() }?.let { genres ->
@@ -551,8 +551,8 @@ private fun ColumnScope.SummaryCard(data: RecapData, colors: CardColors) {
     )
     rows.forEach { (label, value) ->
         Row(Modifier.fillMaxWidth().padding(vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(label, style = YuyuType.meta, color = colors.muted, modifier = Modifier.weight(0.45f))
-            Text(value, style = YuyuType.title, color = colors.text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(0.55f))
+            Text(label, style = NbType.meta, color = colors.muted, modifier = Modifier.weight(0.45f))
+            Text(value, style = NbType.title, color = colors.text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(0.55f))
         }
         Box(Modifier.fillMaxWidth().height(1.dp).background(colors.muted.copy(alpha = 0.25f)))
     }

@@ -119,12 +119,12 @@ internal fun rememberSheetThemeState(
         systemColorScheme = systemColorScheme
     )
 
-    // LMusic: in the Yuyu palette the artwork colour is only the accent; surfaces and text
-    // stay Yuyu neutrals (see yuyuPlayerScheme).
-    val useYuyuColors = com.twilighty.lmusic.ui.theme.LocalUseYuyuColors.current
-    val yuyuAlbumScheme = remember(rawAlbumColorScheme, systemColorScheme, isDarkTheme, useYuyuColors) {
-        if (useYuyuColors) {
-            com.twilighty.lmusic.ui.theme.yuyuPlayerScheme(rawAlbumColorScheme, systemColorScheme, isDarkTheme)
+    // LMusic: in the Daylight palette the artwork colour is only the accent; surfaces and text
+    // stay Daylight neutrals (see nbPlayerScheme).
+    val useBrandColors = com.twilighty.lmusic.ui.theme.LocalUseBrandColors.current
+    val nbAlbumScheme = remember(rawAlbumColorScheme, systemColorScheme, isDarkTheme, useBrandColors) {
+        if (useBrandColors) {
+            com.twilighty.lmusic.ui.theme.nbPlayerScheme(rawAlbumColorScheme, systemColorScheme, isDarkTheme)
         } else {
             rawAlbumColorScheme
         }
@@ -143,15 +143,15 @@ internal fun rememberSheetThemeState(
     // we use a single Animatable<Float> progress [0,1] that interpolates between the
     // previous and the new target ColorScheme manually. This reduces per-frame State reads
     // from 68 → 0 (the lerp runs during the Animatable tick, not during recomposition).
-    val yuyuMiniScheme = remember(rawMiniPlayerScheme, systemColorScheme, isDarkTheme, useYuyuColors) {
-        if (useYuyuColors) {
-            com.twilighty.lmusic.ui.theme.yuyuPlayerScheme(rawMiniPlayerScheme, systemColorScheme, isDarkTheme)
+    val nbMiniScheme = remember(rawMiniPlayerScheme, systemColorScheme, isDarkTheme, useBrandColors) {
+        if (useBrandColors) {
+            com.twilighty.lmusic.ui.theme.nbPlayerScheme(rawMiniPlayerScheme, systemColorScheme, isDarkTheme)
         } else {
             rawMiniPlayerScheme
         }
     }
-    val albumColorScheme = rememberBatchAnimatedColorScheme(yuyuAlbumScheme)
-    val miniPlayerScheme = rememberBatchAnimatedColorScheme(yuyuMiniScheme)
+    val albumColorScheme = rememberBatchAnimatedColorScheme(nbAlbumScheme)
+    val miniPlayerScheme = rememberBatchAnimatedColorScheme(nbMiniScheme)
 
     val miniAppearProgress = remember { Animatable(0f) }
     LaunchedEffect(currentSong?.id) {

@@ -2,6 +2,7 @@ package com.twilighty.lmusic.data.preferences
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -20,10 +21,21 @@ class ThemePreferencesRepository @Inject constructor(
         val ALBUM_ART_COLOR_ACCURACY = intPreferencesKey("album_art_color_accuracy_v1")
         val APP_THEME_MODE = stringPreferencesKey("app_theme_mode")
         val APP_COLOR_STYLE = stringPreferencesKey("app_color_style_v1")
+        val APP_PITCH_BLACK = booleanPreferencesKey("app_pitch_black_v1")
     }
 
+    /** Pitch black dark mode for OLED screens; only applies while the app is dark. */
+    val appPitchBlackFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[Keys.APP_PITCH_BLACK] ?: false
+    }
+
+    suspend fun setAppPitchBlack(enabled: Boolean) =
+        dataStore.edit { preferences ->
+            preferences[Keys.APP_PITCH_BLACK] = enabled
+        }
+
     val appColorStyleFlow: Flow<String> = dataStore.data.map { preferences ->
-        preferences[Keys.APP_COLOR_STYLE] ?: AppColorStyle.YUYU
+        preferences[Keys.APP_COLOR_STYLE] ?: AppColorStyle.DAYLIGHT
     }
 
     suspend fun setAppColorStyle(style: String) =

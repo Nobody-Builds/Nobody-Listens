@@ -129,7 +129,7 @@ fun LyricsMoreBottomSheet(
                         headlineContent = { Text(stringResource(R.string.save_lyrics_dialog_title).substringBefore("?")) },
                         leadingContent = {
                             Icon(
-                                painter = painterResource(R.drawable.outline_save_24),
+                                painter = painterResource(R.drawable.rounded_save_24),
                                 contentDescription = null
                             )
                         },
@@ -160,7 +160,7 @@ fun LyricsMoreBottomSheet(
                     headlineContent = { Text(stringResource(R.string.reset_imported_lyrics)) },
                     leadingContent = {
                         Icon(
-                            painter = painterResource(R.drawable.outline_restart_alt_24),
+                            painter = painterResource(R.drawable.rounded_restart_alt_24),
                             contentDescription = null
                         )
                     },

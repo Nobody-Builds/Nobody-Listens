@@ -4,15 +4,15 @@ package com.twilighty.lmusic.presentation.screens
 
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuSegmented
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuTextField
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbSegmented
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbTextField
+import com.twilighty.lmusic.presentation.nb.NbType
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -54,7 +54,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
-import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.Album
 import androidx.compose.material.icons.rounded.AutoAwesome
@@ -126,7 +125,6 @@ import androidx.compose.material3.FilterChipDefaults
 import com.twilighty.lmusic.utils.shapes.RoundedStarShape
 import com.twilighty.lmusic.utils.resolvePlaylistCoverContentColor
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.LayoutDirection
@@ -371,8 +369,8 @@ private fun CreatePlaylistContent(
                             } else {
                                 stringResource(R.string.presentation_batch_f_add_songs)
                             },
-                            style = YuyuType.h2,
-                            color = Yuyu.text
+                            style = NbType.h2,
+                            color = Nb.text
                         )
                     }
                 },
@@ -381,7 +379,7 @@ private fun CreatePlaylistContent(
                         modifier = Modifier.padding(start = 6.dp),
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = Color.Transparent,
-                            contentColor = Yuyu.text
+                            contentColor = Nb.text
                         ),
                         onClick = {
                             if (currentStep == 1 && creationMode == PlaylistCreationMode.MANUAL) currentStep = 0 else onDismiss()
@@ -398,7 +396,7 @@ private fun CreatePlaylistContent(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Yuyu.canvas
+                    containerColor = Nb.canvas
                 )
             )
         },
@@ -501,8 +499,8 @@ private fun CreatePlaylistContent(
                     modifier = Modifier
                         .padding(bottom = 8.dp, end = 8.dp)
                         .height(56.dp), // Standard height, feels substantial
-                    containerColor = if (currentStep == 0 && playlistName.isBlank()) Yuyu.emphasis else Yuyu.ink,
-                    contentColor = if (currentStep == 0 && playlistName.isBlank()) Yuyu.textMuted else Yuyu.onInk,
+                    containerColor = if (currentStep == 0 && playlistName.isBlank()) Nb.emphasis else Nb.ink,
+                    contentColor = if (currentStep == 0 && playlistName.isBlank()) Nb.textMuted else Nb.onInk,
                 )
             }
         },
@@ -673,8 +671,8 @@ fun EditPlaylistContent(
                 title = {
                     Text(
                         stringResource(R.string.presentation_batch_f_edit_playlist),
-                        style = YuyuType.h2,
-                        color = Yuyu.text
+                        style = NbType.h2,
+                        color = Nb.text
                     )
                 },
                 navigationIcon = {
@@ -682,7 +680,7 @@ fun EditPlaylistContent(
                         modifier = Modifier.padding(start = 6.dp),
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = Color.Transparent,
-                            contentColor = Yuyu.text
+                            contentColor = Nb.text
                         ),
                         onClick = onDismiss
                     ) {
@@ -690,7 +688,7 @@ fun EditPlaylistContent(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Yuyu.canvas
+                    containerColor = Nb.canvas
                 )
             )
         },
@@ -735,8 +733,8 @@ fun EditPlaylistContent(
                     modifier = Modifier
                         .padding(bottom = 8.dp, end = 8.dp)
                         .height(56.dp),
-                    containerColor = Yuyu.ink,
-                    contentColor = Yuyu.onInk,
+                    containerColor = Nb.ink,
+                    contentColor = Nb.onInk,
                 )
             }
         },
@@ -1027,7 +1025,7 @@ private fun PlaylistFormContent(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             
-            YuyuTextField(
+            NbTextField(
                 value = playlistName,
                 onValueChange = onNameChange,
                 label = stringResource(R.string.presentation_batch_f_playlist_name_label),
@@ -1041,7 +1039,7 @@ private fun PlaylistFormContent(
             Spacer(modifier = Modifier.height(8.dp))
 
             if (showCreationModeSelector) {
-                YuyuSegmented(
+                NbSegmented(
                     options = listOf(
                         stringResource(R.string.presentation_batch_f_creation_mode_manual),
                         stringResource(R.string.presentation_batch_f_creation_mode_smart)
@@ -1056,10 +1054,10 @@ private fun PlaylistFormContent(
 
             // AI Generation Button - only show in Create mode (not Edit mode)
             if (onGenerateClick != null) {
-                YuyuButton(
+                NbButton(
                     text = stringResource(R.string.presentation_batch_f_generate_with_ai),
                     onClick = onGenerateClick,
-                    style = YuyuButtonStyle.Secondary,
+                    style = NbButtonStyle.Secondary,
                     icon = rememberVectorPainter(Icons.Rounded.AutoAwesome),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1074,14 +1072,14 @@ private fun PlaylistFormContent(
                         .padding(horizontal = 22.dp, vertical = 6.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    YuyuOverline(stringResource(R.string.presentation_batch_f_smart_rule))
+                    NbOverline(stringResource(R.string.presentation_batch_f_smart_rule))
 
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         SmartPlaylistRule.entries.forEach { rule ->
-                            YuyuChip(
+                            NbChip(
                                 text = smartPlaylistRuleTitle(rule),
                                 selected = selectedSmartRule == rule,
                                 onClick = { onSmartRuleChange(rule) }

@@ -2256,14 +2256,14 @@ private fun PlayerSongInfo(
     val resolvedArtistId by remember(artists, artistId) {
         derivedStateOf { artists.firstOrNull { it.id != 0L && it.id != -1L }?.id ?: artistId }
     }
-    // Yuyu now-playing title: Bricolage ExtraBold, artist in Figtree.
-    val titleStyle = com.twilighty.lmusic.presentation.yuyu.YuyuType.h1.copy(
+    // Daylight now-playing title: Gilroy ExtraBold, artist in Google Sans Flex.
+    val titleStyle = com.twilighty.lmusic.presentation.nb.NbType.h1.copy(
         fontSize = 28.sp,
         lineHeight = 32.sp,
         color = textColor
     )
 
-    val artistStyle = com.twilighty.lmusic.presentation.yuyu.YuyuType.bodyLarge.copy(
+    val artistStyle = com.twilighty.lmusic.presentation.nb.NbType.bodyLarge.copy(
         letterSpacing = 0.sp,
         color = artistTextColor
     )

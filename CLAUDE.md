@@ -9,6 +9,20 @@
 - Unit tests are JUnit 5: `./gradlew :app:testDebugUnitTest --tests "com.twilighty.lmusic.data.ytmusic.*"`.
 - `YouTubeMusicStreamTest` has a live test that hits YouTube. It only runs with `YTMUSIC_LIVE=1` in the environment.
 
+## Design (Nobody Builds "Daylight" on Material 3)
+
+The source is the sibling repo `NobodyBuilds-Design` (`tokens/tokens.json`, `docs/ui-brand-spec.md`). Always follow the Material 3 theme; never hand-roll colours, type or shapes.
+
+- **Colours:** `ui/theme/Color.kt` `Daylight` holds the 53 light/dark tokens copied exactly from `tokens.json` (`DaylightSchemeTest` checks them and their contrast). `Theme.kt` maps them to M3 roles: primary = Blueprint, secondaryContainer = Sky, tertiary = accent ink (text-safe), **tertiaryFixed = Hard Hat**, surface = Paper / Night Shift, surfaceContainerLowest = white panel (light). In presentation code read `MaterialTheme.colorScheme` or the kit's `Nb.*` roles, never `Color(0x…)`. The exceptions are service-logo colours, artwork/illustration palettes (Garden, genre art, covers) and the OLED-black screensaver and sleep clock.
+- **Hard Hat yellow** (`Nb.accent`, `NbButtonStyle.Accent`) is one bold moment per screen and only a **fill** with Night Shift on it. Never use it as text, thin graphics or progress on Paper: it is about 1.6:1 there. Use `Nb.ink` (Blueprint) for meters, rings, chart highlights and spinners.
+- **Kit:** `presentation/nb/` (`NbButton`, `NbCard`, `NbChip`, `NbType`, `NbShapes`, `Nb`…) is the shared component layer. Restyle there, not per screen. Status = a word on a soft fill (`NbStatusChip`, `Nb.successSoft/successText`, `warningSoft/warningText`).
+- **Shape and depth:** controls 10 dp, cards 16 dp, sheets 20 dp, buttons, chips and tags pill-shaped. **No shadows**: `surfaceTint` is transparent, and layers separate by surface steps plus `outlineVariant` hairlines. Only drag feedback, the brick-breaker game and the overlay over other apps keep elevation.
+- **Type:** Gilroy open weights only (`gilroy_light.otf`, `gilroy_extrabold.otf`; free-font EULA in `licenses/`) for display and headings, Google Sans Flex (`gflex_variable.ttf`) for text, Unbounded (`NbType.accent`) for one accent phrase per layout. `GoogleSansRounded` is a legacy name: text weights map to Flex, Bold and up map to Gilroy ExtraBold.
+- **Icons:** Material Rounded only: `Icons.Rounded.*` / `Icons.AutoMirrored.Rounded.*`, or Material Symbols Rounded vector drawables (`rounded_*_24.xml`, from `google/material-design-icons` `symbols/android/<name>/materialsymbolsrounded/`). Service logos (Telegram, Jellyfin, Navidrome, Subsonic, NetEase, QQ, Gemini, YouTube) and genre artwork keep their own drawings.
+- **Settings › Appearance › App colours:** Daylight (stored value `"yuyu"`, kept from the old design so no migration is needed) or Material You. Album-art schemes stay on the player and detail screens (`nbPlayerScheme`, default accent Blueprint).
+- **Pitch black (OLED):** an opt-in switch under App theme (hidden when the theme is Light), stored as `app_pitch_black_v1` in `ThemePreferencesRepository`. It is the one deliberate exception to the brand spec's "no black" dark mode. `DaylightPitchBlackColorScheme` makes the canvas `#000000` and steps cards up through Night Shift, keeping the dark scheme's accents and text (`DaylightSchemeTest` checks contrast). With Material You, `withPitchBlackCanvas()` blacks out only the canvas layers. Album-art player schemes and widgets are unchanged.
+- **Widgets:** `ui/glancewidget/NbWidgetTheme.kt` plus `res/values(-night)/colors_nb_widget.xml`. The play button is Hard Hat with a Night Shift icon.
+
 ## YouTube Music (`data/ytmusic`, `presentation/ytmusic`)
 
 Streams, downloads and video use the **VISIONOS** innertube client (`YouTubeMusicClients.STREAM`). As of 2026-10 it is the only client that returns direct googlevideo URLs which play to the end without a PO token or signature deciphering. ANDROID_VR, IOS_MUSIC and ANDROID_MUSIC hit bot checks. Plain IOS URLs are cut off after about 1 MB. WEB_REMIX is used only for browse and search.

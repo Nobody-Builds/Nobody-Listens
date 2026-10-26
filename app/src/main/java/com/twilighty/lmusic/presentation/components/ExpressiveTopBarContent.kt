@@ -182,19 +182,8 @@ private fun rememberGoogleSansFlexFontFamily(
 ): FontFamily {
     val sanitizedWidthAxis = widthAxis.coerceIn(1f, DefaultTopBarTitleWidthAxis).roundToInt().toFloat()
     return remember(fontWeight, sanitizedWidthAxis) {
-        // LMusic: screen titles use Bricolage Grotesque (Yuyu display face). The collapsing
-        // animation still narrows the title through Bricolage's width axis (75–100).
-        val widthFraction = ((sanitizedWidthAxis - 1f) / (DefaultTopBarTitleWidthAxis - 1f)).coerceIn(0f, 1f)
-        FontFamily(
-            Font(
-                resId = R.font.bricolage_variable,
-                weight = fontWeight,
-                variationSettings = FontVariation.Settings(
-                    FontVariation.weight(fontWeight.weight.coerceIn(200, 800)),
-                    FontVariation.width(75f + 25f * widthFraction),
-                    FontVariation.Setting("opsz", 48f)
-                )
-            )
-        )
+        // LMusic: screen titles use Gilroy (Daylight display face). Gilroy has no width axis,
+        // so the collapsing animation only changes the size.
+        com.twilighty.lmusic.ui.theme.GilroyFamily
     }
 }

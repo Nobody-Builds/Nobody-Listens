@@ -4,221 +4,113 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.googlefonts.Font
-import androidx.compose.ui.text.googlefonts.GoogleFont
-import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.twilighty.lmusic.R
 
+// Daylight type: Gilroy's open weights (Light 300, ExtraBold 800 — licenses/Gilroy-Free-Font-EULA.txt)
+// for display and headings, Google Sans Flex for body and interface text, Unbounded for one
+// short accent phrase per layout.
 
-private val montserrat = GoogleFont("Montserrat")
-private val provider = GoogleFont.Provider(
-    providerAuthority = "com.google.android.gms.fonts",
-    providerPackage   = "com.google.android.gms",
-    certificates      = R.array.com_google_android_gms_fonts_certs
+/** Gilroy, open weights only. 600 and up resolve to ExtraBold, 500 and below to Light. */
+val GilroyFamily = FontFamily(
+    Font(R.font.gilroy_light, FontWeight.Light),
+    Font(R.font.gilroy_extrabold, FontWeight.ExtraBold),
 )
 
-val MontserratFamily = FontFamily(
-    Font(googleFont = montserrat, fontProvider = provider, weight = FontWeight.Black),
-    Font(googleFont = montserrat, fontProvider = provider, weight = FontWeight.ExtraBold),
-    Font(googleFont = montserrat, fontProvider = provider, weight = FontWeight.Bold),
-    Font(googleFont = montserrat, fontProvider = provider, weight = FontWeight.SemiBold),
-    Font(googleFont = montserrat, fontProvider = provider, weight = FontWeight.Medium),
-    Font(googleFont = montserrat, fontProvider = provider, weight = FontWeight.Normal),
-    Font(googleFont = montserrat, fontProvider = provider, weight = FontWeight.Light),
-)
-
-val ExpTitleTypography = Typography(
-    displayLarge = TextStyle(
-        fontFamily = MontserratFamily,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 60.sp,
-        textGeometricTransform = TextGeometricTransform(scaleX = 1.5f),
-        letterSpacing = (-0.02).em,
-        lineHeight = 0.95.em,
-        platformStyle = PlatformTextStyle(includeFontPadding = false)
-    ),
-    displayMedium = TextStyle(
-        fontFamily = MontserratFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 50.sp,
-        //textGeometricTransform = TextGeometricTransform(scaleX = 1f),
-        letterSpacing = (-0.02).em,
-        lineHeight = 0.95.em,
-        platformStyle = PlatformTextStyle(includeFontPadding = false)
-    ),
-    titleMedium = TextStyle(
-        fontFamily = MontserratFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
-        textGeometricTransform = TextGeometricTransform(scaleX = 1.3f),
-        letterSpacing = (-0.02).em,
-        lineHeight = 0.95.em,
-        platformStyle = PlatformTextStyle(includeFontPadding = false)
-    )
-)
-
-// LMusic (Yuyu design system) type: Figtree for UI text, Bricolage Grotesque for
-// headings. The app references `GoogleSansRounded` in hundreds of places, so that
-// name is kept and now maps light-to-semibold weights to Figtree and bold-and-up
-// weights to Bricolage Grotesque — every bold title picks up the Yuyu display face.
 @OptIn(ExperimentalTextApi::class)
-private fun figtree(weight: FontWeight) = androidx.compose.ui.text.font.Font(
-    resId = R.font.figtree_variable,
+private fun flex(weight: FontWeight) = Font(
+    resId = R.font.gflex_variable,
     weight = weight,
     variationSettings = FontVariation.Settings(FontVariation.weight(weight.weight))
 )
 
+/** Google Sans Flex — body and interface text. */
+val NbBody = FontFamily(
+    flex(FontWeight.Light),
+    flex(FontWeight.Normal),
+    flex(FontWeight.Medium),
+    flex(FontWeight.SemiBold),
+    flex(FontWeight.Bold),
+)
+
+/** Gilroy — display and headings. */
+val NbDisplay = GilroyFamily
+
 @OptIn(ExperimentalTextApi::class)
-private fun bricolage(weight: FontWeight, opticalSize: Float) = androidx.compose.ui.text.font.Font(
-    resId = R.font.bricolage_variable,
-    weight = weight,
-    variationSettings = FontVariation.Settings(
-        // Bricolage Grotesque's weight axis tops out at 800.
-        FontVariation.weight(weight.weight.coerceAtMost(800)),
-        FontVariation.Setting("opsz", opticalSize)
+val UnboundedFamily = FontFamily(
+    Font(
+        resId = R.font.unbounded_variable,
+        weight = FontWeight.SemiBold,
+        variationSettings = FontVariation.Settings(FontVariation.weight(600))
     )
 )
 
-/** Figtree only — Yuyu body/UI text. */
-val YuyuBody = FontFamily(
-    figtree(FontWeight.Light),
-    figtree(FontWeight.Normal),
-    figtree(FontWeight.Medium),
-    figtree(FontWeight.SemiBold),
-    figtree(FontWeight.Bold),
-    figtree(FontWeight.ExtraBold),
-)
-
-/** Bricolage Grotesque only — Yuyu display/headings. */
-val YuyuDisplay = FontFamily(
-    bricolage(FontWeight.Normal, 24f),
-    bricolage(FontWeight.Medium, 24f),
-    bricolage(FontWeight.SemiBold, 24f),
-    bricolage(FontWeight.Bold, 36f),
-    bricolage(FontWeight.ExtraBold, 48f),
-    bricolage(FontWeight.Black, 48f),
-)
-
+// The app references `GoogleSansRounded` in hundreds of places, so that name is kept:
+// text weights map to Google Sans Flex and bold-and-up weights to Gilroy ExtraBold, so
+// every bold title picks up the Daylight display face.
 val GoogleSansRounded = FontFamily(
-    figtree(FontWeight.Light),
-    figtree(FontWeight.Normal),
-    figtree(FontWeight.Medium),
-    figtree(FontWeight.SemiBold),
-    bricolage(FontWeight.Bold, 24f),
-    bricolage(FontWeight.ExtraBold, 36f),
-    bricolage(FontWeight.Black, 48f),
+    flex(FontWeight.Light),
+    flex(FontWeight.Normal),
+    flex(FontWeight.Medium),
+    flex(FontWeight.SemiBold),
+    Font(R.font.gilroy_extrabold, FontWeight.Bold),
+    Font(R.font.gilroy_extrabold, FontWeight.ExtraBold),
+    Font(R.font.gilroy_extrabold, FontWeight.Black),
 )
 
-// Yuyu type scale: Bricolage Grotesque headings (800, tight tracking), Figtree text.
-val Typography = Typography(
+/** Older expressive titles asked for Montserrat; they now use Gilroy. */
+val MontserratFamily = GilroyFamily
+
+private val HeadingTracking = (-0.025).em
+
+val ExpTitleTypography = Typography(
     displayLarge = TextStyle(
-        fontFamily = YuyuDisplay,
+        fontFamily = GilroyFamily,
         fontWeight = FontWeight.ExtraBold,
-        fontSize = 48.sp,
-        lineHeight = 56.sp,
-        letterSpacing = (-0.03).em
+        fontSize = 56.sp,
+        letterSpacing = HeadingTracking,
+        lineHeight = 1.0.em,
+        platformStyle = PlatformTextStyle(includeFontPadding = false)
     ),
     displayMedium = TextStyle(
-        fontFamily = YuyuDisplay,
+        fontFamily = GilroyFamily,
         fontWeight = FontWeight.ExtraBold,
-        fontSize = 36.sp,
-        lineHeight = 44.sp,
-        letterSpacing = (-0.03).em
-    ),
-    displaySmall = TextStyle(
-        fontFamily = YuyuDisplay,
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 30.sp,
-        lineHeight = 38.sp,
-        letterSpacing = (-0.02).em
-    ),
-    headlineLarge = TextStyle(
-        fontFamily = YuyuDisplay,
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
-        letterSpacing = (-0.02).em
-    ),
-    headlineMedium = TextStyle(
-        fontFamily = YuyuDisplay,
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 28.sp,
-        lineHeight = 36.sp,
-        letterSpacing = (-0.01).em
-    ),
-    headlineSmall = TextStyle(
-        fontFamily = YuyuDisplay,
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 24.sp,
-        lineHeight = 32.sp,
-        letterSpacing = 0.sp
-    ),
-    titleLarge = TextStyle(
-        fontFamily = YuyuDisplay,
-        fontWeight = FontWeight.Bold,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
+        fontSize = 44.sp,
+        letterSpacing = HeadingTracking,
+        lineHeight = 1.0.em,
+        platformStyle = PlatformTextStyle(includeFontPadding = false)
     ),
     titleMedium = TextStyle(
-        fontFamily = YuyuBody,
-        fontWeight = FontWeight.Medium,
-        fontSize = 18.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.15.sp
-    ),
-    titleSmall = TextStyle(
-        fontFamily = YuyuBody,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.1.sp
-    ),
-    bodyLarge = TextStyle(
-        fontFamily = YuyuBody,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    ),
-    bodyMedium = TextStyle(
-        fontFamily = YuyuBody,
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.25.sp
-    ),
-    bodySmall = TextStyle(
-        fontFamily = YuyuBody,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.4.sp
-    ),
-    labelLarge = TextStyle(
-        fontFamily = YuyuBody,
-        fontWeight = FontWeight.Medium,
-        fontSize = 16.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.1.sp
-    ),
-    labelMedium = TextStyle(
-        fontFamily = YuyuBody,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = YuyuBody,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        fontFamily = GilroyFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 30.sp,
+        letterSpacing = HeadingTracking,
+        lineHeight = 1.0.em,
+        platformStyle = PlatformTextStyle(includeFontPadding = false)
     )
+)
+
+// Material 3 type scale at mobile sizes. Display/headline/titleLarge in Gilroy ExtraBold with
+// −0.025em tracking; everything else in Google Sans Flex.
+val Typography = Typography(
+    displayLarge = TextStyle(fontFamily = NbDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 48.sp, lineHeight = 52.sp, letterSpacing = HeadingTracking),
+    displayMedium = TextStyle(fontFamily = NbDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 36.sp, lineHeight = 42.sp, letterSpacing = HeadingTracking),
+    displaySmall = TextStyle(fontFamily = NbDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 30.sp, lineHeight = 36.sp, letterSpacing = HeadingTracking),
+    headlineLarge = TextStyle(fontFamily = NbDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 32.sp, lineHeight = 38.sp, letterSpacing = HeadingTracking),
+    headlineMedium = TextStyle(fontFamily = NbDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 28.sp, lineHeight = 34.sp, letterSpacing = HeadingTracking),
+    headlineSmall = TextStyle(fontFamily = NbDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 24.sp, lineHeight = 30.sp, letterSpacing = HeadingTracking),
+    titleLarge = TextStyle(fontFamily = NbDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = HeadingTracking),
+    titleMedium = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.SemiBold, fontSize = 17.sp, lineHeight = 24.sp, letterSpacing = 0.1.sp),
+    titleSmall = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp),
+    bodyLarge = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.2.sp),
+    bodyMedium = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.2.sp),
+    bodySmall = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.Normal, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.3.sp),
+    labelLarge = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp),
+    labelMedium = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.4.sp),
+    labelSmall = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.SemiBold, fontSize = 11.sp, lineHeight = 16.sp, letterSpacing = 0.4.sp)
 )

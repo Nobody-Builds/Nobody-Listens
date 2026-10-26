@@ -39,7 +39,7 @@ class GridWidget2x2 : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val playerInfo = currentState<PlayerInfo>().forDisplay()
-            GlanceTheme(colors = YuyuGlanceColors) {
+            GlanceTheme(colors = NbGlanceColors) {
                 GridWidget2x2Content(playerInfo = playerInfo, context = context)
             }
         }
@@ -102,7 +102,7 @@ class GridWidget2x2 : GlanceAppWidget() {
 
                         Spacer(GlanceModifier.width(6.dp))
 
-                        // Play/Pause: an Ember circle centred in its tile
+                        // Play/Pause: a Hard Hat circle centred in its tile
                         Box(
                             modifier = GlanceModifier
                                 .defaultWeight()

@@ -184,7 +184,7 @@ fun JellyfinLoginScreen(
                     color = Color(0xFF00A4DC),
                     modifier = Modifier.size(64.dp),
                     tonalElevation = 2.dp,
-                    shadowElevation = 2.dp
+                    shadowElevation = 0.dp
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(

@@ -1,4 +1,4 @@
-package com.twilighty.lmusic.presentation.yuyu
+package com.twilighty.lmusic.presentation.nb
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 /** One place on Home that opens a "space": lofi, focus, garden, party, taste match, covers. */
-data class YuyuSpace(
+data class NbSpace(
     val id: String,
     val title: String,
     val subtitle: String,
@@ -43,7 +43,7 @@ data class YuyuSpace(
 )
 
 @Composable
-fun YuyuSpacesRow(
+fun NbSpacesRow(
     onLofi: () -> Unit,
     onFocus: () -> Unit,
     onGarden: () -> Unit,
@@ -54,17 +54,18 @@ fun YuyuSpacesRow(
     onSleep: () -> Unit = {},
 ) {
     val spaces = listOf(
-        YuyuSpace("lofi", "Lofi", "Make a tune or tune in", Icons.Rounded.Headphones, onLofi),
-        YuyuSpace("focus", "Focus", "Timer with calm music", Icons.Rounded.Timer, onFocus),
-        YuyuSpace("sleep", "Sleep", "Noise, lofi, slow fade", Icons.Rounded.Bedtime, onSleep),
-        YuyuSpace("garden", "Garden", "Grows as you listen", Icons.Rounded.Spa, onGarden),
-        YuyuSpace("party", "Party", "Friends add songs", Icons.Rounded.Celebration, onParty),
-        YuyuSpace("taste", "Taste match", "Scan a friend", Icons.Rounded.QrCode2, onTasteMatch),
-        YuyuSpace("covers", "Cover studio", "Art for bare songs", Icons.Rounded.Palette, onCovers),
+        NbSpace("lofi", "Lofi", "Make a tune or tune in", Icons.Rounded.Headphones, onLofi),
+        NbSpace("focus", "Focus", "Timer with calm music", Icons.Rounded.Timer, onFocus),
+        NbSpace("sleep", "Sleep", "Noise, lofi, slow fade", Icons.Rounded.Bedtime, onSleep),
+        NbSpace("garden", "Garden", "Grows as you listen", Icons.Rounded.Spa, onGarden),
+        NbSpace("party", "Party", "Friends add songs", Icons.Rounded.Celebration, onParty),
+        NbSpace("taste", "Taste match", "Scan a friend", Icons.Rounded.QrCode2, onTasteMatch),
+        NbSpace("covers", "Cover studio", "Art for bare songs", Icons.Rounded.Palette, onCovers),
     )
-    val tints = listOf(Yuyu.accentSoft, Yuyu.tintLavender, Yuyu.tintMint, Yuyu.tintPeach, Yuyu.tintLavender, Yuyu.tintMint)
+    // Daylight: Sky is the big light fill, with accent-soft and butter-soft for rhythm.
+    val tints = listOf(androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer, Nb.tintLavender, Nb.tintPeach)
     Column(modifier) {
-        YuyuSectionHeader(title = "Spaces", modifier = Modifier.padding(horizontal = 16.dp))
+        NbSectionHeader(title = "Spaces", modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(10.dp))
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
@@ -75,20 +76,20 @@ fun YuyuSpacesRow(
                 Column(
                     modifier = Modifier
                         .width(132.dp)
-                        .clip(YuyuShapes.xl)
+                        .clip(NbShapes.xl)
                         .background(tints[index % tints.size])
                         .clickable(role = Role.Button, onClick = space.onClick)
                         .padding(14.dp)
                 ) {
                     Box(
-                        Modifier.size(40.dp).clip(YuyuShapes.md).background(Yuyu.canvas.copy(alpha = 0.7f)),
+                        Modifier.size(40.dp).clip(NbShapes.md).background(Nb.canvas.copy(alpha = 0.7f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(space.icon, contentDescription = null, tint = Yuyu.text, modifier = Modifier.size(22.dp))
+                        Icon(space.icon, contentDescription = null, tint = Nb.text, modifier = Modifier.size(22.dp))
                     }
                     Spacer(Modifier.height(18.dp))
-                    Text(space.title, style = YuyuType.title, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(space.subtitle, style = YuyuType.caption, color = Yuyu.textMuted, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    Text(space.title, style = NbType.title, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(space.subtitle, style = NbType.caption, color = Nb.textMuted, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 }
             }
         }

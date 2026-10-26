@@ -2,68 +2,137 @@ package com.twilighty.lmusic.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val LMusicPurpleDark = Color(0xFF1E1234)
-val LMusicPurplePrimary = Color(0xFFAB47BC)
-val LMusicPink = Color(0xFFF06292)
-val LMusicOrange = Color(0xFFFF8A65)
-val LMusicLightPurple = Color(0xFFE1BEE7)
-val LMusicWhite = Color(0xFFFFFFFF)
-val LMusicBlack = Color(0xFF000000)
-val LMusicSurface = Color(0xFF2A1F40)
-
-// Colores para tema claro (si se implementa)
-val LightBackground = Color(0xFFF7F2FF)
-val LightSurface = Color(0xFFFBF8FF)
-val LightSurfaceVariant = Color(0xFFE8DEF9)
-val LightOnSurface = Color(0xFF1E1237)
-val LightOnSurfaceVariant = Color(0xFF4D4165)
-val LightPrimary = Color(0xFF6C4FF5)
-val LightPrimaryContainer = Color(0xFFE3DBFF)
-val LightOnPrimaryContainer = Color(0xFF23005C)
-val LightOutline = Color(0xFF78659A)
-
 // ---------------------------------------------------------------------------
-// Yuyu design system (LMusic default). Neutral ink-and-paper palette with the
-// Ember accent; values copied exactly from the Yuyu tokens.
+// Nobody Builds "Daylight" design system (LMusic default). Values copied exactly
+// from NobodyBuilds-Design/tokens/tokens.json; DaylightSchemeTest checks them.
 // ---------------------------------------------------------------------------
-object YuyuColors {
-    // Light
-    val BgCanvas = Color(0xFFFFFFFF)
-    val BgSubtle = Color(0xFFFAFAF9)
-    val BgMuted = Color(0xFFF4F4F2)
-    val BgEmphasis = Color(0xFFEFEEEA)
-    val Border = Color(0xFFE7E6E2)
-    val BorderStrong = Color(0xFFD4D3CE)
-    val Text = Color(0xFF18181B)
-    val TextSecondary = Color(0xFF3F3F46)
-    val TextMuted = Color(0xFF5F5E5A)
-    val Accent = Color(0xFFC2410C)          // Ember
-    val AccentSoft = Color(0xFFFAF0EC)
-    val AccentText = Color(0xFFC2410C)
-    val DangerBg = Color(0xFFFEE2E2)
-    val DangerFg = Color(0xFFB91C1C)
-    val SuccessBg = Color(0xFFDCFCE7)
-    val SuccessFg = Color(0xFF166534)
+object Daylight {
+    // Brand
+    val NightShift = Color(0xFF172033)
+    val Blueprint = Color(0xFF2457A6)
+    val HardHat = Color(0xFFFDC521)
+    val Sky = Color(0xFFCFE0F7)
+    val Butter = Color(0xFFFFE8A3)
+    val Brick = Color(0xFFEA724A)
+    val Paper = Color(0xFFF5F7FB)
 
-    // Dark
-    val DarkBgCanvas = Color(0xFF111113)
-    val DarkBgSubtle = Color(0xFF18181B)
-    val DarkBgInverse = Color(0xFF1C1C1F)
-    val DarkBgMuted = Color(0xFF232326)
-    val DarkBgEmphasis = Color(0xFF2A2A2E)
-    val DarkBorderStrong = Color(0xFF3F3F46)
-    val DarkText = Color(0xFFF4F4F5)
-    val DarkTextSecondary = Color(0xFFD4D4D8)
-    val DarkTextMuted = Color(0xFFA1A1AA)
-    val DarkAccentSoft = Color(0xFF2A1812)
-    val DarkAccentText = Color(0xFFFB8A5B)
-    val DarkDangerBg = Color(0xFF3A1414)
-    val DarkDangerFg = Color(0xFFF87171)
+    /** One theme's tokens, named as in tokens.json. */
+    class Tokens(
+        val bg: Color,
+        val surface: Color,
+        val panel: Color,
+        val hover: Color,
+        val line: Color,
+        val outline: Color,
+        val ink: Color,
+        val muted: Color,
+        val focus: Color,
+        val accent: Color,
+        val accentHover: Color,
+        val accentActive: Color,
+        val onAccent: Color,
+        val accentSoft: Color,
+        val accentInk: Color,
+        val emphasis: Color,
+        val emphasisHover: Color,
+        val emphasisActive: Color,
+        val onEmphasis: Color,
+        val emphasisSoft: Color,
+        val success: Color,
+        val onSuccess: Color,
+        val successSoft: Color,
+        val successInk: Color,
+        val warn: Color,
+        val onWarn: Color,
+        val warnSoft: Color,
+        val warnInk: Color,
+        val info: Color,
+        val onInfo: Color,
+        val infoSoft: Color,
+        val infoInk: Color,
+        val danger: Color,
+        val onDanger: Color,
+        val dangerLine: Color,
+        val sidebar: Color,
+    )
 
-    // Brand / highlight
-    val Mint = Color(0xFF7EE8C4)
-    val Lavender = Color(0xFFB9AEFF)
-    val HighlightMint = Color(0xFFBDF3DF)
-    val HighlightLavender = Color(0xFFDCD6FF)
-    val HighlightPeach = Color(0xFFFDE7C8)
+    val Light = Tokens(
+        bg = Color(0xFFF5F7FB),
+        surface = Color(0xFFECF0F7),
+        panel = Color(0xFFFFFFFF),
+        hover = Color(0xFFE4E9F2),
+        line = Color(0xFFD3DAE6),
+        outline = Color(0xFF7D8699),
+        ink = Color(0xFF172033),
+        muted = Color(0xFF4F5A70),
+        focus = Color(0xFF2457A6),
+        accent = Color(0xFF2457A6),
+        accentHover = Color(0xFF1F4C92),
+        accentActive = Color(0xFF1A417E),
+        onAccent = Color(0xFFF5F7FB),
+        accentSoft = Color(0xFFE3ECF8),
+        accentInk = Color(0xFF2457A6),
+        emphasis = Color(0xFFFDC521),
+        emphasisHover = Color(0xFFFDCD45),
+        emphasisActive = Color(0xFFFED66A),
+        onEmphasis = Color(0xFF172033),
+        emphasisSoft = Color(0xFFFFF6D6),
+        success = Color(0xFFA6D98F),
+        onSuccess = Color(0xFF172033),
+        successSoft = Color(0xFFF1F9EC),
+        successInk = Color(0xFF3B6B2B),
+        warn = Color(0xFFEA724A),
+        onWarn = Color(0xFF172033),
+        warnSoft = Color(0xFFFCEBE4),
+        warnInk = Color(0xFFA3412A),
+        info = Color(0xFFCFE0F7),
+        onInfo = Color(0xFF172033),
+        infoSoft = Color(0xFFEEF4FC),
+        infoInk = Color(0xFF2457A6),
+        danger = Color(0xFFB91C1C),
+        onDanger = Color(0xFFF5F7FB),
+        dangerLine = Color(0xFFFCA5A5),
+        sidebar = Color(0xFFCFE0F7),
+    )
+
+    val Dark = Tokens(
+        bg = Color(0xFF172033),
+        surface = Color(0xFF1D2840),
+        panel = Color(0xFF22304B),
+        hover = Color(0xFF2A3957),
+        line = Color(0xFF3E4D6B),
+        outline = Color(0xFF8592AD),
+        ink = Color(0xFFF5F7FB),
+        muted = Color(0xFFC3C8D2),
+        focus = Color(0xFFFDC521),
+        accent = Color(0xFF7FA8E8),
+        accentHover = Color(0xFF92B5EC),
+        accentActive = Color(0xFFA5C2EF),
+        onAccent = Color(0xFF172033),
+        accentSoft = Color(0xFF263A5C),
+        accentInk = Color(0xFFA9C8F0),
+        emphasis = Color(0xFFFDC521),
+        emphasisHover = Color(0xFFFDCD45),
+        emphasisActive = Color(0xFFFED66A),
+        onEmphasis = Color(0xFF172033),
+        emphasisSoft = Color(0xFF3A3424),
+        success = Color(0xFFA6D98F),
+        onSuccess = Color(0xFF172033),
+        successSoft = Color(0xFF26382F),
+        successInk = Color(0xFFA6D98F),
+        warn = Color(0xFFEA724A),
+        onWarn = Color(0xFF172033),
+        warnSoft = Color(0xFF3B2C2B),
+        warnInk = Color(0xFFF2A88E),
+        info = Color(0xFFCFE0F7),
+        onInfo = Color(0xFF172033),
+        infoSoft = Color(0xFF24344F),
+        infoInk = Color(0xFFCFE0F7),
+        danger = Color(0xFFFCA5A5),
+        onDanger = Color(0xFF172033),
+        dangerLine = Color(0xFF7C6261),
+        sidebar = Color(0xFF121A2B),
+    )
+
+    fun tokens(isDark: Boolean): Tokens = if (isDark) Dark else Light
 }

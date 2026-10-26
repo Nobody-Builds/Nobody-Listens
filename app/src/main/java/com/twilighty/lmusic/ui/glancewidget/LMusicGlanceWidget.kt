@@ -82,7 +82,7 @@ class LMusicGlanceWidget : GlanceAppWidget() {
             Timber.tag("LMusicGlanceWidget")
                 .d("Providing Glance. PlayerInfo: title='${playerInfo.songTitle}', artist='${playerInfo.artistName}', isPlaying=${playerInfo.isPlaying}, hasBitmap=${playerInfo.albumArtBitmapData != null}, progress=${playerInfo.currentPositionMs}/${playerInfo.totalDurationMs}")
 
-            GlanceTheme(colors = YuyuGlanceColors) {
+            GlanceTheme(colors = NbGlanceColors) {
                 WidgetUi(playerInfo = playerInfo, size = currentSize, context = context)
             }
         }

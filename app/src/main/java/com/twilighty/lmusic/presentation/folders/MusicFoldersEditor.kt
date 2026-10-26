@@ -44,21 +44,20 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.MaterialTheme
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.twilighty.lmusic.presentation.components.FileExplorerDialog
 import com.twilighty.lmusic.presentation.screens.SettingsItem
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbTopBar
+import com.twilighty.lmusic.presentation.nb.NbType
 import java.io.File
 
 /**
@@ -87,10 +86,10 @@ fun MusicFoldersEditor(
         val availableQuickAdd = quickAdd.filter { qa -> included.none { it.equals(qa.path, ignoreCase = true) } }
         if (availableQuickAdd.isNotEmpty()) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                YuyuOverline("Quick add")
+                NbOverline("Quick add")
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     availableQuickAdd.forEach { folder ->
-                        YuyuChip(
+                        NbChip(
                             text = folder.label,
                             selected = false,
                             onClick = { viewModel.addFolder(folder.path) },
@@ -102,12 +101,12 @@ fun MusicFoldersEditor(
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            YuyuOverline(if (included.isEmpty()) "No folders yet" else "Your music folders")
+            NbOverline(if (included.isEmpty()) "No folders yet" else "Your music folders")
             if (included.isEmpty()) {
                 Text(
                     "Add at least one folder to continue.",
-                    style = YuyuType.meta,
-                    color = Yuyu.textMuted
+                    style = NbType.meta,
+                    color = Nb.textMuted
                 )
             }
             included.forEach { path ->
@@ -119,13 +118,13 @@ fun MusicFoldersEditor(
             }
         }
 
-        YuyuButton(
+        NbButton(
             text = "Add folder",
             onClick = {
                 showPicker = true
                 viewModel.openExplorer()
             },
-            style = YuyuButtonStyle.Secondary,
+            style = NbButtonStyle.Secondary,
             enabled = canOpenPicker,
             icon = rememberVectorPainter(Icons.Rounded.Add),
             modifier = Modifier.fillMaxWidth()
@@ -135,8 +134,8 @@ fun MusicFoldersEditor(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Icon(Icons.Rounded.Info, contentDescription = null, tint = Yuyu.textMuted, modifier = Modifier.size(16.dp))
-            Text("Only these folders are scanned", style = YuyuType.caption, color = Yuyu.textMuted)
+            Icon(Icons.Rounded.Info, contentDescription = null, tint = Nb.textMuted, modifier = Modifier.size(16.dp))
+            Text("Only these folders are scanned", style = NbType.caption, color = Nb.textMuted)
         }
     }
 
@@ -157,7 +156,7 @@ private fun MusicFolderRow(path: String, removable: Boolean, onRemove: () -> Uni
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, Yuyu.border, YuyuShapes.lg)
+            .border(1.dp, Nb.border, NbShapes.lg)
             .padding(start = 14.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -165,22 +164,22 @@ private fun MusicFolderRow(path: String, removable: Boolean, onRemove: () -> Uni
         Box(
             modifier = Modifier
                 .size(40.dp)
-                .background(Yuyu.accentSoft, YuyuShapes.md),
+                .background(Nb.accentSoft, NbShapes.md),
             contentAlignment = Alignment.Center
         ) {
-            Icon(Icons.Rounded.Folder, contentDescription = null, tint = Yuyu.accentText, modifier = Modifier.size(22.dp))
+            Icon(Icons.Rounded.Folder, contentDescription = null, tint = Nb.accentText, modifier = Modifier.size(22.dp))
         }
         Column(modifier = Modifier.weight(1f)) {
-            Text(name, style = YuyuType.title, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(name, style = NbType.title, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(
                 path,
-                style = YuyuType.caption,
-                color = Yuyu.textMuted,
+                style = NbType.caption,
+                color = Nb.textMuted,
                 maxLines = 1,
                 overflow = TextOverflow.StartEllipsis
             )
         }
-        YuyuIconButton(
+        NbIconButton(
             imageVector = Icons.Rounded.Close,
             contentDescription = "Remove $name",
             onClick = onRemove,
@@ -232,7 +231,7 @@ private fun MusicFolderPicker(
     )
 }
 
-/** Setup page: "Which folders have your music?" in the Yuyu welcome style. */
+/** Setup page: "Which folders have your music?" in the Daylight welcome style. */
 @Composable
 fun MusicFoldersSetupPage(
     viewModel: MusicFoldersViewModel,
@@ -246,7 +245,7 @@ fun MusicFoldersSetupPage(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Yuyu.canvas)
+            .background(Nb.canvas)
             .verticalScroll(rememberScrollState())
             .padding(start = 24.dp, end = 24.dp, top = 48.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(28.dp)
@@ -255,15 +254,15 @@ fun MusicFoldersSetupPage(
             Text(
                 buildAnnotatedString {
                     append("Which folders have ")
-                    withStyle(SpanStyle(background = Yuyu.highlightMint)) { append("your music?") }
+                    withStyle(SpanStyle(background = Nb.highlightMint)) { append("your music?") }
                 },
-                style = YuyuType.display(40.sp),
-                color = Yuyu.text
+                style = NbType.display(40.sp),
+                color = Nb.text
             )
             Text(
                 "Pick the folders LMusic should look in. Voice notes, ringtones and other audio elsewhere stay out of your library.",
-                style = YuyuType.bodyLarge,
-                color = Yuyu.textSecondary
+                style = NbType.bodyLarge,
+                color = Nb.textSecondary
             )
         }
         MusicFoldersEditor(viewModel = viewModel, canOpenPicker = hasMediaPermission, allowRemovingLast = true)
@@ -287,18 +286,18 @@ fun MusicFoldersSettingsDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
     ) {
-        Surface(modifier = Modifier.fillMaxSize(), color = Yuyu.canvas) {
+        Surface(modifier = Modifier.fillMaxSize(), color = Nb.canvas) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .statusBarsPadding()
                     .navigationBarsPadding()
             ) {
-                YuyuTopBar(
+                NbTopBar(
                     title = "Music folders",
-                    titleStyle = YuyuType.h2,
+                    titleStyle = NbType.h2,
                     navigationIcon = {
-                        YuyuIconButton(
+                        NbIconButton(
                             imageVector = Icons.Rounded.Close,
                             contentDescription = "Close",
                             onClick = onDismiss
@@ -314,8 +313,8 @@ fun MusicFoldersSettingsDialog(
                 ) {
                     Text(
                         "LMusic only scans these folders. Your library updates after each change.",
-                        style = YuyuType.body,
-                        color = Yuyu.textSecondary
+                        style = NbType.body,
+                        color = Nb.textSecondary
                     )
                     MusicFoldersEditor(viewModel = viewModel)
                 }
@@ -337,7 +336,7 @@ fun MusicFoldersSettingsItem(viewModel: MusicFoldersViewModel = hiltViewModel())
     SettingsItem(
         title = "Music folders",
         subtitle = subtitle,
-        leadingIcon = { Icon(Icons.Outlined.Folder, null, tint = MaterialTheme.colorScheme.secondary) },
+        leadingIcon = { Icon(Icons.Rounded.Folder, null, tint = MaterialTheme.colorScheme.secondary) },
         trailingIcon = { Icon(Icons.Rounded.ChevronRight, "Open", tint = MaterialTheme.colorScheme.onSurfaceVariant) },
         onClick = { open = true }
     )

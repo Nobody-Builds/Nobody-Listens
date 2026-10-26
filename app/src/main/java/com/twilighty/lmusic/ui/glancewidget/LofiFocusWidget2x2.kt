@@ -86,7 +86,7 @@ class LofiFocusWidget2x2 : GlanceAppWidget() {
                 ep?.lofiController()?.state?.drop(1)?.collect { value = it.isPlaying to (it.source != null) }
             }
             val data = initial.copy(lofiPlaying = lofi.first, lofiLoaded = lofi.second, focus = focus)
-            GlanceTheme(colors = YuyuGlanceColors) { Content(context, data) }
+            GlanceTheme(colors = NbGlanceColors) { Content(context, data) }
         }
     }
 
@@ -115,9 +115,9 @@ class LofiFocusWidget2x2 : GlanceAppWidget() {
             modifier = GlanceModifier
                 .fillMaxSize()
                 .background(GlanceTheme.colors.surface)
-                .cornerRadius(YuyuWidget.Radius)
+                .cornerRadius(NbWidget.Radius)
                 .padding(14.dp)
-                .clickable(YuyuWidget.openApp()),
+                .clickable(NbWidget.openApp()),
         ) {
             WidgetOverline(
                 when {

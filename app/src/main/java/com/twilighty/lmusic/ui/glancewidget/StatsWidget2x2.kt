@@ -100,7 +100,7 @@ class StatsWidget2x2 : GlanceAppWidget() {
             val data by produceState(initial) {
                 repo?.refreshFlow?.drop(1)?.collect { value = loadSafely(repo) }
             }
-            GlanceTheme(colors = YuyuGlanceColors) { Content(data) }
+            GlanceTheme(colors = NbGlanceColors) { Content(data) }
         }
     }
 
@@ -115,9 +115,9 @@ class StatsWidget2x2 : GlanceAppWidget() {
             modifier = GlanceModifier
                 .fillMaxSize()
                 .background(GlanceTheme.colors.surface)
-                .cornerRadius(YuyuWidget.Radius)
+                .cornerRadius(NbWidget.Radius)
                 .padding(14.dp)
-                .clickable(YuyuWidget.openApp()),
+                .clickable(NbWidget.openApp()),
         ) {
             WidgetOverline("Today")
             Spacer(GlanceModifier.height(2.dp))

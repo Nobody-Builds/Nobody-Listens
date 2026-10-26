@@ -7,18 +7,18 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuActionRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuSheetHandle
-import com.twilighty.lmusic.presentation.yuyu.YuyuSheetShape
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatus
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatusChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbActionRow
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbSheetHandle
+import com.twilighty.lmusic.presentation.nb.NbSheetShape
+import com.twilighty.lmusic.presentation.nb.NbStatus
+import com.twilighty.lmusic.presentation.nb.NbStatusChip
+import com.twilighty.lmusic.presentation.nb.NbType
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -39,22 +39,18 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.QueueMusic
-import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.QueueMusic
+import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
+import androidx.compose.material.icons.rounded.DeleteForever
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.Album
 import androidx.compose.material.icons.rounded.AudioFile
 import androidx.compose.material.icons.rounded.Cloud
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.SmartDisplay
@@ -325,10 +321,10 @@ fun SongInfoBottomSheet(
             }
         },
         sheetState = sheetState,
-        containerColor = Yuyu.canvas,
+        containerColor = Nb.canvas,
         tonalElevation = 0.dp,
-        shape = YuyuSheetShape,
-        dragHandle = { YuyuSheetHandle() }
+        shape = NbSheetShape,
+        dragHandle = { NbSheetHandle() }
     ) {
         CompositionLocalProvider(
             LocalOverscrollFactory provides null
@@ -375,37 +371,37 @@ fun SongInfoBottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    YuyuArt(
+                    NbArt(
                         model = song.albumArtUriString,
                         title = song.album.ifBlank { song.title },
                         size = 64.dp,
-                        shape = YuyuShapes.md,
+                        shape = NbShapes.md,
                         contentDescription = stringResource(R.string.widget_album_art)
                     )
                     Column(Modifier.weight(1f)) {
                         Text(
                             text = song.title,
-                            style = YuyuType.h3,
-                            color = Yuyu.text,
+                            style = NbType.h3,
+                            color = Nb.text,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             text = listOf(song.displayArtist, song.album).filter { it.isNotBlank() }.joinToString(" · "),
-                            style = YuyuType.body,
-                            color = Yuyu.textSecondary,
+                            style = NbType.body,
+                            color = Nb.textSecondary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             text = listOfNotNull(formatDuration(song.duration), audioMetaLabel).joinToString(" · "),
-                            style = YuyuType.caption,
-                            color = Yuyu.textMuted,
+                            style = NbType.caption,
+                            color = Nb.textMuted,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                    YuyuIconButton(
+                    NbIconButton(
                         imageVector = if (isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
                         contentDescription = stringResource(
                             if (isFavorite) R.string.cd_remove_from_favorites else R.string.cd_add_to_favorites
@@ -414,23 +410,23 @@ fun SongInfoBottomSheet(
                             com.twilighty.lmusic.presentation.haptics.LMusicHaptics.get().like(!isFavorite)
                             onToggleFavorite()
                         },
-                        tint = if (isFavorite) Yuyu.accentText else Yuyu.text
+                        tint = if (isFavorite) Nb.accentText else Nb.text
                     )
                 }
-                YuyuDivider()
+                NbDivider()
                 Spacer(Modifier.height(6.dp))
 
-                YuyuActionRow(
+                NbActionRow(
                     text = stringResource(R.string.play_playback),
                     icon = rememberVectorPainter(Icons.Rounded.PlayArrow),
                     onClick = onPlaySong
                 )
-                YuyuActionRow(
+                NbActionRow(
                     text = stringResource(R.string.action_queue_next),
                     icon = rememberVectorPainter(Icons.Rounded.SkipNext),
                     onClick = { com.twilighty.lmusic.presentation.haptics.LMusicHaptics.get().successLight(); onAddNextToQueue() }
                 )
-                YuyuActionRow(
+                NbActionRow(
                     text = stringResource(R.string.action_add_to_queue),
                     icon = rememberVectorPainter(Icons.AutoMirrored.Rounded.QueueMusic),
                     onClick = { com.twilighty.lmusic.presentation.haptics.LMusicHaptics.get().successLight(); onAddToQueue() }
@@ -438,7 +434,7 @@ fun SongInfoBottomSheet(
                 // YouTube songs: YouTube's mix of similar songs.
                 com.twilighty.lmusic.presentation.ytmusic.YouTubeMusicStartRadioAction(song = song, onDismiss = onDismiss)
                 if (youTubeVideoId != null) {
-                    YuyuActionRow(
+                    NbActionRow(
                         text = "Watch video",
                         icon = rememberVectorPainter(Icons.Rounded.SmartDisplay),
                         onClick = {
@@ -455,44 +451,44 @@ fun SongInfoBottomSheet(
                 com.twilighty.lmusic.presentation.smart.SmartSongActions(song = song, onDismiss = onDismiss)
                 // Ambient rain / café / fire / waves over music (opens its own small sheet).
                 com.twilighty.lmusic.presentation.lofi.LofiSongActions()
-                YuyuActionRow(
+                NbActionRow(
                     text = "Add to playlist…",
                     icon = rememberVectorPainter(Icons.AutoMirrored.Rounded.PlaylistAdd),
                     onClick = onAddToPlayList
                 )
-                if (youTubeVideoId == null) YuyuActionRow(
+                if (youTubeVideoId == null) NbActionRow(
                     text = "Edit tags",
                     icon = rememberVectorPainter(Icons.Rounded.Edit),
                     onClick = { showEditSheet = true },
                     trailing = {
-                        YuyuStatusChip(
+                        NbStatusChip(
                             text = "Autofill",
-                            status = YuyuStatus.Neutral,
+                            status = NbStatus.Neutral,
                             icon = rememberVectorPainter(Icons.Rounded.AutoAwesome)
                         )
                     }
                 )
                 // Cover studio: "Make a cover" (only for local songs without artwork).
                 com.twilighty.lmusic.presentation.covers.CoverSongActions(song = song)
-                YuyuActionRow(
+                NbActionRow(
                     text = "Go to album",
                     icon = rememberVectorPainter(Icons.Rounded.Album),
                     onClick = onNavigateToAlbum
                 )
-                YuyuActionRow(
+                NbActionRow(
                     text = "Go to artist",
                     icon = rememberVectorPainter(Icons.Rounded.Person),
                     onClick = onNavigateToArtist
                 )
                 if (!song.genre.isNullOrEmpty()) {
-                    YuyuActionRow(
+                    NbActionRow(
                         text = "Go to genre",
                         subtitle = song.genre,
                         icon = rememberVectorPainter(Icons.Rounded.MusicNote),
                         onClick = onNavigateToGenre
                     )
                 }
-                YuyuActionRow(
+                NbActionRow(
                     text = if (youTubeVideoId != null) "Share link" else "Share file",
                     icon = rememberVectorPainter(Icons.Rounded.Share),
                     onClick = shareSong
@@ -513,7 +509,7 @@ fun SongInfoBottomSheet(
                         isLMusicWatchAvailable -> stringResource(R.string.song_info_send_to_watch)
                         else -> stringResource(R.string.song_info_watch_unavailable)
                     }
-                    YuyuActionRow(
+                    NbActionRow(
                         text = watchText,
                         icon = painterResource(R.drawable.rounded_watch_arrow_down_24),
                         enabled = shouldOfferWatchTransfer && !isSendingToWatch,
@@ -528,8 +524,8 @@ fun SongInfoBottomSheet(
                     )
                 }
 
-                if (youTubeVideoId == null) YuyuDivider(Modifier.padding(vertical = 4.dp))
-                if (youTubeVideoId == null) YuyuActionRow(
+                if (youTubeVideoId == null) NbDivider(Modifier.padding(vertical = 4.dp))
+                if (youTubeVideoId == null) NbActionRow(
                     text = "Delete from device…",
                     icon = rememberVectorPainter(Icons.Rounded.Delete),
                     danger = true,
@@ -547,13 +543,13 @@ fun SongInfoBottomSheet(
 
                 // Details
                 Spacer(Modifier.height(12.dp))
-                YuyuOverline(stringResource(R.string.song_info_tab_details), modifier = Modifier.padding(start = 6.dp, bottom = 4.dp))
+                NbOverline(stringResource(R.string.song_info_tab_details), modifier = Modifier.padding(start = 6.dp, bottom = 4.dp))
                 SongInfoSegmentedListItem(
                     headline = stringResource(R.string.song_info_label_duration),
                     supporting = formatDuration(song.duration),
                     icon = Icons.Rounded.Schedule,
                     iconDescription = stringResource(R.string.cd_duration_icon),
-                    shape = YuyuShapes.md,
+                    shape = NbShapes.md,
                 )
                 if (!audioMetaLabel.isNullOrEmpty()) {
                     SongInfoSegmentedListItem(
@@ -561,7 +557,7 @@ fun SongInfoBottomSheet(
                         supporting = audioMetaLabel,
                         icon = Icons.Rounded.Info,
                         iconDescription = stringResource(R.string.cd_audio_format_icon),
-                        shape = YuyuShapes.md,
+                        shape = NbShapes.md,
                     )
                 }
                 SongInfoSegmentedListItem(
@@ -575,7 +571,7 @@ fun SongInfoBottomSheet(
                             R.string.cd_file_icon
                         }
                     ),
-                    shape = YuyuShapes.md,
+                    shape = NbShapes.md,
                 )
             }
         }
@@ -631,12 +627,12 @@ private fun SongInfoSegmentedListItem(
         Icon(
             imageVector = icon,
             contentDescription = iconDescription,
-            tint = Yuyu.textMuted,
+            tint = Nb.textMuted,
             modifier = Modifier.size(22.dp)
         )
         Column(Modifier.weight(1f)) {
-            Text(headline, style = YuyuType.caption, color = Yuyu.textMuted)
-            Text(supporting, style = YuyuType.body, color = Yuyu.text)
+            Text(headline, style = NbType.caption, color = Nb.textMuted)
+            Text(supporting, style = NbType.body, color = Nb.text)
         }
     }
 }

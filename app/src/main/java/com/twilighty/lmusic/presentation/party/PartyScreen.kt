@@ -54,28 +54,28 @@ import com.twilighty.lmusic.data.party.PartyHostState
 import com.twilighty.lmusic.data.party.PartyRequest
 import com.twilighty.lmusic.data.party.PartyStatus
 import com.twilighty.lmusic.data.party.PartySummary
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCallout
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuSectionHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuSegmented
-import com.twilighty.lmusic.presentation.yuyu.YuyuSettingRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuSongRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatTile
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatus
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatusChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuSwitch
-import com.twilighty.lmusic.presentation.yuyu.YuyuTile
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCallout
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbIconButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbSectionHeader
+import com.twilighty.lmusic.presentation.nb.NbSegmented
+import com.twilighty.lmusic.presentation.nb.NbSettingRow
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbSongRow
+import com.twilighty.lmusic.presentation.nb.NbStatTile
+import com.twilighty.lmusic.presentation.nb.NbStatus
+import com.twilighty.lmusic.presentation.nb.NbStatusChip
+import com.twilighty.lmusic.presentation.nb.NbSwitch
+import com.twilighty.lmusic.presentation.nb.NbTile
+import com.twilighty.lmusic.presentation.nb.NbTopBar
+import com.twilighty.lmusic.presentation.nb.NbType
 import kotlinx.coroutines.delay
 
 private val DurationHours = listOf(1, 2, 4)
@@ -88,11 +88,11 @@ fun PartyScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val batteryTip = com.twilighty.lmusic.presentation.yuyu.rememberBatteryTipState()
+    val batteryTip = com.twilighty.lmusic.presentation.nb.rememberBatteryTipState()
     Box(
         Modifier
             .fillMaxSize()
-            .background(Yuyu.canvas)
+            .background(Nb.canvas)
     ) {
         LazyColumn(
             modifier = Modifier
@@ -102,7 +102,7 @@ fun PartyScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item(key = "top") {
-                YuyuTopBar(
+                NbTopBar(
                     title = "Party queue",
                     kicker = when (state.status) {
                         PartyStatus.Running -> "Live on your Wi-Fi"
@@ -110,7 +110,7 @@ fun PartyScreen(
                         PartyStatus.Idle -> "Friends add songs from your phone"
                     },
                     navigationIcon = {
-                        YuyuIconButton(
+                        NbIconButton(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = "Back",
                             onClick = onBack
@@ -120,7 +120,7 @@ fun PartyScreen(
             }
             if (batteryTip.visible) {
                 item(key = "battery_tip") {
-                    com.twilighty.lmusic.presentation.yuyu.BatteryOptimizationTip(batteryTip, Modifier.padding(horizontal = 16.dp))
+                    com.twilighty.lmusic.presentation.nb.BatteryOptimizationTip(batteryTip, Modifier.padding(horizontal = 16.dp))
                 }
             }
             state.lastSummary?.let { summary ->
@@ -130,7 +130,7 @@ fun PartyScreen(
             }
             state.error?.takeIf { state.status == PartyStatus.Idle }?.let { error ->
                 item(key = "error") {
-                    YuyuCallout(boldText = "Heads up.", text = error, modifier = Modifier.padding(horizontal = 16.dp))
+                    NbCallout(boldText = "Heads up.", text = error, modifier = Modifier.padding(horizontal = 16.dp))
                 }
             }
             when (state.status) {
@@ -139,7 +139,7 @@ fun PartyScreen(
                 }
                 PartyStatus.Starting -> item(key = "starting") {
                     Box(Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = Yuyu.accent)
+                        CircularProgressIndicator(color = Nb.ink)
                     }
                 }
                 PartyStatus.Running -> runningContent(state, viewModel)
@@ -166,14 +166,14 @@ private fun androidx.compose.foundation.lazy.LazyListScope.runningContent(
             Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            YuyuStatTile(label = "Guests", value = state.guests.size.toString(), modifier = Modifier.weight(1f))
-            YuyuStatTile(
+            NbStatTile(label = "Guests", value = state.guests.size.toString(), modifier = Modifier.weight(1f))
+            NbStatTile(
                 label = "Played",
                 value = (state.summarySoFar?.songsPlayed ?: 0).toString(),
                 supporting = "${state.upNext.size} up next",
                 modifier = Modifier.weight(1f)
             )
-            YuyuStatTile(
+            NbStatTile(
                 label = "Ends in",
                 value = if (left >= 60) "${left / 60}h ${left % 60}m" else "${left}m",
                 modifier = Modifier.weight(1f)
@@ -181,10 +181,10 @@ private fun androidx.compose.foundation.lazy.LazyListScope.runningContent(
         }
     }
     item(key = "approve") {
-        YuyuSettingRow(
+        NbSettingRow(
             title = "Approve each request",
             subtitle = "Songs wait for your OK before they join the queue",
-            trailing = { YuyuSwitch(checked = state.approveEach, onCheckedChange = viewModel::setApproveEach) },
+            trailing = { NbSwitch(checked = state.approveEach, onCheckedChange = viewModel::setApproveEach) },
             onClick = { viewModel.setApproveEach(!state.approveEach) },
             modifier = Modifier.padding(horizontal = 16.dp)
         )
@@ -193,8 +193,8 @@ private fun androidx.compose.foundation.lazy.LazyListScope.runningContent(
     state.nowPlaying?.let { np ->
         item(key = "np") {
             Column(Modifier.padding(horizontal = 16.dp)) {
-                YuyuOverline("Now playing")
-                YuyuSongRow(
+                NbOverline("Now playing")
+                NbSongRow(
                     title = np.title.ifBlank { "Nothing playing" },
                     subtitle = listOfNotNull(np.artist.ifBlank { null }, np.addedBy?.let { "added by $it" }).joinToString(" · "),
                     artModel = np.artUri,
@@ -207,7 +207,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.runningContent(
 
     if (state.awaiting.isNotEmpty()) {
         item(key = "awaiting_h") {
-            YuyuSectionHeader(
+            NbSectionHeader(
                 title = "Waiting for you · ${state.awaiting.size}",
                 actionLabel = "Approve all",
                 onAction = viewModel::approveAll,
@@ -216,18 +216,18 @@ private fun androidx.compose.foundation.lazy.LazyListScope.runningContent(
         }
         items(state.awaiting, key = { "aw_${it.id}" }) { r ->
             RequestRow(r, Modifier.padding(horizontal = 16.dp)) {
-                YuyuIconButton(
+                NbIconButton(
                     imageVector = Icons.Rounded.Close,
                     contentDescription = "Remove",
                     onClick = { viewModel.remove(r.id) },
-                    style = YuyuIconButtonStyle.Outline,
+                    style = NbIconButtonStyle.Outline,
                     size = 40.dp
                 )
-                YuyuIconButton(
+                NbIconButton(
                     imageVector = Icons.Rounded.Check,
                     contentDescription = "Approve",
                     onClick = { viewModel.approve(r.id) },
-                    style = YuyuIconButtonStyle.Accent,
+                    style = NbIconButtonStyle.Accent,
                     size = 40.dp
                 )
             }
@@ -235,14 +235,14 @@ private fun androidx.compose.foundation.lazy.LazyListScope.runningContent(
     }
 
     item(key = "next_h") {
-        YuyuSectionHeader(title = "Up next", modifier = Modifier.padding(horizontal = 16.dp))
+        NbSectionHeader(title = "Up next", modifier = Modifier.padding(horizontal = 16.dp))
     }
     if (state.upNext.isEmpty()) {
         item(key = "next_empty") {
             Text(
                 "No requests yet. Friends scan the code, pick a name and add songs.",
-                style = YuyuType.meta,
-                color = Yuyu.textMuted,
+                style = NbType.meta,
+                color = Nb.textMuted,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
@@ -250,9 +250,9 @@ private fun androidx.compose.foundation.lazy.LazyListScope.runningContent(
     items(state.upNext, key = { "nx_${it.id}" }) { r ->
         RequestRow(r, Modifier.padding(horizontal = 16.dp)) {
             if (r.status == com.twilighty.lmusic.data.party.PartyRequestStatus.Staged) {
-                YuyuStatusChip("Next", YuyuStatus.Accent)
+                NbStatusChip("Next", NbStatus.Accent)
             }
-            YuyuIconButton(
+            NbIconButton(
                 imageVector = Icons.Rounded.Close,
                 contentDescription = "Remove",
                 onClick = { viewModel.remove(r.id) },
@@ -262,7 +262,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.runningContent(
     }
 
     item(key = "guests_h") {
-        YuyuSectionHeader(title = "Guests · ${state.guests.size}", modifier = Modifier.padding(horizontal = 16.dp))
+        NbSectionHeader(title = "Guests · ${state.guests.size}", modifier = Modifier.padding(horizontal = 16.dp))
     }
     items(state.guests, key = { "g_${it.id}" }) { g ->
         Row(
@@ -272,13 +272,13 @@ private fun androidx.compose.foundation.lazy.LazyListScope.runningContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            YuyuArt(model = null, title = g.name, size = 40.dp, shape = CircleShape)
+            NbArt(model = null, title = g.name, size = 40.dp, shape = CircleShape)
             val added = state.upNext.count { it.guestId == g.id } + state.awaiting.count { it.guestId == g.id }
             Column(Modifier.weight(1f)) {
-                Text(g.name, style = YuyuType.title, color = Yuyu.text)
-                Text(if (added == 1) "1 song waiting" else "$added songs waiting", style = YuyuType.caption, color = Yuyu.textMuted)
+                Text(g.name, style = NbType.title, color = Nb.text)
+                Text(if (added == 1) "1 song waiting" else "$added songs waiting", style = NbType.caption, color = Nb.textMuted)
             }
-            YuyuIconButton(
+            NbIconButton(
                 imageVector = Icons.Rounded.PersonRemove,
                 contentDescription = "Remove ${g.name}",
                 onClick = { viewModel.kick(g.id) },
@@ -288,11 +288,11 @@ private fun androidx.compose.foundation.lazy.LazyListScope.runningContent(
     }
 
     item(key = "end") {
-        YuyuButton(
+        NbButton(
             text = "End party",
             onClick = viewModel::end,
-            style = YuyuButtonStyle.Danger,
-            size = YuyuButtonSize.Large,
+            style = NbButtonStyle.Danger,
+            size = NbButtonSize.Large,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -306,7 +306,7 @@ private fun RequestRow(
     modifier: Modifier = Modifier,
     actions: @Composable () -> Unit,
 ) {
-    YuyuSongRow(
+    NbSongRow(
         title = r.song.title,
         subtitle = "${r.song.artist} · ${r.guestName}",
         artKey = r.song.album.ifBlank { r.song.title },
@@ -314,8 +314,8 @@ private fun RequestRow(
         trailing = {
             if (r.votes > 1) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(rememberVectorPainter(Icons.Rounded.ThumbUp), null, tint = Yuyu.textMuted, modifier = Modifier.size(14.dp))
-                    Text(" ${r.votes}", style = YuyuType.caption, color = Yuyu.textMuted)
+                    Icon(rememberVectorPainter(Icons.Rounded.ThumbUp), null, tint = Nb.textMuted, modifier = Modifier.size(14.dp))
+                    Text(" ${r.votes}", style = NbType.caption, color = Nb.textMuted)
                 }
             }
             actions()
@@ -327,9 +327,9 @@ private fun RequestRow(
 private fun JoinCard(state: PartyHostState, viewModel: PartyViewModel, modifier: Modifier = Modifier) {
     val joinUrl = state.joinUrl ?: return
     val qr = remember(joinUrl) { viewModel.qrFor(joinUrl) }
-    YuyuCard(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(20.dp)) {
+    NbCard(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(20.dp)) {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            YuyuOverline("Scan to join")
+            NbOverline("Scan to join")
             Spacer(Modifier.height(12.dp))
             if (qr != null) {
                 Box(
@@ -337,7 +337,7 @@ private fun JoinCard(state: PartyHostState, viewModel: PartyViewModel, modifier:
                         .widthIn(max = 280.dp)
                         .fillMaxWidth()
                         .aspectRatio(1f)
-                        .clip(YuyuShapes.lg)
+                        .clip(NbShapes.lg)
                         .background(Color.White)
                         .padding(8.dp)
                 ) {
@@ -350,25 +350,25 @@ private fun JoinCard(state: PartyHostState, viewModel: PartyViewModel, modifier:
                 }
             }
             Spacer(Modifier.height(16.dp))
-            Text("PIN", style = YuyuType.caption, color = Yuyu.textMuted)
+            Text("PIN", style = NbType.caption, color = Nb.textMuted)
             Text(
                 state.pin.orEmpty().chunked(3).joinToString(" "),
-                style = YuyuType.display(40.sp),
-                color = Yuyu.text
+                style = NbType.display(40.sp),
+                color = Nb.text
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 "Or open ${state.baseUrl.orEmpty()} and enter the PIN",
-                style = YuyuType.meta,
-                color = Yuyu.textMuted,
+                style = NbType.meta,
+                color = Nb.textMuted,
                 textAlign = TextAlign.Center
             )
             state.tvUrl?.let {
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "Big screen: open ${state.baseUrl}/tv on a laptop or TV",
-                    style = YuyuType.caption,
-                    color = Yuyu.textMuted,
+                    style = NbType.caption,
+                    color = Nb.textMuted,
                     textAlign = TextAlign.Center
                 )
             }
@@ -381,69 +381,69 @@ private fun SetupCard(onStart: (Int, Boolean) -> Unit, modifier: Modifier = Modi
     var durationIndex by rememberSaveable { mutableIntStateOf(1) }
     var approve by rememberSaveable { mutableStateOf(false) }
     Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        YuyuTile(background = Yuyu.accentSoft) {
-            Text("Let friends pick the music", style = YuyuType.h2, color = Yuyu.text)
+        NbTile(background = Nb.accentSoft) {
+            Text("Let friends pick the music", style = NbType.h2, color = Nb.text)
             Spacer(Modifier.height(6.dp))
             Text(
                 "Friends on the same Wi-Fi scan a code, pick a name, search your library and add songs. " +
                     "Votes decide what plays first. Nothing leaves your network, and it stops when the party ends.",
-                style = YuyuType.body,
-                color = Yuyu.textSecondary
+                style = NbType.body,
+                color = Nb.textSecondary
             )
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Party length", style = YuyuType.label, color = Yuyu.text)
-            YuyuSegmented(
+            Text("Party length", style = NbType.label, color = Nb.text)
+            NbSegmented(
                 options = DurationHours.map { "$it h" },
                 selectedIndex = durationIndex,
                 onSelect = { durationIndex = it },
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        YuyuSettingRow(
+        NbSettingRow(
             title = "Approve each request",
             subtitle = "Check every song before it joins the queue",
-            trailing = { YuyuSwitch(checked = approve, onCheckedChange = { approve = it }) },
+            trailing = { NbSwitch(checked = approve, onCheckedChange = { approve = it }) },
             onClick = { approve = !approve }
         )
-        YuyuButton(
+        NbButton(
             text = "Start party",
             onClick = { onStart(DurationHours[durationIndex], approve) },
-            style = YuyuButtonStyle.Accent,
-            size = YuyuButtonSize.Large,
+            style = NbButtonStyle.Accent,
+            size = NbButtonSize.Large,
             modifier = Modifier.fillMaxWidth()
         )
         Text(
             "Guests can add one song every 10 s, up to 5 waiting at a time.",
-            style = YuyuType.caption,
-            color = Yuyu.textMuted
+            style = NbType.caption,
+            color = Nb.textMuted
         )
     }
 }
 
 @Composable
 private fun SummaryCard(summary: PartySummary, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
-    YuyuTile(background = Yuyu.accent, modifier = modifier.fillMaxWidth()) {
+    NbTile(background = Nb.accent, modifier = modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.Top) {
             Column(Modifier.weight(1f)) {
-                Text("PARTY'S OVER", style = YuyuType.overline, color = Yuyu.onAccent.copy(alpha = 0.8f))
+                Text("PARTY'S OVER", style = NbType.overline, color = Nb.onAccent.copy(alpha = 0.8f))
                 Spacer(Modifier.height(4.dp))
                 val songs = if (summary.songsPlayed == 1) "1 song" else "${summary.songsPlayed} songs"
                 val friends = if (summary.contributors == 1) "1 friend" else "${summary.contributors} friends"
-                Text("$songs from $friends", style = YuyuType.display(30.sp), color = Yuyu.onAccent)
+                Text("$songs from $friends", style = NbType.display(30.sp), color = Nb.onAccent)
                 Spacer(Modifier.height(6.dp))
                 Text(
                     summary.topContributor?.let { "Top pick-maker: $it (${summary.topContributorSongs})" }
                         ?: "${summary.guests} joined · ${summary.songsRequested} requested",
-                    style = YuyuType.meta.copy(fontWeight = FontWeight.SemiBold),
-                    color = Yuyu.onAccent.copy(alpha = 0.9f)
+                    style = NbType.meta.copy(fontWeight = FontWeight.SemiBold),
+                    color = Nb.onAccent.copy(alpha = 0.9f)
                 )
             }
-            YuyuIconButton(
+            NbIconButton(
                 imageVector = Icons.Rounded.Close,
                 contentDescription = "Dismiss",
                 onClick = onDismiss,
-                tint = Yuyu.onAccent
+                tint = Nb.onAccent
             )
         }
     }

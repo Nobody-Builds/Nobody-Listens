@@ -8,5 +8,5 @@
     android:fontFamily="sans-serif-black"
     android:includeFontPadding="false"
     android:maxLines="1"
-    android:textColor="@color/yuyu_widget_text"
+    android:textColor="@color/nb_widget_text"
     android:textSize="30sp" />

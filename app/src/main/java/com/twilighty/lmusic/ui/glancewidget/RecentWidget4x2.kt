@@ -64,7 +64,7 @@ class RecentWidget4x2 : GlanceAppWidget() {
             val songs by produceState(initial) {
                 stats?.refreshFlow?.drop(1)?.collect { value = loadSafely(context) }
             }
-            GlanceTheme(colors = YuyuGlanceColors) { Content(context, songs) }
+            GlanceTheme(colors = NbGlanceColors) { Content(context, songs) }
         }
     }
 
@@ -93,16 +93,16 @@ class RecentWidget4x2 : GlanceAppWidget() {
             modifier = GlanceModifier
                 .fillMaxSize()
                 .background(GlanceTheme.colors.surface)
-                .cornerRadius(YuyuWidget.Radius)
+                .cornerRadius(NbWidget.Radius)
                 .padding(16.dp),
         ) {
-            Box(modifier = GlanceModifier.fillMaxWidth().clickable(YuyuWidget.openApp())) {
+            Box(modifier = GlanceModifier.fillMaxWidth().clickable(NbWidget.openApp())) {
                 WidgetOverline("Recently played")
             }
             Spacer(GlanceModifier.height(8.dp))
             if (songs.isEmpty()) {
                 Box(
-                    modifier = GlanceModifier.fillMaxSize().clickable(YuyuWidget.openApp()),
+                    modifier = GlanceModifier.fillMaxSize().clickable(NbWidget.openApp()),
                     contentAlignment = Alignment.CenterStart,
                 ) {
                     WidgetMeta("Songs you play show up here")
@@ -126,7 +126,7 @@ class RecentWidget4x2 : GlanceAppWidget() {
                                 albumArtUri = song.artUri,
                                 size = cover,
                                 context = context,
-                                cornerRadius = YuyuWidget.InnerRadius,
+                                cornerRadius = NbWidget.InnerRadius,
                             )
                             Spacer(GlanceModifier.height(4.dp))
                             WidgetMeta(song.title, color = GlanceTheme.colors.onSurface, size = 11.sp)
@@ -134,7 +134,7 @@ class RecentWidget4x2 : GlanceAppWidget() {
                             Box(
                                 modifier = GlanceModifier.size(cover)
                                     .background(GlanceTheme.colors.surfaceVariant)
-                                    .cornerRadius(YuyuWidget.InnerRadius),
+                                    .cornerRadius(NbWidget.InnerRadius),
                             ) {}
                         }
                     }

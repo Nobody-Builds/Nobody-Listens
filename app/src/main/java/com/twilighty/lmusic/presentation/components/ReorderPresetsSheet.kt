@@ -214,7 +214,7 @@ fun ReorderPresetsSheet(
                                     )
                                 ) {
                                     Icon(
-                                        painter = painterResource(R.drawable.outline_restart_alt_24),
+                                        painter = painterResource(R.drawable.rounded_restart_alt_24),
                                         contentDescription = stringResource(R.string.presentation_batch_e_cd_reset_presets_default)
                                     )
                                 }

@@ -37,22 +37,22 @@ import androidx.compose.ui.unit.sp
 import com.twilighty.lmusic.data.model.Song
 import com.twilighty.lmusic.presentation.haptics.LocalLMusicHaptics
 import com.twilighty.lmusic.presentation.viewmodel.ArtistStoryState
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuEmptyState
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuSectionHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatus
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatusChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuTile
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbEmptyState
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbIconButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbSectionHeader
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbStatus
+import com.twilighty.lmusic.presentation.nb.NbStatusChip
+import com.twilighty.lmusic.presentation.nb.NbTile
+import com.twilighty.lmusic.presentation.nb.NbType
 import java.time.ZoneId
 
 /**
@@ -71,17 +71,17 @@ fun ArtistStorySection(
     when (state) {
         ArtistStoryState.Loading -> Unit // stays quiet; the section appears once ready
         ArtistStoryState.Empty -> Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            YuyuSectionHeader(title = "Your story with $artistName")
-            YuyuEmptyState(
+            NbSectionHeader(title = "Your story with $artistName")
+            NbEmptyState(
                 title = "No story yet",
                 body = "Play something by $artistName to start one.",
             ) {
                 if (canPlay) {
-                    YuyuButton(
+                    NbButton(
                         text = "Play",
                         onClick = onPlayArtist,
-                        style = YuyuButtonStyle.Accent,
-                        size = YuyuButtonSize.Small,
+                        style = NbButtonStyle.Accent,
+                        size = NbButtonSize.Small,
                         icon = rememberVectorPainter(Icons.Rounded.PlayArrow)
                     )
                 }
@@ -104,15 +104,15 @@ private fun ArtistStoryContent(
     val calc = ArtistStoryCalculator
 
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        YuyuSectionHeader(title = "Your story with $artistName")
+        NbSectionHeader(title = "Your story with $artistName")
 
         // Hero: total listening time.
-        YuyuTile(background = Yuyu.accentSoft, modifier = Modifier.fillMaxWidth()) {
-            YuyuOverline("Since ${calc.formatDate(story.firstListenMillis, zone)}", color = Yuyu.accentText)
+        NbTile(background = Nb.accentSoft, modifier = Modifier.fillMaxWidth()) {
+            NbOverline("Since ${calc.formatDate(story.firstListenMillis, zone)}", color = Nb.accentText)
             Text(
                 calc.formatDuration(story.totalDurationMs),
-                style = YuyuType.display(34.sp),
-                color = Yuyu.text,
+                style = NbType.display(34.sp),
+                color = Nb.text,
                 modifier = Modifier.padding(top = 6.dp)
             )
             Text(
@@ -122,8 +122,8 @@ private fun ArtistStoryContent(
                     append(calc.formatShare(story.shareOfAll))
                     append(" of everything you played")
                 },
-                style = YuyuType.meta,
-                color = Yuyu.textSecondary,
+                style = NbType.meta,
+                color = Nb.textSecondary,
                 modifier = Modifier.padding(top = 4.dp)
             )
         }
@@ -160,41 +160,41 @@ private fun ArtistStoryContent(
 
         // Your song.
         state.topSong?.let { song ->
-            YuyuCard(
+            NbCard(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onPlaySong(song) },
                 contentPadding = PaddingValues(12.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    YuyuArt(
+                    NbArt(
                         model = song.albumArtUriString,
                         title = song.album.ifBlank { song.title },
                         size = 56.dp,
-                        shape = YuyuShapes.md,
+                        shape = NbShapes.md,
                         contentDescription = song.title
                     )
                     Column(Modifier.weight(1f)) {
-                        YuyuOverline("Your song")
+                        NbOverline("Your song")
                         Text(
                             song.title,
-                            style = YuyuType.title.copy(fontWeight = FontWeight.Bold),
-                            color = Yuyu.text,
+                            style = NbType.title.copy(fontWeight = FontWeight.Bold),
+                            color = Nb.text,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             (if (story.topSongPlays == 1) "1 play" else "${story.topSongPlays} plays") +
                                 " · " + calc.formatDuration(story.topSongDurationMs),
-                            style = YuyuType.meta,
-                            color = Yuyu.textMuted,
+                            style = NbType.meta,
+                            color = Nb.textMuted,
                             maxLines = 1
                         )
                     }
-                    YuyuIconButton(
+                    NbIconButton(
                         imageVector = Icons.Rounded.PlayArrow,
                         contentDescription = "Play ${song.title}",
                         onClick = { onPlaySong(song) },
-                        style = YuyuIconButtonStyle.Accent,
+                        style = NbIconButtonStyle.Accent,
                         size = 40.dp,
                         iconSize = 22.dp
                     )
@@ -209,7 +209,7 @@ private fun ArtistStoryContent(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                story.milestones.forEach { YuyuStatusChip(text = it, status = YuyuStatus.Accent) }
+                story.milestones.forEach { NbStatusChip(text = it, status = NbStatus.Accent) }
             }
         }
     }
@@ -217,13 +217,13 @@ private fun ArtistStoryContent(
 
 @Composable
 private fun StoryFact(label: String, value: String, supporting: String?, modifier: Modifier = Modifier) {
-    YuyuCard(modifier = modifier, contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp)) {
-        Text(label, style = YuyuType.caption, color = Yuyu.textMuted, maxLines = 1)
-        Text(value, style = YuyuType.h3, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    NbCard(modifier = modifier, contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp)) {
+        Text(label, style = NbType.caption, color = Nb.textMuted, maxLines = 1)
+        Text(value, style = NbType.h3, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Text(
             supporting ?: " ",
-            style = YuyuType.caption,
-            color = Yuyu.textSecondary,
+            style = NbType.caption,
+            color = Nb.textSecondary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -238,19 +238,19 @@ private fun StoryTimeline(months: List<StoryMonth>) {
         mutableIntStateOf(months.indexOfLast { it.durationMs > 0 }.takeIf { it >= 0 } ?: months.lastIndex)
     }
     val maxMs = remember(months) { months.maxOf { it.durationMs }.coerceAtLeast(1L) }
-    val accent = Yuyu.accent
-    val track = Yuyu.muted
+    val accent = Nb.ink
+    val track = Nb.muted
     val sel = months.getOrNull(selected)
 
-    YuyuCard(modifier = Modifier.fillMaxWidth()) {
+    NbCard(modifier = Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            YuyuOverline("Month by month", modifier = Modifier.weight(1f))
+            NbOverline("Month by month", modifier = Modifier.weight(1f))
             if (sel != null) {
                 Text(
                     "${ArtistStoryCalculator.formatMonth(sel.month)} · " +
                         if (sel.durationMs > 0) ArtistStoryCalculator.formatDuration(sel.durationMs) else "no plays",
-                    style = YuyuType.label,
-                    color = Yuyu.text,
+                    style = NbType.label,
+                    color = Nb.text,
                     maxLines = 1
                 )
             }
@@ -297,8 +297,8 @@ private fun StoryTimeline(months: List<StoryMonth>) {
             months.forEachIndexed { i, m ->
                 Text(
                     ArtistStoryCalculator.monthInitial(m.month),
-                    style = YuyuType.caption.copy(fontWeight = if (i == selected) FontWeight.Bold else FontWeight.Normal),
-                    color = if (i == selected) Yuyu.text else Yuyu.textMuted,
+                    style = NbType.caption.copy(fontWeight = if (i == selected) FontWeight.Bold else FontWeight.Normal),
+                    color = if (i == selected) Nb.text else Nb.textMuted,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f)
                 )

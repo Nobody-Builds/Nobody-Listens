@@ -35,9 +35,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.twilighty.lmusic.ui.theme.LocalLMusicDarkTheme
-import com.twilighty.lmusic.ui.theme.LocalUseYuyuColors
+import com.twilighty.lmusic.ui.theme.LocalUseBrandColors
 import com.twilighty.lmusic.ui.theme.LMusicStatusBarStyle
-import com.twilighty.lmusic.ui.theme.yuyuPlayerScheme
+import com.twilighty.lmusic.ui.theme.nbPlayerScheme
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
@@ -54,17 +54,17 @@ import com.twilighty.lmusic.presentation.artist.ArtistStorySection
 import com.twilighty.lmusic.presentation.viewmodel.ArtistAlbumSection
 import com.twilighty.lmusic.presentation.viewmodel.PlayerViewModel
 import com.twilighty.lmusic.presentation.viewmodel.PlaylistViewModel
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuAvatarHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuDetailAppBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuPlayShuffleRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuSectionHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbAvatarHeader
+import com.twilighty.lmusic.presentation.nb.NbDetailAppBar
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbIconButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbPlayShuffleRow
+import com.twilighty.lmusic.presentation.nb.NbSectionHeader
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbType
 import com.twilighty.lmusic.utils.formatSongCount
 import com.twilighty.lmusic.presentation.components.subcomps.EnhancedSongListItem
 import kotlinx.coroutines.delay
@@ -103,17 +103,17 @@ fun ArtistDetailScreen(
     var showPlaylistBottomSheet by remember { mutableStateOf(false) }
     val density = LocalDensity.current
     val isDarkTheme = LocalLMusicDarkTheme.current
-    val useYuyuColors = LocalUseYuyuColors.current
+    val useBrandColors = LocalUseBrandColors.current
     val baseColorScheme = MaterialTheme.colorScheme
 
     // --- Dynamic color palette from pre-warmed ViewModel state ---
     // artistColorScheme is set by the ViewModel BEFORE isLoading becomes false,
     // so the very first composition already has the correct palette — no flash.
-    // Yuyu keeps the neutral canvas and uses the image colour only as the accent.
+    // Daylight keeps the neutral canvas and uses the image colour only as the accent.
     val artistColorSchemePair by viewModel.artistColorScheme.collectAsStateWithLifecycle()
-    val artistColorScheme = remember(artistColorSchemePair, isDarkTheme, baseColorScheme, useYuyuColors) {
+    val artistColorScheme = remember(artistColorSchemePair, isDarkTheme, baseColorScheme, useBrandColors) {
         val generated = artistColorSchemePair?.let { pair -> if (isDarkTheme) pair.dark else pair.light }
-        if (useYuyuColors) yuyuPlayerScheme(generated ?: baseColorScheme, baseColorScheme, isDarkTheme)
+        if (useBrandColors) nbPlayerScheme(generated ?: baseColorScheme, baseColorScheme, isDarkTheme)
         else generated ?: baseColorScheme
     }
 
@@ -145,7 +145,7 @@ fun ArtistDetailScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             val artistForBar = uiState.artist
-            YuyuDetailAppBar(
+            NbDetailAppBar(
                 onBack = { navController.popBackStack() },
                 title = if (headerScrolledAway) artistForBar?.name else null,
                 backContentDescription = stringResource(R.string.auth_cd_back),
@@ -173,8 +173,8 @@ fun ArtistDetailScreen(
                     ) {
                         Text(
                             text = uiState.error!!,
-                            color = Yuyu.danger,
-                            style = YuyuType.body
+                            color = Nb.danger,
+                            style = NbType.body
                         )
                     }
                 }
@@ -220,7 +220,7 @@ fun ArtistDetailScreen(
                                 modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
                                 verticalArrangement = Arrangement.spacedBy(20.dp)
                             ) {
-                                YuyuAvatarHeader(
+                                NbAvatarHeader(
                                     title = artist.name,
                                     caption = buildString {
                                         if (albumCount > 0) {
@@ -233,7 +233,7 @@ fun ArtistDetailScreen(
                                 ) {
                                     val displayUrl = uiState.effectiveImageUrl?.takeIf { it.isNotBlank() }
                                     Box(Modifier.size(128.dp).clip(CircleShape)) {
-                                        YuyuArt(model = null, title = artist.name, size = 128.dp, shape = CircleShape)
+                                        NbArt(model = null, title = artist.name, size = 128.dp, shape = CircleShape)
                                         if (displayUrl != null) {
                                             SmartImage(
                                                 model = displayUrl,
@@ -241,13 +241,13 @@ fun ArtistDetailScreen(
                                                 shape = CircleShape,
                                                 targetSize = Size(avatarSizePx, avatarSizePx),
                                                 allowHardware = true,
-                                                placeHolderBackgroundColor = Yuyu.muted,
+                                                placeHolderBackgroundColor = Nb.muted,
                                                 modifier = Modifier.fillMaxSize()
                                             )
                                         }
                                     }
                                 }
-                                YuyuPlayShuffleRow(
+                                NbPlayShuffleRow(
                                     playLabel = "Play all",
                                     enabled = songs.isNotEmpty(),
                                     onPlay = {
@@ -273,7 +273,7 @@ fun ArtistDetailScreen(
                                     }
                                 )
                                 if (albumCount > 0) {
-                                    YuyuSectionHeader(title = if (albumCount == 1) "Album" else "Albums")
+                                    NbSectionHeader(title = if (albumCount == 1) "Album" else "Albums")
                                 }
                             }
                         }
@@ -290,7 +290,7 @@ fun ArtistDetailScreen(
                                 contentType = "artist_section_header"
                             ) {
                                 Column {
-                                    if (index > 0) YuyuDivider(Modifier.padding(vertical = 4.dp))
+                                    if (index > 0) NbDivider(Modifier.padding(vertical = 4.dp))
                                     CollapsibleAlbumSectionHeader(
                                         section = section,
                                         isExpanded = isExpanded,
@@ -469,7 +469,7 @@ private fun ArtistImageMenuButton(
 ) {
     var showImageMenu by remember { mutableStateOf(false) }
     Box {
-        YuyuIconButton(
+        NbIconButton(
             imageVector = Icons.Rounded.Edit,
             contentDescription = stringResource(R.string.presentation_batch_d_edit_artist_image_cd),
             onClick = { showImageMenu = true }
@@ -477,14 +477,14 @@ private fun ArtistImageMenuButton(
         DropdownMenu(
             expanded = showImageMenu,
             onDismissRequest = { showImageMenu = false },
-            shape = YuyuShapes.md,
-            containerColor = Yuyu.canvas,
+            shape = NbShapes.md,
+            containerColor = Nb.canvas,
             tonalElevation = 0.dp,
-            border = androidx.compose.foundation.BorderStroke(1.dp, Yuyu.border)
+            border = androidx.compose.foundation.BorderStroke(1.dp, Nb.border)
         ) {
             DropdownMenuItem(
-                text = { Text(stringResource(R.string.presentation_batch_d_change_photo), style = YuyuType.body, color = Yuyu.text) },
-                leadingIcon = { Icon(Icons.Rounded.AddAPhoto, contentDescription = null, tint = Yuyu.textSecondary) },
+                text = { Text(stringResource(R.string.presentation_batch_d_change_photo), style = NbType.body, color = Nb.text) },
+                leadingIcon = { Icon(Icons.Rounded.AddAPhoto, contentDescription = null, tint = Nb.textSecondary) },
                 onClick = {
                     showImageMenu = false
                     onChangeImage()
@@ -492,8 +492,8 @@ private fun ArtistImageMenuButton(
             )
             if (hasCustomImage) {
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.presentation_batch_d_reset_to_default), style = YuyuType.body, color = Yuyu.danger) },
-                    leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null, tint = Yuyu.danger) },
+                    text = { Text(stringResource(R.string.presentation_batch_d_reset_to_default), style = NbType.body, color = Nb.danger) },
+                    leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null, tint = Nb.danger) },
                     onClick = {
                         showImageMenu = false
                         onClearCustomImage()
@@ -530,40 +530,40 @@ private fun CollapsibleAlbumSectionHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(YuyuShapes.lg)
+            .clip(NbShapes.lg)
             .clickable(onClick = onToggleExpanded)
             .padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        YuyuArt(
+        NbArt(
             model = section.albumArtUriString,
             title = section.title,
             size = 56.dp,
-            shape = YuyuShapes.md,
+            shape = NbShapes.md,
             contentDescription = section.title
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = section.title,
-                style = YuyuType.title.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
-                color = Yuyu.text,
+                style = NbType.title.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
+                color = Nb.text,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = subtitle,
-                style = YuyuType.meta,
-                color = Yuyu.textMuted,
+                style = NbType.meta,
+                color = Nb.textMuted,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
-        YuyuIconButton(
+        NbIconButton(
             imageVector = Icons.Rounded.PlayArrow,
             contentDescription = stringResource(R.string.presentation_batch_d_cd_play_title, section.title),
             onClick = onPlayAlbum,
-            style = YuyuIconButtonStyle.Tonal,
+            style = NbIconButtonStyle.Tonal,
             size = 40.dp,
             iconSize = 22.dp
         )
@@ -574,7 +574,7 @@ private fun CollapsibleAlbumSectionHeader(
             } else {
                 stringResource(R.string.presentation_batch_d_cd_expand_title, section.title)
             },
-            tint = Yuyu.textMuted,
+            tint = Nb.textMuted,
             modifier = Modifier.graphicsLayer {
                 rotationZ = expandIconRotation
             }

@@ -95,15 +95,15 @@ import com.twilighty.lmusic.presentation.jellyfin.dashboard.JellyfinDashboardVie
 import com.twilighty.lmusic.presentation.navidrome.dashboard.NavidromeDashboardViewModel
 import com.twilighty.lmusic.presentation.qqmusic.dashboard.QqMusicDashboardViewModel
 import com.twilighty.lmusic.presentation.components.DailyMixSection
-import com.twilighty.lmusic.presentation.yuyu.YuyuHomeHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuMixTile
-import com.twilighty.lmusic.presentation.yuyu.YuyuRecentlyPlayedRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuWeekStats
-import com.twilighty.lmusic.presentation.yuyu.MadeForYouMix
-import com.twilighty.lmusic.presentation.yuyu.YuyuHomeViewModel
-import com.twilighty.lmusic.presentation.yuyu.YuyuMadeForYouRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuSongCoverRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopArtistsRow
+import com.twilighty.lmusic.presentation.nb.NbHomeHeader
+import com.twilighty.lmusic.presentation.nb.NbMixTile
+import com.twilighty.lmusic.presentation.nb.NbRecentlyPlayedRow
+import com.twilighty.lmusic.presentation.nb.NbWeekStats
+import com.twilighty.lmusic.presentation.nb.MadeForYouMix
+import com.twilighty.lmusic.presentation.nb.NbHomeViewModel
+import com.twilighty.lmusic.presentation.nb.NbMadeForYouRow
+import com.twilighty.lmusic.presentation.nb.NbSongCoverRow
+import com.twilighty.lmusic.presentation.nb.NbTopArtistsRow
 import com.twilighty.lmusic.presentation.components.HomeOptionsBottomSheet
 import com.twilighty.lmusic.presentation.components.MiniPlayerHeight
 import com.twilighty.lmusic.presentation.components.NavBarContentHeight
@@ -146,7 +146,7 @@ fun HomeScreen(
     navidromeViewModel: NavidromeDashboardViewModel = hiltViewModel(),
     jellyfinViewModel: JellyfinDashboardViewModel = hiltViewModel(),
     youTubeMusicViewModel: YouTubeMusicDashboardViewModel = hiltViewModel(),
-    yuyuHomeViewModel: YuyuHomeViewModel = hiltViewModel(),
+    nbHomeViewModel: NbHomeViewModel = hiltViewModel(),
     onOpenSidebar: () -> Unit
 ) {
     val context = LocalContext.current
@@ -255,16 +255,16 @@ fun HomeScreen(
     }.collectAsStateWithLifecycle(initialValue = false)
 
 
-    // Yuyu Home data: "Made for you" rule-based mixes, recently added, top artists.
-    val showClassicSections by yuyuHomeViewModel.showClassicSections.collectAsStateWithLifecycle()
-    val recentlyAddedSongs by yuyuHomeViewModel.recentlyAdded.collectAsStateWithLifecycle()
-    val favouriteSongs by yuyuHomeViewModel.favourites.collectAsStateWithLifecycle()
-    val smartMixes by yuyuHomeViewModel.smartMixes.collectAsStateWithLifecycle()
-    val forgottenFavourites by yuyuHomeViewModel.forgottenFavourites.collectAsStateWithLifecycle()
-    val topArtists by yuyuHomeViewModel.topArtists.collectAsStateWithLifecycle()
-    DisposableEffect(lifecycleOwner, yuyuHomeViewModel) {
+    // Daylight Home data: "Made for you" rule-based mixes, recently added, top artists.
+    val showClassicSections by nbHomeViewModel.showClassicSections.collectAsStateWithLifecycle()
+    val recentlyAddedSongs by nbHomeViewModel.recentlyAdded.collectAsStateWithLifecycle()
+    val favouriteSongs by nbHomeViewModel.favourites.collectAsStateWithLifecycle()
+    val smartMixes by nbHomeViewModel.smartMixes.collectAsStateWithLifecycle()
+    val forgottenFavourites by nbHomeViewModel.forgottenFavourites.collectAsStateWithLifecycle()
+    val topArtists by nbHomeViewModel.topArtists.collectAsStateWithLifecycle()
+    DisposableEffect(lifecycleOwner, nbHomeViewModel) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_START) yuyuHomeViewModel.refreshIfStale()
+            if (event == Lifecycle.Event.ON_START) nbHomeViewModel.refreshIfStale()
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
@@ -302,7 +302,7 @@ fun HomeScreen(
     val homeStatsOverview by statsViewModel.homeOverview.collectAsStateWithLifecycle()
     LaunchedEffect(homeStatsOverview) {
         homeStatsOverview?.let { overview ->
-            yuyuHomeViewModel.setTopArtistNames(overview.topArtists.map { it.artist })
+            nbHomeViewModel.setTopArtistNames(overview.topArtists.map { it.artist })
         }
     }
 
@@ -340,8 +340,8 @@ fun HomeScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(28.dp)
             ) {
-                item(key = "yuyu_home_header", contentType = "yuyu_home_header") {
-                    YuyuHomeHeader(
+                item(key = "nb_home_header", contentType = "nb_home_header") {
+                    NbHomeHeader(
                         onSettingsClick = { navController.navigateSafely(Screen.Settings.route) },
                         onWhatsNewClick = { showChangelogBottomSheet = true },
                         onSourcesClick = { showStreamingProviderSheet = true }
@@ -367,7 +367,7 @@ fun HomeScreen(
                                     homePlaceholderRefreshGeneration++
                                     settingsViewModel.refreshLibrary()
                                     playerViewModel.forceUpdateDailyMix()
-                                    yuyuHomeViewModel.refreshIfStale(force = true)
+                                    nbHomeViewModel.refreshIfStale(force = true)
                                 }
                             )
                         }
@@ -377,7 +377,7 @@ fun HomeScreen(
                         key = "your_mix_header",
                         contentType = "your_mix_header"
                     ) {
-                        YuyuMixTile(
+                        NbMixTile(
                             songs = yourMixSongs,
                             isShuffleEnabled = isShuffleEnabled,
                             modifier = Modifier.padding(horizontal = 16.dp),
@@ -467,7 +467,7 @@ fun HomeScreen(
                 }
 
                 item(key = "spaces", contentType = "spaces") {
-                    com.twilighty.lmusic.presentation.yuyu.YuyuSpacesRow(
+                    com.twilighty.lmusic.presentation.nb.NbSpacesRow(
                         onLofi = { navController.navigateSafely(Screen.Lofi.route) },
                         onFocus = { navController.navigateSafely(Screen.Focus.route) },
                         onSleep = { navController.navigateSafely(Screen.Sleep.route) },
@@ -479,7 +479,7 @@ fun HomeScreen(
                 }
                 if (madeForYouMixes.isNotEmpty() || smartMixes.isNotEmpty()) {
                     item(key = "made_for_you", contentType = "made_for_you") {
-                        YuyuMadeForYouRow(
+                        NbMadeForYouRow(
                             // On-device smart mixes lead the row when the smart layer is on.
                             mixes = smartMixes + madeForYouMixes,
                             extraMixes = emptyList(),
@@ -501,7 +501,7 @@ fun HomeScreen(
                         key = "recently_played_section",
                         contentType = "recently_played_section"
                     ) {
-                        YuyuRecentlyPlayedRow(
+                        NbRecentlyPlayedRow(
                             songs = recentlyPlayedQueue.take(20),
                             onSongClick = { song ->
                                 if (recentlyPlayedQueue.isNotEmpty()) {
@@ -522,7 +522,7 @@ fun HomeScreen(
 
                 if (recentlyAddedSongs.isNotEmpty()) {
                     item(key = "recently_added_section", contentType = "recently_added_section") {
-                        YuyuSongCoverRow(
+                        NbSongCoverRow(
                             title = "Recently added",
                             songs = recentlyAddedSongs.take(20),
                             currentSongId = currentSong?.id,
@@ -544,7 +544,7 @@ fun HomeScreen(
                         contentType = "listening_stats_preview"
                     ) {
                         homeStatsOverview?.let { overview ->
-                            YuyuWeekStats(
+                            NbWeekStats(
                                 summary = overview,
                                 onOpenStats = { navController.navigateToTopLevelSafely(Screen.Stats.route) }
                             )
@@ -554,7 +554,7 @@ fun HomeScreen(
 
                 if (topArtists.isNotEmpty()) {
                     item(key = "top_artists", contentType = "top_artists") {
-                        YuyuTopArtistsRow(
+                        NbTopArtistsRow(
                             artists = topArtists,
                             onArtistClick = { artist ->
                                 navController.navigateSafely(Screen.ArtistDetail.createRoute(artist.id))
@@ -924,17 +924,7 @@ fun SongListItemFavsWrapper(
 private fun rememberYourMixTitleStyle(): TextStyle {
     return remember {
         TextStyle(
-            fontFamily = FontFamily(
-                Font(
-                    resId = R.font.bricolage_variable,
-                    weight = FontWeight.ExtraBold,
-                    variationSettings = FontVariation.Settings(
-                        FontVariation.weight(800),
-                        FontVariation.width(100f),
-                        FontVariation.Setting("opsz", 72f)
-                    )
-                )
-            ),
+            fontFamily = com.twilighty.lmusic.ui.theme.GilroyFamily,
             fontWeight = FontWeight.ExtraBold,
             fontSize = 60.sp,
             lineHeight = 58.sp,

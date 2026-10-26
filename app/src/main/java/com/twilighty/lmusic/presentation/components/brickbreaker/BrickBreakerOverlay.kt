@@ -24,7 +24,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Shuffle
@@ -561,7 +561,7 @@ fun BrickBreakerOverlay(
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
-                            Icons.Outlined.Close,
+                            Icons.Rounded.Close,
                             contentDescription = stringResource(R.string.presentation_batch_g_brick_cd_close),
                             modifier = Modifier.size(18.dp)
                         )

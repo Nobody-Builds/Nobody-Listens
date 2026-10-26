@@ -71,24 +71,24 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.twilighty.lmusic.data.taste.TasteMatchHistoryEntry
 import com.twilighty.lmusic.presentation.haptics.LocalLMusicHaptics
 import com.twilighty.lmusic.presentation.viewmodel.PlayerViewModel
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCallout
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuEmptyState
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuSectionHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuSongRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuTextField
-import com.twilighty.lmusic.presentation.yuyu.YuyuTile
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCallout
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbEmptyState
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbIconButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbSectionHeader
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbSongRow
+import com.twilighty.lmusic.presentation.nb.NbTextField
+import com.twilighty.lmusic.presentation.nb.NbTile
+import com.twilighty.lmusic.presentation.nb.NbTopBar
+import com.twilighty.lmusic.presentation.nb.NbType
 import java.text.DateFormat
 import java.util.Date
 
@@ -106,7 +106,7 @@ fun TasteMatchScreen(
     Box(
         Modifier
             .fillMaxSize()
-            .background(Yuyu.canvas)
+            .background(Nb.canvas)
     ) {
         when (state.mode) {
             TasteMode.Home -> HomeContent(state, viewModel, onBack, bottomInset)
@@ -146,18 +146,18 @@ private fun HomeContent(state: TasteUiState, viewModel: TasteMatchViewModel, onB
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item(key = "top") {
-            YuyuTopBar(
+            NbTopBar(
                 title = "Taste match",
                 kicker = "Scan a friend, see how your music lines up",
                 navigationIcon = {
-                    YuyuIconButton(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = onBack)
+                    NbIconButton(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = onBack)
                 }
             )
         }
         if (state.loading) {
             item(key = "loading") {
                 Box(Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Yuyu.accent)
+                    CircularProgressIndicator(color = Nb.ink)
                 }
             }
             return@LazyColumn
@@ -175,7 +175,7 @@ private fun HomeContent(state: TasteUiState, viewModel: TasteMatchViewModel, onB
 
         if (!state.fromListening && !state.isEmpty) {
             item(key = "library-note") {
-                YuyuCallout(
+                NbCallout(
                     boldText = "Based on your library.",
                     text = "Play some music and your code will reflect what you actually listen to.",
                     modifier = Modifier.padding(horizontal = 16.dp)
@@ -185,7 +185,7 @@ private fun HomeContent(state: TasteUiState, viewModel: TasteMatchViewModel, onB
 
         item(key = "mine") {
             if (state.isEmpty) {
-                YuyuEmptyState(
+                NbEmptyState(
                     title = "Nothing to match yet",
                     body = "Add some music and play a few songs, then come back for your taste code.",
                     modifier = Modifier.padding(horizontal = 16.dp)
@@ -202,19 +202,19 @@ private fun HomeContent(state: TasteUiState, viewModel: TasteMatchViewModel, onB
 
         item(key = "actions") {
             Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                YuyuButton(
+                NbButton(
                     text = "Scan a friend",
                     onClick = onScan,
-                    style = YuyuButtonStyle.Accent,
-                    size = YuyuButtonSize.Large,
+                    style = NbButtonStyle.Accent,
+                    size = NbButtonSize.Large,
                     icon = rememberVectorPainter(Icons.Rounded.QrCodeScanner),
                     enabled = !state.isEmpty,
                     modifier = Modifier.fillMaxWidth()
                 )
-                YuyuButton(
+                NbButton(
                     text = if (pasteOpen) "Hide paste box" else "Paste code",
                     onClick = { pasteOpen = !pasteOpen },
-                    style = YuyuButtonStyle.Secondary,
+                    style = NbButtonStyle.Secondary,
                     enabled = !state.isEmpty,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -234,13 +234,13 @@ private fun HomeContent(state: TasteUiState, viewModel: TasteMatchViewModel, onB
             }
         } else if (state.error != null) {
             item(key = "error") {
-                YuyuCallout(boldText = "Heads up.", text = state.error, modifier = Modifier.padding(horizontal = 16.dp))
+                NbCallout(boldText = "Heads up.", text = state.error, modifier = Modifier.padding(horizontal = 16.dp))
             }
         }
 
         if (state.history.isNotEmpty()) {
             item(key = "history-h") {
-                YuyuSectionHeader("Past matches", modifier = Modifier.padding(horizontal = 16.dp))
+                NbSectionHeader("Past matches", modifier = Modifier.padding(horizontal = 16.dp))
             }
             items(state.history, key = { "h" + it.timestamp + it.name }) { entry ->
                 HistoryRow(entry, Modifier.padding(horizontal = 16.dp))
@@ -251,9 +251,9 @@ private fun HomeContent(state: TasteUiState, viewModel: TasteMatchViewModel, onB
 
 @Composable
 private fun MyTasteCard(state: TasteUiState, onShare: () -> Unit, onEditName: () -> Unit, modifier: Modifier = Modifier) {
-    YuyuCard(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(20.dp)) {
+    NbCard(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(20.dp)) {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            YuyuOverline("My taste")
+            NbOverline("My taste")
             Spacer(Modifier.height(12.dp))
             state.qr?.let { qr ->
                 Box(
@@ -261,7 +261,7 @@ private fun MyTasteCard(state: TasteUiState, onShare: () -> Unit, onEditName: ()
                         .widthIn(max = 300.dp)
                         .fillMaxWidth()
                         .aspectRatio(1f)
-                        .clip(YuyuShapes.lg)
+                        .clip(NbShapes.lg)
                         .background(Color.White)
                         .padding(6.dp)
                 ) {
@@ -277,13 +277,13 @@ private fun MyTasteCard(state: TasteUiState, onShare: () -> Unit, onEditName: ()
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     state.name,
-                    style = YuyuType.h2,
-                    color = Yuyu.text,
+                    style = NbType.h2,
+                    color = Nb.text,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false)
                 )
-                YuyuIconButton(
+                NbIconButton(
                     imageVector = Icons.Rounded.Edit,
                     contentDescription = "Edit name",
                     onClick = onEditName,
@@ -294,26 +294,26 @@ private fun MyTasteCard(state: TasteUiState, onShare: () -> Unit, onEditName: ()
             if (state.topArtists.isNotEmpty()) {
                 Text(
                     state.topArtists.joinToString(" · "),
-                    style = YuyuType.meta,
-                    color = Yuyu.textMuted,
+                    style = NbType.meta,
+                    color = Nb.textMuted,
                     textAlign = TextAlign.Center,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
             }
             Spacer(Modifier.height(16.dp))
-            YuyuButton(
+            NbButton(
                 text = "Share code as text",
                 onClick = onShare,
-                style = YuyuButtonStyle.Secondary,
-                size = YuyuButtonSize.Small,
+                style = NbButtonStyle.Secondary,
+                size = NbButtonSize.Small,
                 icon = rememberVectorPainter(Icons.Rounded.Share)
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 "Works offline. Only artist names, song titles and your name are in the code.",
-                style = YuyuType.caption,
-                color = Yuyu.textMuted,
+                style = NbType.caption,
+                color = Nb.textMuted,
                 textAlign = TextAlign.Center
             )
         }
@@ -323,17 +323,17 @@ private fun MyTasteCard(state: TasteUiState, onShare: () -> Unit, onEditName: ()
 @Composable
 private fun NameCard(initial: String, onSave: (String) -> Unit, modifier: Modifier = Modifier) {
     var name by rememberSaveable { mutableStateOf(initial) }
-    YuyuCard(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(16.dp)) {
-        Text("What should friends see?", style = YuyuType.title, color = Yuyu.text)
+    NbCard(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(16.dp)) {
+        Text("What should friends see?", style = NbType.title, color = Nb.text)
         Spacer(Modifier.height(10.dp))
-        YuyuTextField(
+        NbTextField(
             value = name,
             onValueChange = { name = it.take(40) },
             placeholder = "Your name",
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(12.dp))
-        YuyuButton(text = "Save", onClick = { onSave(name) }, size = YuyuButtonSize.Small)
+        NbButton(text = "Save", onClick = { onSave(name) }, size = NbButtonSize.Small)
     }
 }
 
@@ -346,8 +346,8 @@ private fun PasteCard(
     onMatch: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    YuyuCard(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(16.dp)) {
-        YuyuTextField(
+    NbCard(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(16.dp)) {
+        NbTextField(
             value = value,
             onValueChange = onValueChange,
             label = "Friend's code",
@@ -360,11 +360,11 @@ private fun PasteCard(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(12.dp))
-        YuyuButton(
+        NbButton(
             text = if (busy) "Matching…" else "Match",
             onClick = onMatch,
             enabled = value.isNotBlank() && !busy,
-            size = YuyuButtonSize.Small
+            size = NbButtonSize.Small
         )
     }
 }
@@ -375,16 +375,16 @@ private fun HistoryRow(entry: TasteMatchHistoryEntry, modifier: Modifier = Modif
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(YuyuShapes.md)
-            .border(1.dp, Yuyu.border, YuyuShapes.md)
+            .clip(NbShapes.md)
+            .border(1.dp, Nb.border, NbShapes.md)
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(Modifier.weight(1f)) {
-            Text(entry.name, style = YuyuType.title, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text("$date · ${com.twilighty.lmusic.data.taste.TasteMatcher.labelFor(entry.percent)}", style = YuyuType.caption, color = Yuyu.textMuted)
+            Text(entry.name, style = NbType.title, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text("$date · ${com.twilighty.lmusic.data.taste.TasteMatcher.labelFor(entry.percent)}", style = NbType.caption, color = Nb.textMuted)
         }
-        Text("${entry.percent}%", style = YuyuType.h3, color = Yuyu.text)
+        Text("${entry.percent}%", style = NbType.h3, color = Nb.text)
     }
 }
 
@@ -404,7 +404,7 @@ private fun ScanContent(state: TasteUiState, viewModel: TasteMatchViewModel, bot
             Modifier
                 .align(Alignment.Center)
                 .size(260.dp)
-                .border(3.dp, Color.White, YuyuShapes.xxl)
+                .border(3.dp, Color.White, NbShapes.xxl)
         )
 
         Row(
@@ -414,11 +414,11 @@ private fun ScanContent(state: TasteUiState, viewModel: TasteMatchViewModel, bot
                 .padding(horizontal = 8.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            YuyuIconButton(
+            NbIconButton(
                 imageVector = Icons.Rounded.Close,
                 contentDescription = "Close scanner",
                 onClick = viewModel::backToHome,
-                style = YuyuIconButtonStyle.Tonal
+                style = NbIconButtonStyle.Tonal
             )
             Spacer(Modifier.weight(1f))
         }
@@ -429,7 +429,7 @@ private fun ScanContent(state: TasteUiState, viewModel: TasteMatchViewModel, bot
                 .navigationBarsPadding()
                 .padding(bottom = bottomInset)
                 .padding(24.dp)
-                .clip(YuyuShapes.xl)
+                .clip(NbShapes.xl)
                 .background(Color.Black.copy(alpha = 0.6f))
                 .padding(horizontal = 18.dp, vertical = 14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -437,12 +437,12 @@ private fun ScanContent(state: TasteUiState, viewModel: TasteMatchViewModel, bot
             if (state.matching) {
                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                 Spacer(Modifier.height(8.dp))
-                Text("Matching…", style = YuyuType.title, color = Color.White)
+                Text("Matching…", style = NbType.title, color = Color.White)
             } else {
-                Text("Point at a friend's taste code", style = YuyuType.title, color = Color.White, textAlign = TextAlign.Center)
+                Text("Point at a friend's taste code", style = NbType.title, color = Color.White, textAlign = TextAlign.Center)
                 Text(
                     state.error ?: "On their phone: Taste match → My taste",
-                    style = YuyuType.caption,
+                    style = NbType.caption,
                     color = Color.White.copy(alpha = 0.75f),
                     textAlign = TextAlign.Center
                 )
@@ -478,29 +478,29 @@ private fun ResultContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item(key = "top") {
-            YuyuTopBar(
+            NbTopBar(
                 title = "Taste match",
                 kicker = "You & ${result.friendName}",
                 navigationIcon = {
-                    YuyuIconButton(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = viewModel::backToHome)
+                    NbIconButton(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = viewModel::backToHome)
                 }
             )
         }
         item(key = "score") {
-            YuyuTile(background = Yuyu.accentSoft, modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()) {
+            NbTile(background = Nb.accentSoft, modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    YuyuOverline("Match", color = Yuyu.accentText)
+                    NbOverline("Match", color = Nb.accentText)
                     Text(
                         "${count.value.toInt()}%",
-                        style = YuyuType.display(96.sp),
-                        color = Yuyu.text
+                        style = NbType.display(96.sp),
+                        color = Nb.text
                     )
-                    Text(result.label, style = YuyuType.h2, color = Yuyu.accentText, textAlign = TextAlign.Center)
+                    Text(result.label, style = NbType.h2, color = Nb.accentText, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(6.dp))
                     Text(
                         if (result.usedSmart) "Based on artists, genres and moods" else "Based on the artists you both play",
-                        style = YuyuType.caption,
-                        color = Yuyu.textMuted
+                        style = NbType.caption,
+                        color = Nb.textMuted
                     )
                 }
             }
@@ -508,18 +508,18 @@ private fun ResultContent(
 
         item(key = "shared") {
             Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                YuyuSectionHeader("Artists you share")
+                NbSectionHeader("Artists you share")
                 if (result.sharedArtists.isEmpty()) {
                     Text(
                         if (result.friendTopArtists.isEmpty()) "No artists in common yet."
                         else "None yet. ${result.friendName} is into ${result.friendTopArtists.take(3).joinToString(", ")}.",
-                        style = YuyuType.meta,
-                        color = Yuyu.textMuted
+                        style = NbType.meta,
+                        color = Nb.textMuted
                     )
                 } else {
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         result.sharedArtists.take(15).forEachIndexed { i, a ->
-                            YuyuChip(text = a.name, selected = i < 3, onClick = {})
+                            NbChip(text = a.name, selected = i < 3, onClick = {})
                         }
                     }
                 }
@@ -530,7 +530,7 @@ private fun ResultContent(
 
         if (result.songsMissing.isNotEmpty()) {
             item(key = "missing-h") {
-                YuyuSectionHeader(
+                NbSectionHeader(
                     "Find these",
                     actionLabel = "Copy list",
                     onAction = { copyMissing(context, result) },
@@ -540,13 +540,13 @@ private fun ResultContent(
             item(key = "missing-sub") {
                 Text(
                     "${result.friendName}'s favourites that aren't in your library",
-                    style = YuyuType.meta,
-                    color = Yuyu.textMuted,
+                    style = NbType.meta,
+                    color = Nb.textMuted,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
             itemsIndexed(result.songsMissing, key = { i, s -> "m$i${s.title}" }) { _, s ->
-                YuyuSongRow(
+                NbSongRow(
                     title = s.title,
                     subtitle = s.artist,
                     artKey = s.artist.ifBlank { s.title },
@@ -559,17 +559,17 @@ private fun ResultContent(
             Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
                     "Songs ${result.friendName} would love from you show up on their phone when they scan your code.",
-                    style = YuyuType.caption,
-                    color = Yuyu.textMuted
+                    style = NbType.caption,
+                    color = Nb.textMuted
                 )
-                YuyuButton(
+                NbButton(
                     text = "Scan another friend",
                     onClick = viewModel::openScanner,
-                    style = YuyuButtonStyle.Secondary,
+                    style = NbButtonStyle.Secondary,
                     icon = rememberVectorPainter(Icons.Rounded.QrCodeScanner),
                     modifier = Modifier.fillMaxWidth()
                 )
-                YuyuButton(text = "Done", onClick = viewModel::backToHome, style = YuyuButtonStyle.Quiet, modifier = Modifier.fillMaxWidth())
+                NbButton(text = "Done", onClick = viewModel::backToHome, style = NbButtonStyle.Quiet, modifier = Modifier.fillMaxWidth())
             }
         }
     }
@@ -579,26 +579,26 @@ private fun LazyListScope.loveSection(result: TasteResultUi, playerViewModel: Pl
     if (result.songsToPlay.isEmpty()) return
     item(key = "love-h") {
         Column(Modifier.padding(horizontal = 16.dp)) {
-            YuyuSectionHeader("Songs you'd love from them")
+            NbSectionHeader("Songs you'd love from them")
             Text(
                 "${result.friendName}'s favourites that you already have",
-                style = YuyuType.meta,
-                color = Yuyu.textMuted
+                style = NbType.meta,
+                color = Nb.textMuted
             )
             Spacer(Modifier.height(10.dp))
-            YuyuButton(
+            NbButton(
                 text = "Play all",
                 onClick = {
                     playerViewModel.playSongs(result.songsToPlay, result.songsToPlay.first(), "Taste match · ${result.friendName}")
                 },
-                style = YuyuButtonStyle.Primary,
-                size = YuyuButtonSize.Small,
+                style = NbButtonStyle.Primary,
+                size = NbButtonSize.Small,
                 icon = rememberVectorPainter(Icons.Rounded.PlayArrow)
             )
         }
     }
     items(result.songsToPlay, key = { "p" + it.id }) { song ->
-        YuyuSongRow(
+        NbSongRow(
             title = song.title,
             subtitle = song.displayArtist,
             artModel = song.albumArtUriString,

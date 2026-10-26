@@ -8,7 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
-import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -98,7 +98,7 @@ fun PlaylistCover(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = getIconByName(playlist.coverIconName) ?: Icons.Filled.MusicNote,
+                    imageVector = getIconByName(playlist.coverIconName) ?: Icons.Rounded.MusicNote,
                     contentDescription = null,
                     tint = resolvePlaylistCoverContentColor(
                         playlist.coverColorArgb,

@@ -41,7 +41,7 @@ class AlbumArtWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val info = currentState<PlayerInfo>().forDisplay()
-            GlanceTheme(colors = YuyuGlanceColors) { Content(context, info) }
+            GlanceTheme(colors = NbGlanceColors) { Content(context, info) }
         }
     }
 
@@ -55,9 +55,9 @@ class AlbumArtWidget : GlanceAppWidget() {
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .cornerRadius(YuyuWidget.Radius)
+                .cornerRadius(NbWidget.Radius)
                 .background(GlanceTheme.colors.surfaceVariant)
-                .clickable(YuyuWidget.openApp()),
+                .clickable(NbWidget.openApp()),
             contentAlignment = Alignment.BottomCenter,
         ) {
             AlbumArtImage(
@@ -66,7 +66,7 @@ class AlbumArtWidget : GlanceAppWidget() {
                 albumArtUri = info.albumArtUri,
                 size = side,
                 context = context,
-                cornerRadius = YuyuWidget.Radius,
+                cornerRadius = NbWidget.Radius,
             )
             Column(
                 modifier = GlanceModifier
@@ -76,14 +76,14 @@ class AlbumArtWidget : GlanceAppWidget() {
                 Column(
                     modifier = GlanceModifier
                         .fillMaxWidth()
-                        .background(YuyuWidget.OnArtScrim)
+                        .background(NbWidget.OnArtScrim)
                         .cornerRadius(if (large) 20.dp else 16.dp)
                         .padding(horizontal = 10.dp, vertical = if (large) 10.dp else 6.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     if (large) {
-                        WidgetTitle(info.songTitle, color = YuyuWidget.White, size = 15.sp)
-                        WidgetMeta(info.artistName, color = YuyuWidget.LockTextMuted, size = 12.sp)
+                        WidgetTitle(info.songTitle, color = NbWidget.White, size = 15.sp)
+                        WidgetMeta(info.artistName, color = NbWidget.LockTextMuted, size = 12.sp)
                         Spacer(GlanceModifier.height(8.dp))
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -92,7 +92,7 @@ class AlbumArtWidget : GlanceAppWidget() {
                             contentDescription = "Previous",
                             action = musicServiceAction(context, PlayerActions.PREVIOUS),
                             size = button, iconSize = icon,
-                            background = YuyuWidget.LockButton, tint = YuyuWidget.White,
+                            background = NbWidget.LockButton, tint = NbWidget.White,
                         )
                         Spacer(GlanceModifier.width(if (large) 16.dp else 8.dp))
                         WidgetPlayPause(context, info.isPlaying, size = button, iconSize = icon)
@@ -102,7 +102,7 @@ class AlbumArtWidget : GlanceAppWidget() {
                             contentDescription = "Next",
                             action = musicServiceAction(context, PlayerActions.NEXT),
                             size = button, iconSize = icon,
-                            background = YuyuWidget.LockButton, tint = YuyuWidget.White,
+                            background = NbWidget.LockButton, tint = NbWidget.White,
                         )
                     }
                 }

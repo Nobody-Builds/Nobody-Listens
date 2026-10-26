@@ -55,20 +55,20 @@ import com.twilighty.lmusic.data.model.Song
 import com.twilighty.lmusic.data.sleep.SleepSession
 import com.twilighty.lmusic.data.sleep.SleepSource
 import com.twilighty.lmusic.presentation.noise.NoiseSection
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCallout
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuDialog
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuSegmented
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCallout
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbDialog
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbIconButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbSegmented
+import com.twilighty.lmusic.presentation.nb.NbTopBar
+import com.twilighty.lmusic.presentation.nb.NbType
 import kotlinx.coroutines.delay
 import java.text.DateFormat
 import java.util.Date
@@ -108,24 +108,24 @@ fun SleepScreen(
     // The session ended (timer ran out): wake the screen state so it may turn off normally.
     LaunchedEffect(session) { if (session == null) dimmed = false }
 
-    Box(Modifier.fillMaxSize().background(Yuyu.canvas)) {
+    Box(Modifier.fillMaxSize().background(Nb.canvas)) {
         LazyColumn(
             modifier = Modifier.fillMaxSize().statusBarsPadding(),
             contentPadding = PaddingValues(bottom = bottomInset + 120.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item(key = "top") {
-                YuyuTopBar(
+                NbTopBar(
                     title = "Sleep",
                     kicker = if (session != null) "Winding down" else "Drift off slowly",
                     navigationIcon = {
-                        YuyuIconButton(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = onBack)
+                        NbIconButton(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = onBack)
                     },
                 )
             }
             notice?.let { text ->
                 item(key = "notice") {
-                    YuyuCallout(
+                    NbCallout(
                         boldText = "Heads up.",
                         text = text,
                         actionLabel = "OK",
@@ -150,41 +150,41 @@ fun SleepScreen(
                 }
             } else {
                 item(key = "setup") {
-                    YuyuCard(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()) {
-                        YuyuOverline("Sound")
+                    NbCard(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()) {
+                        NbOverline("Sound")
                         Spacer(Modifier.height(10.dp))
-                        YuyuSegmented(
+                        NbSegmented(
                             options = SleepSource.entries.map { it.label },
                             selectedIndex = settings.source.ordinal,
                             onSelect = { viewModel.setSource(SleepSource.entries[it]) },
                             modifier = Modifier.fillMaxWidth(),
                         )
                         Spacer(Modifier.height(6.dp))
-                        Text(settings.source.blurb, style = YuyuType.caption, color = Yuyu.textMuted)
+                        Text(settings.source.blurb, style = NbType.caption, color = Nb.textMuted)
                         Spacer(Modifier.height(16.dp))
-                        YuyuOverline("Sleep timer")
+                        NbOverline("Sleep timer")
                         Spacer(Modifier.height(10.dp))
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             TIMER_CHOICES.forEach { m ->
-                                YuyuChip(text = "$m min", selected = settings.minutes == m, onClick = { viewModel.setMinutes(m) })
+                                NbChip(text = "$m min", selected = settings.minutes == m, onClick = { viewModel.setMinutes(m) })
                             }
                             val custom = settings.minutes !in TIMER_CHOICES
-                            YuyuChip(text = if (custom) "${settings.minutes} min" else "Custom", selected = custom, onClick = { customOpen = true })
+                            NbChip(text = if (custom) "${settings.minutes} min" else "Custom", selected = custom, onClick = { customOpen = true })
                         }
                         Spacer(Modifier.height(16.dp))
-                        YuyuOverline("Lower the volume over the last")
+                        NbOverline("Lower the volume over the last")
                         Spacer(Modifier.height(10.dp))
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             FADE_CHOICES.forEach { m ->
-                                YuyuChip(text = "$m min", selected = settings.fadeMinutes == m, onClick = { viewModel.setFadeMinutes(m) })
+                                NbChip(text = "$m min", selected = settings.fadeMinutes == m, onClick = { viewModel.setFadeMinutes(m) })
                             }
                         }
                         Spacer(Modifier.height(18.dp))
-                        YuyuButton(
+                        NbButton(
                             text = "Start",
                             onClick = { viewModel.start(onPlaySongs) },
-                            style = YuyuButtonStyle.Accent,
-                            size = YuyuButtonSize.Large,
+                            style = NbButtonStyle.Accent,
+                            size = NbButtonSize.Large,
                             icon = rememberVectorPainter(Icons.Rounded.PlayArrow),
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -199,8 +199,8 @@ fun SleepScreen(
             item(key = "tip") {
                 Text(
                     "Keeps playing with the screen off. Use Dim to keep a dark clock on the nightstand.",
-                    style = YuyuType.caption,
-                    color = Yuyu.textMuted,
+                    style = NbType.caption,
+                    color = Nb.textMuted,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
                 )
@@ -243,14 +243,14 @@ private fun RunningCard(
 ) {
     val endsAt = session.endsAt
     val fading = endsAt != null && endsAt - now <= fadeMinutes * 60_000L
-    YuyuCard(modifier = modifier.fillMaxWidth()) {
-        YuyuOverline(session.source.label)
+    NbCard(modifier = modifier.fillMaxWidth()) {
+        NbOverline(session.source.label)
         Spacer(Modifier.height(6.dp))
         val clock = if (preparing) "Finding calm songs…" else remainingText(endsAt, now)
         Text(
             clock,
-            style = YuyuType.display(if (clock.length > 7) 32.sp else 56.sp).copy(fontFeatureSettings = "tnum"),
-            color = Yuyu.text,
+            style = NbType.display(if (clock.length > 7) 32.sp else 56.sp).copy(fontFeatureSettings = "tnum"),
+            color = Nb.text,
             maxLines = 1,
             modifier = Modifier.semantics { contentDescription = "$clock left" }
         )
@@ -260,22 +260,22 @@ private fun RunningCard(
                 fading -> "Getting quieter…"
                 else -> "Then the volume lowers over $fadeMinutes min"
             },
-            style = YuyuType.meta,
-            color = Yuyu.textMuted
+            style = NbType.meta,
+            color = Nb.textMuted
         )
         Spacer(Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-            YuyuButton(
+            NbButton(
                 text = "Dim",
                 onClick = onDim,
-                style = YuyuButtonStyle.Primary,
+                style = NbButtonStyle.Primary,
                 icon = rememberVectorPainter(Icons.Rounded.Bedtime),
                 modifier = Modifier.weight(1f)
             )
-            YuyuButton(text = "+10 min", onClick = onExtend, style = YuyuButtonStyle.Secondary, enabled = endsAt != null)
-            YuyuIconButton(
+            NbButton(text = "+10 min", onClick = onExtend, style = NbButtonStyle.Secondary, enabled = endsAt != null)
+            NbIconButton(
                 imageVector = Icons.Rounded.Close, contentDescription = "Stop", onClick = onStop,
-                style = YuyuIconButtonStyle.Outline, size = 44.dp
+                style = NbIconButtonStyle.Outline, size = 44.dp
             )
         }
     }
@@ -311,16 +311,16 @@ private fun DimScreen(session: SleepSession, now: Long, onWake: () -> Unit) {
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(clock, style = YuyuType.display(56.sp), color = Color(0xFF3A3A3C))
+                Text(clock, style = NbType.display(56.sp), color = Color(0xFF3A3A3C))
                 Spacer(Modifier.height(8.dp))
                 val left = session.endsAt?.let { ((it - now).coerceAtLeast(0L) + 59_999L) / 60_000L }
                 Text(
                     if (left != null) "${session.source.label} · $left min left" else session.source.label,
-                    style = YuyuType.meta,
+                    style = NbType.meta,
                     color = Color(0xFF2C2C2E)
                 )
                 Spacer(Modifier.height(40.dp))
-                Text("Tap to wake", style = YuyuType.caption, color = Color(0xFF242426))
+                Text("Tap to wake", style = NbType.caption, color = Color(0xFF242426))
             }
         }
     }
@@ -329,24 +329,24 @@ private fun DimScreen(session: SleepSession, now: Long, onWake: () -> Unit) {
 @Composable
 private fun CustomTimerDialog(initial: Int, onDismiss: () -> Unit, onSave: (Int) -> Unit) {
     var minutes by remember { mutableFloatStateOf(initial.toFloat().coerceIn(5f, 180f)) }
-    YuyuDialog(
+    NbDialog(
         onDismissRequest = onDismiss,
         title = "Sleep timer",
         actions = {
-            YuyuButton(text = "Cancel", onClick = onDismiss, style = YuyuButtonStyle.Quiet)
-            YuyuButton(text = "Save", onClick = { onSave(minutes.toInt()) })
+            NbButton(text = "Cancel", onClick = onDismiss, style = NbButtonStyle.Quiet)
+            NbButton(text = "Save", onClick = { onSave(minutes.toInt()) })
         }
     ) {
-        Text("${minutes.toInt()} min", style = YuyuType.h2, color = Yuyu.text)
+        Text("${minutes.toInt()} min", style = NbType.h2, color = Nb.text)
         Slider(
             value = minutes,
             onValueChange = { minutes = it },
             valueRange = 5f..180f,
             steps = 34,
             colors = SliderDefaults.colors(
-                thumbColor = Yuyu.ink,
-                activeTrackColor = Yuyu.ink,
-                inactiveTrackColor = Yuyu.emphasis,
+                thumbColor = Nb.ink,
+                activeTrackColor = Nb.ink,
+                inactiveTrackColor = Nb.emphasis,
                 activeTickColor = Color.Transparent,
                 inactiveTickColor = Color.Transparent,
             )

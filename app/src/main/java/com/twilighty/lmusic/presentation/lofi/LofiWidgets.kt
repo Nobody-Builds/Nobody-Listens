@@ -31,16 +31,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.twilighty.lmusic.data.lofi.AmbienceKind
 import com.twilighty.lmusic.data.lofi.AmbienceLayerState
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuSettingRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuSwitch
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbSettingRow
+import com.twilighty.lmusic.presentation.nb.NbSwitch
+import com.twilighty.lmusic.presentation.nb.NbType
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
 
-/** Labelled Yuyu-styled slider with a value readout. */
+/** Labelled Daylight-styled slider with a value readout. */
 @Composable
 fun LofiSlider(
     label: String,
@@ -54,8 +54,8 @@ fun LofiSlider(
 ) {
     Column(modifier.fillMaxWidth()) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(label, style = YuyuType.label, color = if (enabled) Yuyu.text else Yuyu.textMuted, modifier = Modifier.weight(1f))
-            Text(valueText, style = YuyuType.caption, color = Yuyu.textMuted)
+            Text(label, style = NbType.label, color = if (enabled) Nb.text else Nb.textMuted, modifier = Modifier.weight(1f))
+            Text(valueText, style = NbType.caption, color = Nb.textMuted)
         }
         Slider(
             value = value,
@@ -64,9 +64,9 @@ fun LofiSlider(
             steps = steps,
             enabled = enabled,
             colors = SliderDefaults.colors(
-                thumbColor = Yuyu.ink,
-                activeTrackColor = Yuyu.ink,
-                inactiveTrackColor = Yuyu.emphasis,
+                thumbColor = Nb.ink,
+                activeTrackColor = Nb.ink,
+                inactiveTrackColor = Nb.emphasis,
                 activeTickColor = Color.Transparent,
                 inactiveTickColor = Color.Transparent,
             ),
@@ -92,10 +92,10 @@ fun AmbienceLayerControls(
     Column(modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
         for (kind in AmbienceKind.entries) {
             val state = layers[kind] ?: AmbienceLayerState()
-            YuyuSettingRow(
+            NbSettingRow(
                 title = kind.label,
                 icon = androidx.compose.ui.graphics.vector.rememberVectorPainter(kind.icon()),
-                trailing = { YuyuSwitch(checked = state.enabled, onCheckedChange = { onEnabled(kind, it) }) },
+                trailing = { NbSwitch(checked = state.enabled, onCheckedChange = { onEnabled(kind, it) }) },
                 onClick = { onEnabled(kind, !state.enabled) },
             )
             if (state.enabled) {
@@ -119,9 +119,9 @@ fun LofiVisualizer(
     meters: () -> FloatArray?,
     active: Boolean,
     modifier: Modifier = Modifier,
-    ink: Color = Yuyu.ink,
-    accent: Color = Yuyu.accent,
-    track: Color = Yuyu.emphasis,
+    ink: Color = Nb.ink,
+    accent: Color = Nb.accent,
+    track: Color = Nb.emphasis,
 ) {
     val smooth = remember { FloatArray(6) }
     val bars = remember { FloatArray(BAR_COUNT) }

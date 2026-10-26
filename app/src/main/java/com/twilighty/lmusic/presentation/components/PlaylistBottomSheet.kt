@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -148,7 +148,7 @@ fun PlaylistBottomSheet(
                     trailingIcon = {
                         if (searchQuery.isNotEmpty()) IconButton(onClick = {
                             searchQuery = ""
-                        }) { Icon(Icons.Filled.Clear, null) }
+                        }) { Icon(Icons.Rounded.Clear, null) }
                     }
                 )
 

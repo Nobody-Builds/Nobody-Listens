@@ -31,7 +31,7 @@ import com.twilighty.lmusic.data.ytmusic.YouTubeMusicUris
 import com.twilighty.lmusic.presentation.components.subcomps.EnhancedSongListItem
 import com.twilighty.lmusic.presentation.screens.SearchResultSectionHeader
 import com.twilighty.lmusic.presentation.viewmodel.PlayerViewModel
-import com.twilighty.lmusic.presentation.yuyu.YuyuEmptyState
+import com.twilighty.lmusic.presentation.nb.NbEmptyState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -133,7 +133,7 @@ fun YouTubeMusicSearchResults(
                 color = MaterialTheme.colorScheme.primary,
             )
         }
-        state.shelves.isEmpty() -> YuyuEmptyState(
+        state.shelves.isEmpty() -> NbEmptyState(
             title = if (state.error != null) "Could not search YouTube" else "No YouTube results",
             body = state.error ?: "Try another search, or paste a YouTube link.",
             icon = rememberVectorPainter(Icons.Rounded.Search),

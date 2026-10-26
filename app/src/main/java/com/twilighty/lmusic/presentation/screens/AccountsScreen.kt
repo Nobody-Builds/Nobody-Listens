@@ -425,7 +425,7 @@ private fun ConnectedAccountCard(
     }
 
     Surface(
-        shape = AbsoluteSmoothCornerShape(12.dp, 60),
+        shape = androidx.compose.foundation.shape.CircleShape,
         color = if (isComingSoon) {
             MaterialTheme.colorScheme.secondaryContainer
         } else {
@@ -607,64 +607,17 @@ private data class ServicePalette(
 
 @Composable
 private fun servicePalette(service: ExternalServiceAccount): ServicePalette {
-    return when (service) {
-        ExternalServiceAccount.TELEGRAM -> ServicePalette(
-            iconContainer = MaterialTheme.colorScheme.primaryContainer,
-            iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
-            statusContainer = Color(0xFFC9F8E6),
-            statusTint = Color(0xFF035C43),
-            primaryActionContainer = MaterialTheme.colorScheme.primaryContainer,
-            primaryActionTint = MaterialTheme.colorScheme.onPrimaryContainer
-        )
-        ExternalServiceAccount.GOOGLE_DRIVE -> ServicePalette(
-            iconContainer = MaterialTheme.colorScheme.secondaryContainer,
-            iconTint = MaterialTheme.colorScheme.onSecondaryContainer,
-            statusContainer = Color(0xFFD7F4D0),
-            statusTint = Color(0xFF1E5E18),
-            primaryActionContainer = MaterialTheme.colorScheme.secondaryContainer,
-            primaryActionTint = MaterialTheme.colorScheme.onSecondaryContainer
-        )
-        ExternalServiceAccount.NETEASE -> ServicePalette(
-            iconContainer = MaterialTheme.colorScheme.errorContainer,
-            iconTint = MaterialTheme.colorScheme.onErrorContainer,
-            statusContainer = Color(0xFFFFE3E1),
-            statusTint = Color(0xFF7A1D16),
-            primaryActionContainer = MaterialTheme.colorScheme.errorContainer,
-            primaryActionTint = MaterialTheme.colorScheme.onErrorContainer
-        )
-        ExternalServiceAccount.QQ_MUSIC -> ServicePalette(
-            iconContainer = MaterialTheme.colorScheme.tertiaryContainer,
-            iconTint = MaterialTheme.colorScheme.onTertiaryContainer,
-            statusContainer = Color(0xFFFFF0C7),
-            statusTint = Color(0xFF704900),
-            primaryActionContainer = MaterialTheme.colorScheme.tertiaryContainer,
-            primaryActionTint = MaterialTheme.colorScheme.onTertiaryContainer
-        )
-        ExternalServiceAccount.NAVIDROME -> ServicePalette(
-            iconContainer = Color.White,
-            iconTint = Color.Unspecified,
-            statusContainer = Color(0xFFE1F5FE),
-            statusTint = Color(0xFF0277BD),
-            primaryActionContainer = Color(0xFFE3F2FD),
-            primaryActionTint = Color(0xFF1565C0)
-        )
-        ExternalServiceAccount.JELLYFIN -> ServicePalette(
-            iconContainer = Color(0xFF00A4DC),
-            iconTint = Color.White,
-            statusContainer = Color(0xFFE1F5FE),
-            statusTint = Color(0xFF0277BD),
-            primaryActionContainer = Color(0xFFE3F2FD),
-            primaryActionTint = Color(0xFF1565C0)
-        )
-        ExternalServiceAccount.YOUTUBE_MUSIC -> ServicePalette(
-            iconContainer = Color(0xFFFF0033),
-            iconTint = Color.White,
-            statusContainer = Color(0xFFFFE4E8),
-            statusTint = Color(0xFF8C001A),
-            primaryActionContainer = Color(0xFFFFD6DE),
-            primaryActionTint = Color(0xFF8C001A)
-        )
-    }
+    // Daylight: one palette for every service (the logo carries the identity), and the
+    // connected status is a word on the success soft fill. Navidrome's logo keeps its colours.
+    val scheme = MaterialTheme.colorScheme
+    return ServicePalette(
+        iconContainer = scheme.primaryContainer,
+        iconTint = if (service == ExternalServiceAccount.NAVIDROME) Color.Unspecified else scheme.onPrimaryContainer,
+        statusContainer = com.twilighty.lmusic.presentation.nb.Nb.successSoft,
+        statusTint = com.twilighty.lmusic.presentation.nb.Nb.successText,
+        primaryActionContainer = scheme.primaryContainer,
+        primaryActionTint = scheme.onPrimaryContainer
+    )
 }
 
 private fun accountIcon(service: ExternalServiceAccount): ImageVector {

@@ -93,22 +93,22 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCallout
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuCheckbox
-import com.twilighty.lmusic.presentation.yuyu.YuyuCompareRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatus
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatusChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuTextField
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCallout
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbCheckbox
+import com.twilighty.lmusic.presentation.nb.NbCompareRow
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbStatus
+import com.twilighty.lmusic.presentation.nb.NbStatusChip
+import com.twilighty.lmusic.presentation.nb.NbTextField
+import com.twilighty.lmusic.presentation.nb.NbType
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
@@ -227,7 +227,7 @@ fun MetadataAutofillDialog(
                         onNav = onDismiss
                     )
                 },
-                containerColor = Yuyu.canvas,
+                containerColor = Nb.canvas,
                 contentWindowInsets = WindowInsets.statusBars
             ) { padding ->
                 LazyColumn(
@@ -245,31 +245,31 @@ fun MetadataAutofillDialog(
                     item {
                         Text(
                             text = stringResource(R.string.lmusic_autofill_subtitle),
-                            style = YuyuType.body,
-                            color = Yuyu.textSecondary
+                            style = NbType.body,
+                            color = Nb.textSecondary
                         )
                     }
                     item {
-                        YuyuCard(
+                        NbCard(
                             modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 8.dp),
                             contentPadding = PaddingValues(14.dp)
                         ) {
                             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    YuyuTextField(
+                                    NbTextField(
                                         value = queryTitle,
                                         onValueChange = { queryTitle = it },
                                         label = stringResource(R.string.lmusic_autofill_search_title),
                                         modifier = Modifier.weight(1f)
                                     )
-                                    YuyuTextField(
+                                    NbTextField(
                                         value = queryArtist,
                                         onValueChange = { queryArtist = it },
                                         label = stringResource(R.string.lmusic_autofill_search_artist),
                                         modifier = Modifier.weight(1f)
                                     )
                                 }
-                                YuyuTextField(
+                                NbTextField(
                                     value = queryAlbum,
                                     onValueChange = { queryAlbum = it },
                                     label = stringResource(R.string.lmusic_autofill_search_album),
@@ -281,16 +281,16 @@ fun MetadataAutofillDialog(
                                 ) {
                                     Text(
                                         text = if (offlineCandidate != null && current.title.isBlank()) "Filled in from the filename" else "",
-                                        style = YuyuType.caption,
-                                        color = Yuyu.textMuted,
+                                        style = NbType.caption,
+                                        color = Nb.textMuted,
                                         modifier = Modifier.weight(1f)
                                     )
-                                    YuyuButton(
+                                    NbButton(
                                         text = stringResource(R.string.lmusic_autofill_search),
                                         onClick = { runSearch() },
                                         enabled = queryTitle.isNotBlank() && online !is OnlineState.Loading,
-                                        style = YuyuButtonStyle.Secondary,
-                                        size = YuyuButtonSize.Small,
+                                        style = NbButtonStyle.Secondary,
+                                        size = NbButtonSize.Small,
                                         icon = rememberVectorPainter(Icons.Rounded.Search)
                                     )
                                 }
@@ -303,7 +303,7 @@ fun MetadataAutofillDialog(
                             SectionHeader(
                                 title = stringResource(R.string.lmusic_autofill_from_files),
                                 subtitle = stringResource(R.string.lmusic_autofill_from_files_desc),
-                                badge = { YuyuStatusChip(text = "Offline", status = YuyuStatus.Neutral) }
+                                badge = { NbStatusChip(text = "Offline", status = NbStatus.Neutral) }
                             )
                         }
                         item {
@@ -315,7 +315,7 @@ fun MetadataAutofillDialog(
                         SectionHeader(
                             title = stringResource(R.string.lmusic_autofill_online),
                             subtitle = stringResource(R.string.lmusic_autofill_online_desc),
-                            badge = { Text("MusicBrainz", style = YuyuType.caption, color = Yuyu.textMuted) }
+                            badge = { Text("MusicBrainz", style = NbType.caption, color = Nb.textMuted) }
                         )
                     }
                     when (val state = online) {
@@ -325,16 +325,16 @@ fun MetadataAutofillDialog(
                                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                                 modifier = Modifier.padding(vertical = 12.dp)
                             ) {
-                                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = Yuyu.ink)
+                                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = Nb.ink)
                                 Text(
                                     text = stringResource(R.string.lmusic_autofill_searching),
-                                    style = YuyuType.body,
-                                    color = Yuyu.textSecondary
+                                    style = NbType.body,
+                                    color = Nb.textSecondary
                                 )
                             }
                         }
                         is OnlineState.Failed -> item {
-                            YuyuCallout(
+                            NbCallout(
                                 boldText = "Offline.",
                                 text = stringResource(R.string.lmusic_autofill_offline_error),
                                 actionLabel = stringResource(R.string.lmusic_autofill_search),
@@ -346,8 +346,8 @@ fun MetadataAutofillDialog(
                                 item {
                                     Text(
                                         text = stringResource(R.string.lmusic_autofill_no_results),
-                                        style = YuyuType.body,
-                                        color = Yuyu.textSecondary,
+                                        style = NbType.body,
+                                        color = Nb.textSecondary,
                                         modifier = Modifier.padding(vertical = 8.dp)
                                     )
                                 }
@@ -380,24 +380,24 @@ private fun AutofillTopBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Yuyu.canvas)
+            .background(Nb.canvas)
             .statusBarsPadding()
             .heightIn(min = 60.dp)
             .padding(start = 6.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        YuyuIconButton(imageVector = navIcon, contentDescription = navDescription, onClick = onNav)
+        NbIconButton(imageVector = navIcon, contentDescription = navDescription, onClick = onNav)
         Column(Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = if (subtitle != null) YuyuType.h3 else YuyuType.h2,
-                color = Yuyu.text,
+                style = if (subtitle != null) NbType.h3 else NbType.h2,
+                color = Nb.text,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             if (subtitle != null) {
-                Text(subtitle, style = YuyuType.caption, color = Yuyu.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(subtitle, style = NbType.caption, color = Nb.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
         trailing?.invoke()
@@ -408,10 +408,10 @@ private fun AutofillTopBar(
 private fun SectionHeader(title: String, subtitle: String, badge: (@Composable () -> Unit)? = null) {
     Column(modifier = Modifier.padding(top = 10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = title, style = YuyuType.h3, color = Yuyu.text, modifier = Modifier.weight(1f))
+            Text(text = title, style = NbType.h3, color = Nb.text, modifier = Modifier.weight(1f))
             badge?.invoke()
         }
-        Text(text = subtitle, style = YuyuType.caption, color = Yuyu.textMuted)
+        Text(text = subtitle, style = NbType.caption, color = Nb.textMuted)
     }
 }
 
@@ -420,9 +420,9 @@ private fun CandidateRow(candidate: AutofillCandidate, highlighted: Boolean, onC
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(YuyuShapes.lg)
-            .background(Yuyu.canvas)
-            .border(if (highlighted) 1.5.dp else 1.dp, if (highlighted) Yuyu.ink else Yuyu.border, YuyuShapes.lg)
+            .clip(NbShapes.lg)
+            .background(Nb.canvas)
+            .border(if (highlighted) 1.5.dp else 1.dp, if (highlighted) Nb.ink else Nb.border, NbShapes.lg)
             .clickable(onClick = onClick)
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -432,14 +432,14 @@ private fun CandidateRow(candidate: AutofillCandidate, highlighted: Boolean, onC
             Box(
                 modifier = Modifier
                     .size(52.dp)
-                    .clip(YuyuShapes.md)
-                    .background(Yuyu.muted),
+                    .clip(NbShapes.md)
+                    .background(Nb.muted),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Rounded.FolderOpen, contentDescription = null, tint = Yuyu.text)
+                Icon(Icons.Rounded.FolderOpen, contentDescription = null, tint = Nb.text)
             }
         } else {
-            YuyuArt(
+            NbArt(
                 model = candidate.thumbnailUrl,
                 title = candidate.fields.album.ifBlank { candidate.fields.title },
                 size = 52.dp,
@@ -449,17 +449,17 @@ private fun CandidateRow(candidate: AutofillCandidate, highlighted: Boolean, onC
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(1.dp)) {
             Text(
                 text = candidate.fields.title.ifBlank { "—" },
-                style = YuyuType.title,
+                style = NbType.title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = Yuyu.text
+                color = Nb.text
             )
             Text(
                 text = candidate.fields.artist.ifBlank { "—" },
-                style = YuyuType.meta,
+                style = NbType.meta,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = Yuyu.textMuted
+                color = Nb.textMuted
             )
             val meta = listOfNotNull(
                 candidate.fields.album.ifBlank { null },
@@ -470,29 +470,29 @@ private fun CandidateRow(candidate: AutofillCandidate, highlighted: Boolean, onC
             if (meta.isNotEmpty()) {
                 Text(
                     text = meta,
-                    style = YuyuType.caption,
+                    style = NbType.caption,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = Yuyu.textMuted
+                    color = Nb.textMuted
                 )
             }
         }
         if (candidate.source == AutofillSource.MUSICBRAINZ) {
             ConfidenceChip(candidate.confidence)
         } else {
-            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null, tint = Yuyu.textMuted)
+            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null, tint = Nb.textMuted)
         }
     }
 }
 
 @Composable
 private fun ConfidenceChip(confidence: Int, short: Boolean = false) {
-    YuyuStatusChip(
+    NbStatusChip(
         text = if (short) "$confidence%" else stringResource(R.string.lmusic_autofill_match, confidence),
         status = when {
-            confidence >= 80 -> YuyuStatus.Success
-            confidence >= 65 -> YuyuStatus.Warning
-            else -> YuyuStatus.Neutral
+            confidence >= 80 -> NbStatus.Success
+            confidence >= 65 -> NbStatus.Warning
+            else -> NbStatus.Neutral
         }
     )
 }
@@ -579,9 +579,9 @@ private fun CandidateDetail(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Yuyu.canvas)
+                    .background(Nb.canvas)
             ) {
-                YuyuDivider()
+                NbDivider()
                 Column(
                     modifier = Modifier.padding(
                         start = 16.dp,
@@ -593,7 +593,7 @@ private fun CandidateDetail(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     val count = selectedSet.size
-                    YuyuButton(
+                    NbButton(
                         text = when {
                             count > 0 && applyCover -> "Fill $count ${if (count == 1) "field" else "fields"} and cover"
                             count > 0 -> "Fill $count ${if (count == 1) "field" else "fields"}"
@@ -612,19 +612,19 @@ private fun CandidateDetail(
                             )
                         },
                         enabled = details != null && (selectedSet.isNotEmpty() || applyCover),
-                        size = YuyuButtonSize.Large,
+                        size = NbButtonSize.Large,
                         icon = rememberVectorPainter(Icons.Rounded.AutoAwesome),
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
                         "Nothing is written to the file until you tap Save.",
-                        style = YuyuType.caption,
-                        color = Yuyu.textMuted
+                        style = NbType.caption,
+                        color = Nb.textMuted
                     )
                 }
             }
         },
-        containerColor = Yuyu.canvas,
+        containerColor = Nb.canvas,
         contentWindowInsets = WindowInsets.statusBars
     ) { padding ->
         LazyColumn(
@@ -643,8 +643,8 @@ private fun CandidateDetail(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(YuyuShapes.lg)
-                            .border(if (checked) 1.5.dp else 1.dp, if (checked) Yuyu.ink else Yuyu.border, YuyuShapes.lg)
+                            .clip(NbShapes.lg)
+                            .border(if (checked) 1.5.dp else 1.dp, if (checked) Nb.ink else Nb.border, NbShapes.lg)
                             .clickable(enabled = coverArt != null) { useCover = !useCover }
                             .padding(horizontal = 14.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -653,8 +653,8 @@ private fun CandidateDetail(
                         Box(
                             modifier = Modifier
                                 .size(64.dp)
-                                .clip(YuyuShapes.md)
-                                .background(Yuyu.muted),
+                                .clip(NbShapes.md)
+                                .background(Nb.muted),
                             contentAlignment = Alignment.Center
                         ) {
                             val bitmap = coverBitmap
@@ -665,15 +665,15 @@ private fun CandidateDetail(
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier.fillMaxSize()
                                 )
-                                coverLoading -> CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp, color = Yuyu.ink)
-                                else -> Icon(Icons.Rounded.Album, contentDescription = null, tint = Yuyu.textMuted)
+                                coverLoading -> CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp, color = Nb.ink)
+                                else -> Icon(Icons.Rounded.Album, contentDescription = null, tint = Nb.textMuted)
                             }
                         }
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = stringResource(R.string.lmusic_autofill_cover_art),
-                                style = YuyuType.title,
-                                color = Yuyu.text
+                                style = NbType.title,
+                                color = Nb.text
                             )
                             Text(
                                 text = when {
@@ -681,11 +681,11 @@ private fun CandidateDetail(
                                     coverArt == null -> stringResource(R.string.lmusic_autofill_cover_none)
                                     else -> stringResource(if (songHasArt) R.string.lmusic_autofill_cover_replace else R.string.lmusic_autofill_cover_add)
                                 },
-                                style = YuyuType.caption,
-                                color = Yuyu.textMuted
+                                style = NbType.caption,
+                                color = Nb.textMuted
                             )
                         }
-                        YuyuCheckbox(
+                        NbCheckbox(
                             checked = checked,
                             onCheckedChange = if (coverArt != null) ({ v -> useCover = v }) else null
                         )
@@ -700,15 +700,15 @@ private fun CandidateDetail(
                 ) {
                     Text(
                         text = stringResource(R.string.lmusic_autofill_choose_fields),
-                        style = YuyuType.h3,
-                        color = Yuyu.text,
+                        style = NbType.h3,
+                        color = Nb.text,
                         modifier = Modifier.weight(1f)
                     )
                     if (changedFields.isNotEmpty()) {
                         Text(
                             "${chosenFields.orEmpty().size} of ${changedFields.size} picked",
-                            style = YuyuType.caption,
-                            color = Yuyu.textMuted
+                            style = NbType.caption,
+                            color = Nb.textMuted
                         )
                     }
                 }
@@ -721,11 +721,11 @@ private fun CandidateDetail(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.padding(vertical = 12.dp)
                     ) {
-                        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = Yuyu.ink)
+                        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = Nb.ink)
                         Text(
                             text = stringResource(R.string.lmusic_autofill_loading_details),
-                            style = YuyuType.body,
-                            color = Yuyu.textSecondary
+                            style = NbType.body,
+                            color = Nb.textSecondary
                         )
                     }
                 }
@@ -733,14 +733,14 @@ private fun CandidateDetail(
                 item {
                     Text(
                         text = stringResource(R.string.lmusic_autofill_nothing_new),
-                        style = YuyuType.body,
-                        color = Yuyu.textSecondary
+                        style = NbType.body,
+                        color = Nb.textSecondary
                     )
                 }
             } else {
                 items(changedFields, key = { it.name }) { field ->
                     val isChecked = chosenFields.orEmpty().contains(field)
-                    YuyuCompareRow(
+                    NbCompareRow(
                         label = stringResource(fieldLabels.getValue(field)),
                         current = field.valueOf(current),
                         proposed = field.valueOf(proposals),

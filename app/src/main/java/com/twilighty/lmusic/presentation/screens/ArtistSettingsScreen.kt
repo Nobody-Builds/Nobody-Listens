@@ -36,12 +36,12 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Lightbulb
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Lightbulb
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Album
 import androidx.compose.material.icons.rounded.ChevronRight
@@ -194,7 +194,7 @@ fun ArtistSettingsScreen(
                     title = stringResource(R.string.presentation_batch_g_artist_section_multi_parsing),
                     icon = {
                         Icon(
-                            imageVector = Icons.Outlined.Person,
+                            imageVector = Icons.Rounded.Person,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -213,7 +213,7 @@ fun ArtistSettingsScreen(
                             ),
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Outlined.Settings,
+                                    imageVector = Icons.Rounded.Settings,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.secondary
                                 )
@@ -245,7 +245,7 @@ fun ArtistSettingsScreen(
                             },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Outlined.Settings,
+                                    imageVector = Icons.Rounded.Settings,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.secondary
                                 )
@@ -360,7 +360,7 @@ private fun RescanRequiredBanner(
             modifier = Modifier.padding(16.dp)
         ) {
             Icon(
-                imageVector = Icons.Outlined.Warning,
+                imageVector = Icons.Rounded.Warning,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onTertiaryContainer,
                 modifier = Modifier.size(24.dp)
@@ -401,7 +401,7 @@ private fun RescanRequiredBanner(
                     )
                 } else {
                     Icon(
-                        imageVector = Icons.Outlined.Refresh,
+                        imageVector = Icons.Rounded.Refresh,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )
@@ -436,7 +436,7 @@ private fun InfoCard(
             modifier = Modifier.padding(16.dp)
         ) {
             Icon(
-                imageVector = Icons.Outlined.Info,
+                imageVector = Icons.Rounded.Info,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier.size(24.dp)
@@ -480,7 +480,7 @@ private fun ExamplesCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Lightbulb,
+                    imageVector = Icons.Rounded.Lightbulb,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.size(24.dp)

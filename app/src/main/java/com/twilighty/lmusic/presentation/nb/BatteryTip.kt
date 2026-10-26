@@ -1,4 +1,4 @@
-package com.twilighty.lmusic.presentation.yuyu
+package com.twilighty.lmusic.presentation.nb
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -87,15 +87,15 @@ fun BatteryOptimizationTip(state: BatteryTipState, modifier: Modifier = Modifier
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(YuyuShapes.lg)
-            .background(Yuyu.warningSoft)
+            .clip(NbShapes.lg)
+            .background(Nb.warningSoft)
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
             "Samsung may pause LMusic in the background. Allow it to keep timers and parties running.",
-            style = YuyuType.meta,
-            color = Yuyu.warningText
+            style = NbType.meta,
+            color = Nb.warningText
         )
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             TipAction("Allow in settings") { state.openSettings() }
@@ -108,10 +108,10 @@ fun BatteryOptimizationTip(state: BatteryTipState, modifier: Modifier = Modifier
 private fun TipAction(label: String, onClick: () -> Unit) {
     Text(
         label,
-        style = YuyuType.label.copy(fontWeight = FontWeight.Bold),
-        color = Yuyu.warningText,
+        style = NbType.label.copy(fontWeight = FontWeight.Bold),
+        color = Nb.warningText,
         modifier = Modifier
-            .clip(YuyuShapes.pill)
+            .clip(NbShapes.pill)
             .clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = 6.dp, vertical = 6.dp)
     )

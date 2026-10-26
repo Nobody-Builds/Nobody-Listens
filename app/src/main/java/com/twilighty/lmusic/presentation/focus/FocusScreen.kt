@@ -66,23 +66,23 @@ import com.twilighty.lmusic.data.focus.FocusPhase
 import com.twilighty.lmusic.data.focus.FocusService
 import com.twilighty.lmusic.data.focus.FocusTimerState
 import com.twilighty.lmusic.data.model.Song
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCallout
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuDialog
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuSectionHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatTile
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCallout
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbDialog
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbIconButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbSectionHeader
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbStatTile
+import com.twilighty.lmusic.presentation.nb.NbTopBar
+import com.twilighty.lmusic.presentation.nb.NbType
 import kotlinx.coroutines.delay
 import java.time.format.TextStyle
 import java.util.Locale
@@ -129,16 +129,16 @@ fun FocusScreen(
 
     var customOpen by remember { mutableStateOf(false) }
     val active = timer.phase.isActive
-    val batteryTip = com.twilighty.lmusic.presentation.yuyu.rememberBatteryTipState()
+    val batteryTip = com.twilighty.lmusic.presentation.nb.rememberBatteryTipState()
 
-    Box(Modifier.fillMaxSize().background(Yuyu.canvas)) {
+    Box(Modifier.fillMaxSize().background(Nb.canvas)) {
         LazyColumn(
             modifier = Modifier.fillMaxSize().statusBarsPadding(),
             contentPadding = PaddingValues(bottom = bottomInset + 120.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item(key = "top") {
-                YuyuTopBar(
+                NbTopBar(
                     title = "Focus",
                     kicker = when {
                         timer.phase == FocusPhase.Done -> "Session done"
@@ -146,18 +146,18 @@ fun FocusScreen(
                         else -> "Calm, timed rounds"
                     },
                     navigationIcon = {
-                        YuyuIconButton(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = onBack)
+                        NbIconButton(imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = onBack)
                     },
                 )
             }
             if (batteryTip.visible) {
                 item(key = "battery_tip") {
-                    com.twilighty.lmusic.presentation.yuyu.BatteryOptimizationTip(batteryTip, Modifier.padding(horizontal = 16.dp))
+                    com.twilighty.lmusic.presentation.nb.BatteryOptimizationTip(batteryTip, Modifier.padding(horizontal = 16.dp))
                 }
             }
             notice?.let { text ->
                 item(key = "notice") {
-                    YuyuCallout(
+                    NbCallout(
                         boldText = "Heads up.",
                         text = text,
                         actionLabel = "OK",
@@ -168,7 +168,7 @@ fun FocusScreen(
             }
             if (exactAlarmNeeded && active) {
                 item(key = "exact_alarm") {
-                    YuyuCallout(
+                    NbCallout(
                         boldText = "Breaks may start late.",
                         text = "Allow precise alarms so breaks start on time",
                         actionLabel = "Allow",
@@ -224,8 +224,8 @@ fun FocusScreen(
                             FocusMusicSource.Noise -> "Noise plays during focus"
                             else -> "${sessionMusic.label} plays during focus and pauses in breaks"
                         },
-                        style = YuyuType.meta,
-                        color = Yuyu.textMuted,
+                        style = NbType.meta,
+                        color = Nb.textMuted,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
                     )
@@ -251,15 +251,15 @@ fun FocusScreen(
             }
             item(key = "today") {
                 Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    YuyuSectionHeader(title = "Your focus")
+                    NbSectionHeader(title = "Your focus")
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        YuyuStatTile(
+                        NbStatTile(
                             label = "Today",
                             value = "$todayMinutes min",
                             supporting = if (todayRounds == 1) "1 round" else "$todayRounds rounds",
                             modifier = Modifier.weight(1f)
                         )
-                        YuyuStatTile(
+                        NbStatTile(
                             label = "This week",
                             value = "${week.sumOf { it.minutes }} min",
                             supporting = "${week.count { it.minutes > 0 }} of 7 days",
@@ -299,8 +299,8 @@ private fun FocusRing(timer: FocusTimerState, config: FocusConfig, now: Long, mo
         animationSpec = tween(900),
         label = "focusRing"
     )
-    val ringColor = if (timer.phase.isBreak) Yuyu.successText else Yuyu.accent
-    val track = Yuyu.emphasis
+    val ringColor = if (timer.phase.isBreak) Nb.successText else Nb.ink
+    val track = Nb.emphasis
     val phaseLabel = when {
         timer.phase == FocusPhase.Done -> "Done"
         active -> timer.phase.label
@@ -334,15 +334,15 @@ private fun FocusRing(timer: FocusTimerState, config: FocusConfig, now: Long, mo
                 }
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                YuyuOverline(phaseLabel, color = if (timer.phase.isBreak) Yuyu.successText else Yuyu.accentText)
+                NbOverline(phaseLabel, color = if (timer.phase.isBreak) Nb.successText else Nb.accentText)
                 Text(
                     text = clock,
-                    style = YuyuType.display(if (clock.length > 5) 48.sp else 64.sp)
+                    style = NbType.display(if (clock.length > 5) 48.sp else 64.sp)
                         .copy(fontFeatureSettings = "tnum"),
-                    color = if (timer.isPaused) Yuyu.textMuted else Yuyu.text,
+                    color = if (timer.isPaused) Nb.textMuted else Nb.text,
                     maxLines = 1
                 )
-                Text(roundLabel, style = YuyuType.meta, color = Yuyu.textMuted)
+                Text(roundLabel, style = NbType.meta, color = Nb.textMuted)
             }
         }
     }
@@ -358,8 +358,8 @@ private fun RoundDots(rounds: Int, completed: Int, current: Int, modifier: Modif
                 Modifier
                     .size(if (isCurrent) 14.dp else 10.dp)
                     .clip(CircleShape)
-                    .background(if (done) Yuyu.accent else if (isCurrent) Yuyu.accentSoft else Yuyu.emphasis)
-                    .then(if (isCurrent) Modifier.border(2.dp, Yuyu.accent, CircleShape) else Modifier)
+                    .background(if (done) Nb.ink else if (isCurrent) Nb.accentSoft else Nb.emphasis)
+                    .then(if (isCurrent) Modifier.border(2.dp, Nb.ink, CircleShape) else Modifier)
                     .align(Alignment.CenterVertically)
             )
         }
@@ -378,31 +378,31 @@ private fun Controls(
 ) {
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
         when {
-            timer.phase == FocusPhase.Done -> YuyuButton(
-                text = "Start again", onClick = onAgain, style = YuyuButtonStyle.Accent, size = YuyuButtonSize.Large
+            timer.phase == FocusPhase.Done -> NbButton(
+                text = "Start again", onClick = onAgain, style = NbButtonStyle.Accent, size = NbButtonSize.Large
             )
             timer.phase.isActive -> {
-                YuyuIconButton(
+                NbIconButton(
                     imageVector = Icons.Rounded.Close, contentDescription = "Stop session", onClick = onStop,
-                    style = YuyuIconButtonStyle.Outline, size = 52.dp
+                    style = NbIconButtonStyle.Outline, size = 52.dp
                 )
-                YuyuButton(
+                NbButton(
                     text = if (timer.isRunning) "Pause" else "Resume",
                     onClick = onToggle,
-                    style = YuyuButtonStyle.Primary,
-                    size = YuyuButtonSize.Large,
+                    style = NbButtonStyle.Primary,
+                    size = NbButtonSize.Large,
                     icon = rememberVectorPainter(if (timer.isRunning) Icons.Rounded.Pause else Icons.Rounded.PlayArrow),
                     modifier = Modifier.width(160.dp)
                 )
-                YuyuIconButton(
+                NbIconButton(
                     imageVector = Icons.Rounded.SkipNext,
                     contentDescription = if (timer.phase.isBreak) "Skip break" else "Skip to break",
                     onClick = onSkip,
-                    style = YuyuIconButtonStyle.Outline, size = 52.dp
+                    style = NbIconButtonStyle.Outline, size = 52.dp
                 )
             }
-            else -> YuyuButton(
-                text = "Start focus", onClick = onStart, style = YuyuButtonStyle.Accent, size = YuyuButtonSize.Large,
+            else -> NbButton(
+                text = "Start focus", onClick = onStart, style = NbButtonStyle.Accent, size = NbButtonSize.Large,
                 icon = rememberVectorPainter(Icons.Rounded.PlayArrow),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -423,52 +423,52 @@ private fun SettingsCard(
     onCustom: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    YuyuCard(modifier = modifier.fillMaxWidth()) {
-        YuyuOverline("Focus length")
+    NbCard(modifier = modifier.fillMaxWidth()) {
+        NbOverline("Focus length")
         Spacer(Modifier.height(10.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val isPreset = config.focusMinutes in FocusConfig.FOCUS_PRESETS
             FocusConfig.FOCUS_PRESETS.forEach { m ->
-                YuyuChip(text = "$m min", selected = config.focusMinutes == m, onClick = { onConfig { it.copy(focusMinutes = m) } })
+                NbChip(text = "$m min", selected = config.focusMinutes == m, onClick = { onConfig { it.copy(focusMinutes = m) } })
             }
-            YuyuChip(
+            NbChip(
                 text = if (isPreset) "Custom" else "${config.focusMinutes} min",
                 selected = !isPreset,
                 onClick = onCustom
             )
         }
         Spacer(Modifier.height(8.dp))
-        YuyuDivider()
+        NbDivider()
         Stepper("Short break", "${config.shortBreakMinutes} min",
             onMinus = { onConfig { it.copy(shortBreakMinutes = it.shortBreakMinutes - 1) } },
             onPlus = { onConfig { it.copy(shortBreakMinutes = it.shortBreakMinutes + 1) } },
             minusEnabled = config.shortBreakMinutes > FocusConfig.MIN_MINUTES,
             plusEnabled = config.shortBreakMinutes < FocusConfig.MAX_BREAK_MINUTES)
-        YuyuDivider()
+        NbDivider()
         Stepper("Long break", "${config.longBreakMinutes} min · every ${config.longBreakEvery} rounds",
             onMinus = { onConfig { it.copy(longBreakMinutes = it.longBreakMinutes - 5) } },
             onPlus = { onConfig { it.copy(longBreakMinutes = it.longBreakMinutes + 5) } },
             minusEnabled = config.longBreakMinutes > 5,
             plusEnabled = config.longBreakMinutes < FocusConfig.MAX_BREAK_MINUTES)
-        YuyuDivider()
+        NbDivider()
         Stepper("Rounds", "${config.rounds}",
             onMinus = { onConfig { it.copy(rounds = it.rounds - 1) } },
             onPlus = { onConfig { it.copy(rounds = it.rounds + 1) } },
             minusEnabled = config.rounds > FocusConfig.MIN_ROUNDS,
             plusEnabled = config.rounds < FocusConfig.MAX_ROUNDS)
-        YuyuDivider()
+        NbDivider()
         Spacer(Modifier.height(14.dp))
-        YuyuOverline("Music during focus")
+        NbOverline("Music during focus")
         Spacer(Modifier.height(10.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FocusMusicSource.entries
                 .filter { it != FocusMusicSource.Smart || smartEnabled }
                 .forEach { source ->
-                    YuyuChip(text = source.label, selected = musicSource == source, onClick = { onMusic(source) })
+                    NbChip(text = source.label, selected = musicSource == source, onClick = { onMusic(source) })
                 }
         }
         Spacer(Modifier.height(8.dp))
-        Text(musicSource.blurb, style = YuyuType.caption, color = Yuyu.textMuted)
+        Text(musicSource.blurb, style = NbType.caption, color = Nb.textMuted)
     }
 }
 
@@ -487,37 +487,37 @@ private fun Stepper(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Column(Modifier.weight(1f)) {
-            Text(title, style = YuyuType.title, color = Yuyu.text)
-            Text(value, style = YuyuType.meta, color = Yuyu.textMuted)
+            Text(title, style = NbType.title, color = Nb.text)
+            Text(value, style = NbType.meta, color = Nb.textMuted)
         }
-        YuyuIconButton(imageVector = Icons.Rounded.Remove, contentDescription = "Less $title".lowercase().replaceFirstChar { it.uppercase() },
-            onClick = onMinus, style = YuyuIconButtonStyle.Tonal, size = 36.dp, iconSize = 18.dp, enabled = minusEnabled)
-        YuyuIconButton(imageVector = Icons.Rounded.Add, contentDescription = "More $title".lowercase().replaceFirstChar { it.uppercase() },
-            onClick = onPlus, style = YuyuIconButtonStyle.Tonal, size = 36.dp, iconSize = 18.dp, enabled = plusEnabled)
+        NbIconButton(imageVector = Icons.Rounded.Remove, contentDescription = "Less $title".lowercase().replaceFirstChar { it.uppercase() },
+            onClick = onMinus, style = NbIconButtonStyle.Tonal, size = 36.dp, iconSize = 18.dp, enabled = minusEnabled)
+        NbIconButton(imageVector = Icons.Rounded.Add, contentDescription = "More $title".lowercase().replaceFirstChar { it.uppercase() },
+            onClick = onPlus, style = NbIconButtonStyle.Tonal, size = 36.dp, iconSize = 18.dp, enabled = plusEnabled)
     }
 }
 
 @Composable
 private fun CustomLengthDialog(initial: Int, onDismiss: () -> Unit, onSave: (Int) -> Unit) {
     var minutes by remember { mutableFloatStateOf(initial.toFloat().coerceIn(5f, 120f)) }
-    YuyuDialog(
+    NbDialog(
         onDismissRequest = onDismiss,
         title = "Focus length",
         actions = {
-            YuyuButton(text = "Cancel", onClick = onDismiss, style = YuyuButtonStyle.Quiet)
-            YuyuButton(text = "Save", onClick = { onSave(minutes.toInt()) })
+            NbButton(text = "Cancel", onClick = onDismiss, style = NbButtonStyle.Quiet)
+            NbButton(text = "Save", onClick = { onSave(minutes.toInt()) })
         }
     ) {
-        Text("${minutes.toInt()} min", style = YuyuType.h2, color = Yuyu.text)
+        Text("${minutes.toInt()} min", style = NbType.h2, color = Nb.text)
         Slider(
             value = minutes,
             onValueChange = { minutes = it },
             valueRange = 5f..120f,
             steps = 22,
             colors = SliderDefaults.colors(
-                thumbColor = Yuyu.ink,
-                activeTrackColor = Yuyu.ink,
-                inactiveTrackColor = Yuyu.emphasis,
+                thumbColor = Nb.ink,
+                activeTrackColor = Nb.ink,
+                inactiveTrackColor = Nb.emphasis,
                 activeTickColor = Color.Transparent,
                 inactiveTickColor = Color.Transparent,
             )
@@ -531,8 +531,8 @@ private fun CustomLengthDialog(initial: Int, onDismiss: () -> Unit, onSave: (Int
 private fun WeekChart(week: List<FocusDay>) {
     if (week.isEmpty()) return
     val max = (week.maxOf { it.minutes }).coerceAtLeast(25)
-    YuyuCard(modifier = Modifier.fillMaxWidth()) {
-        Text("Last 7 days", style = YuyuType.label, color = Yuyu.text)
+    NbCard(modifier = Modifier.fillMaxWidth()) {
+        Text("Last 7 days", style = NbType.label, color = Nb.text)
         Spacer(Modifier.height(12.dp))
         Row(
             Modifier.fillMaxWidth().height(96.dp),
@@ -552,8 +552,8 @@ private fun WeekChart(week: List<FocusDay>) {
                         Modifier
                             .fillMaxWidth()
                             .fillMaxHeight(if (day.minutes > 0) fraction.coerceIn(0.06f, 1f) else 0.04f)
-                            .clip(YuyuShapes.sm)
-                            .background(if (day.minutes == 0) Yuyu.emphasis else if (isToday) Yuyu.accent else Yuyu.borderStrong)
+                            .clip(NbShapes.sm)
+                            .background(if (day.minutes == 0) Nb.emphasis else if (isToday) Nb.ink else Nb.borderStrong)
                     )
                 }
             }
@@ -563,8 +563,8 @@ private fun WeekChart(week: List<FocusDay>) {
             week.forEachIndexed { index, day ->
                 Text(
                     day.date.dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
-                    style = YuyuType.caption,
-                    color = if (index == week.lastIndex) Yuyu.text else Yuyu.textMuted,
+                    style = NbType.caption,
+                    color = if (index == week.lastIndex) Nb.text else Nb.textMuted,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f)
                 )

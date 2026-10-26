@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base app theme -->
-    <style name="Theme.LMusic" parent="Theme.Material3.DynamicColors.DayNight">
+    <!-- Base app theme: Daylight window colours so launch and the system splash match the app. -->
+    <style name="Theme.LMusic" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/nb_primary</item>
+        <item name="colorOnPrimary">@color/nb_on_primary</item>
+        <item name="android:windowBackground">@color/nb_window_background</item>
+        <item name="android:windowSplashScreenBackground">@color/nb_window_background</item>
     </style>
 
     <!-- Screensaver: pure black from the first frame (OLED). -->
@@ -16,7 +20,7 @@
         <item name="android:navigationBarColor">@android:color/black</item>
     </style>
 
-    <style name="Theme.LMusic.ExternalPlayer" parent="Theme.Material3.DynamicColors.DayNight">
+    <style name="Theme.LMusic.ExternalPlayer" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -26,10 +30,5 @@
         <item name="android:enforceNavigationBarContrast">false</item>
     </style>
 
-    <!-- Splash screen theme can still extend Theme.SplashScreen -->
-    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-<!--        <item name="windowSplashScreenBackground">@color/light_background</item>-->
-<!--        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>-->
-<!--        <item name="postSplashScreenTheme">@style/Theme.LMusic</item>-->
-    </style>
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen" />
 </resources>

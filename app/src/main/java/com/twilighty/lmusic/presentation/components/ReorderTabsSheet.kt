@@ -257,7 +257,7 @@ fun FloatingToolBar(
                 onClick = onReset // This now calls the lambda from the parent
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.outline_restart_alt_24),
+                    painter = painterResource(R.drawable.rounded_restart_alt_24),
                     contentDescription = stringResource(R.string.cd_reset),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )

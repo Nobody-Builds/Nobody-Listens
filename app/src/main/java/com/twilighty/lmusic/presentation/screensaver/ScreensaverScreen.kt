@@ -83,7 +83,7 @@ import com.twilighty.lmusic.data.screensaver.ScreensaverSettings
 import com.twilighty.lmusic.data.screensaver.WeatherIcon
 import com.twilighty.lmusic.data.screensaver.WeatherSnapshot
 import com.twilighty.lmusic.data.screensaver.screensaverProgress
-import com.twilighty.lmusic.ui.theme.YuyuBody
+import com.twilighty.lmusic.ui.theme.NbBody
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -99,13 +99,7 @@ private val TrackGrey = androidx.compose.ui.graphics.Color(0xFF1A1A1C)
 private val LineGrey = androidx.compose.ui.graphics.Color(0xFF3F3F44)
 
 @OptIn(ExperimentalTextApi::class)
-private val ThinDisplay = FontFamily(
-    Font(
-        resId = R.font.bricolage_variable,
-        weight = FontWeight.ExtraLight,
-        variationSettings = FontVariation.Settings(FontVariation.weight(200), FontVariation.Setting("opsz", 96f))
-    )
-)
+private val ThinDisplay = FontFamily(Font(R.font.gilroy_light, FontWeight.ExtraLight))
 
 private fun animationsOff(context: Context): Boolean = runCatching {
     Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
@@ -289,7 +283,7 @@ fun ScreensaverContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Icon(Icons.Rounded.Close, contentDescription = null, tint = TextGrey, modifier = Modifier.size(18.dp))
-                    Text("Exit", style = TextStyle(fontFamily = YuyuBody, fontWeight = FontWeight.Medium, fontSize = 15.sp), color = TextGrey)
+                    Text("Exit", style = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.Medium, fontSize = 15.sp), color = TextGrey)
                 }
             }
         }
@@ -304,14 +298,14 @@ private fun ClockBlock(time: String, date: String, weather: WeatherSnapshot?, la
             style = if (large) {
                 TextStyle(fontFamily = ThinDisplay, fontWeight = FontWeight.ExtraLight, fontSize = 128.sp, lineHeight = 128.sp, letterSpacing = (-0.02).em)
             } else {
-                TextStyle(fontFamily = YuyuBody, fontWeight = FontWeight.Light, fontSize = 72.sp, lineHeight = 76.sp)
+                TextStyle(fontFamily = NbBody, fontWeight = FontWeight.Light, fontSize = 72.sp, lineHeight = 76.sp)
             },
             color = ClockGrey,
             maxLines = 1
         )
         Text(
             text = date,
-            style = TextStyle(fontFamily = YuyuBody, fontWeight = FontWeight.Normal, fontSize = if (large) 20.sp else 16.sp),
+            style = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.Normal, fontSize = if (large) 20.sp else 16.sp),
             color = TextGrey,
             maxLines = 1
         )
@@ -322,7 +316,7 @@ private fun ClockBlock(time: String, date: String, weather: WeatherSnapshot?, la
                 val parts = listOfNotNull(weather.temperatureText, weather.condition.label, weather.city)
                 Text(
                     parts.joinToString("  ·  "),
-                    style = TextStyle(fontFamily = YuyuBody, fontWeight = FontWeight.Normal, fontSize = 16.sp),
+                    style = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.Normal, fontSize = 16.sp),
                     color = TextGrey,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -339,7 +333,7 @@ private fun NowPlayingBlock(np: ScreensaverNowPlaying?, positionMs: Long, showAr
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         if (np == null) {
-            Text("Nothing playing", style = TextStyle(fontFamily = YuyuBody, fontSize = 16.sp), color = DimGrey)
+            Text("Nothing playing", style = TextStyle(fontFamily = NbBody, fontSize = 16.sp), color = DimGrey)
             return@Column
         }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -359,14 +353,14 @@ private fun NowPlayingBlock(np: ScreensaverNowPlaying?, positionMs: Long, showAr
             Column(Modifier.weight(1f, fill = false), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
                     np.title,
-                    style = TextStyle(fontFamily = YuyuBody, fontWeight = FontWeight.Medium, fontSize = 18.sp),
+                    style = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.Medium, fontSize = 18.sp),
                     color = TextGrey,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     if (np.isPlaying) np.artist else "Music paused",
-                    style = TextStyle(fontFamily = YuyuBody, fontWeight = FontWeight.Normal, fontSize = 15.sp),
+                    style = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.Normal, fontSize = 15.sp),
                     color = DimGrey,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

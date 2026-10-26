@@ -21,7 +21,7 @@ import com.twilighty.lmusic.data.ytmusic.YouTubeMusicRadio
 import com.twilighty.lmusic.data.ytmusic.YouTubeMusicTrack
 import com.twilighty.lmusic.data.ytmusic.YouTubeMusicUris
 import com.twilighty.lmusic.presentation.viewmodel.PlayerViewModel
-import com.twilighty.lmusic.presentation.yuyu.YuyuActionRow
+import com.twilighty.lmusic.presentation.nb.NbActionRow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -59,7 +59,7 @@ fun YouTubeMusicStartRadioAction(
     val scope = rememberCoroutineScope()
     var loading by remember(song.id) { mutableStateOf(false) }
 
-    YuyuActionRow(
+    NbActionRow(
         text = if (loading) "Starting radio…" else "Start radio",
         subtitle = "Similar songs from YouTube Music",
         icon = rememberVectorPainter(Icons.Rounded.Radio),

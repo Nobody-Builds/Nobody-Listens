@@ -3,9 +3,11 @@
 <resources>
     <!-- Appearance -->
     <string name="lmusic_color_style_label">App colors</string>
-    <string name="lmusic_color_style_desc">Yuyu design system or your wallpaper colors (Material You)</string>
-    <string name="lmusic_color_style_yuyu">Yuyu</string>
+    <string name="lmusic_color_style_desc">Daylight design system or your wallpaper colors (Material You)</string>
+    <string name="lmusic_color_style_daylight">Daylight</string>
     <string name="lmusic_color_style_material_you">Material You</string>
+    <string name="lmusic_pitch_black_title">Pitch black</string>
+    <string name="lmusic_pitch_black_subtitle">Black background in dark mode, for OLED screens</string>
 
     <!-- Extended tags -->
     <string name="lmusic_field_album_artist">Album artist</string>

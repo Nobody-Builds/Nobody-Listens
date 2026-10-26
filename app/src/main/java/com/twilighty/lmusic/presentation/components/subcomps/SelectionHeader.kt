@@ -41,7 +41,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
@@ -220,7 +219,6 @@ private fun StackedCoverArts(
                     .zIndex((songs.size - index).toFloat())
                     .graphicsLayer { scaleX = scale; scaleY = scale }
                     .size(imageSize)
-                    .shadow(2.dp, CircleShape)
                     .clip(CircleShape)
                     .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
@@ -243,7 +241,6 @@ private fun StackedCoverArts(
                     .offset { IntOffset(offsetX.dp.roundToPx(), 0) }
                     .zIndex(0f)
                     .size(imageSize)
-                    .shadow(2.dp, CircleShape)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.tertiaryContainer),
                 contentAlignment = Alignment.Center

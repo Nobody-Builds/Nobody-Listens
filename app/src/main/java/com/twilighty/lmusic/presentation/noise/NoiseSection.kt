@@ -33,20 +33,20 @@ import com.twilighty.lmusic.data.noise.NoisePlayState
 import com.twilighty.lmusic.data.noise.NoiseSettings
 import com.twilighty.lmusic.data.noise.dsp.NoiseMixer
 import com.twilighty.lmusic.presentation.lofi.LofiSlider
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuDialog
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuSegmented
-import com.twilighty.lmusic.presentation.yuyu.YuyuSettingRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuSwitch
-import com.twilighty.lmusic.presentation.yuyu.YuyuTextField
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbDialog
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbSegmented
+import com.twilighty.lmusic.presentation.nb.NbSettingRow
+import com.twilighty.lmusic.presentation.nb.NbSwitch
+import com.twilighty.lmusic.presentation.nb.NbTextField
+import com.twilighty.lmusic.presentation.nb.NbType
 
 /** "Playing · Deep work", "Under music", "Off". */
 fun NoisePlayState.label(settings: NoiseSettings): String = when {
@@ -76,51 +76,51 @@ fun NoiseSection(
     var more by rememberSaveable { mutableStateOf(false) }
     var saveOpen by remember { mutableStateOf(false) }
 
-    YuyuCard(modifier = modifier.fillMaxWidth()) {
+    NbCard(modifier = modifier.fillMaxWidth()) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                YuyuOverline("Noise")
-                Text(state.label(settings), style = YuyuType.meta, color = Yuyu.textMuted, maxLines = 1)
+                NbOverline("Noise")
+                Text(state.label(settings), style = NbType.meta, color = Nb.textMuted, maxLines = 1)
             }
             if (showPlayButton) {
-                YuyuButton(
+                NbButton(
                     text = if (state.active) "Pause" else "Play",
                     onClick = viewModel::togglePlay,
-                    style = if (state.active) YuyuButtonStyle.Primary else YuyuButtonStyle.Accent,
-                    size = YuyuButtonSize.Small,
+                    style = if (state.active) NbButtonStyle.Primary else NbButtonStyle.Accent,
+                    size = NbButtonSize.Small,
                     icon = rememberVectorPainter(if (state.active) Icons.Rounded.Pause else Icons.Rounded.PlayArrow),
                     enabled = state.active || settings.layers.isNotEmpty(),
                 )
             }
         }
         Spacer(Modifier.height(14.dp))
-        Text("Presets", style = YuyuType.label, color = Yuyu.text)
+        Text("Presets", style = NbType.label, color = Nb.text)
         Spacer(Modifier.height(8.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             presets.forEach { p ->
-                YuyuChip(text = p.name, selected = settings.presetName == p.name, onClick = { viewModel.applyPreset(p) })
+                NbChip(text = p.name, selected = settings.presetName == p.name, onClick = { viewModel.applyPreset(p) })
             }
-            YuyuChip(text = "Save as preset", selected = false, onClick = { saveOpen = true })
+            NbChip(text = "Save as preset", selected = false, onClick = { saveOpen = true })
         }
         val userPreset = presets.firstOrNull { !it.builtIn && it.name == settings.presetName }
         if (userPreset != null) {
-            YuyuButton(
+            NbButton(
                 text = "Delete “${userPreset.name}”",
                 onClick = { viewModel.deletePreset(userPreset.name) },
-                style = YuyuButtonStyle.Quiet,
-                size = YuyuButtonSize.Small,
+                style = NbButtonStyle.Quiet,
+                size = NbButtonSize.Small,
             )
         }
 
         Spacer(Modifier.height(14.dp))
-        Text("Sounds · up to ${NoiseMixer.MAX_LAYERS}", style = YuyuType.label, color = Yuyu.text)
+        Text("Sounds · up to ${NoiseMixer.MAX_LAYERS}", style = NbType.label, color = Nb.text)
         NoiseGroup.entries.forEach { group ->
             Spacer(Modifier.height(10.dp))
-            Text(group.label, style = YuyuType.caption, color = Yuyu.textMuted)
+            Text(group.label, style = NbType.caption, color = Nb.textMuted)
             Spacer(Modifier.height(6.dp))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 NoiseKind.entries.filter { it.group == group }.forEach { kind ->
-                    YuyuChip(
+                    NbChip(
                         text = kind.label,
                         selected = settings.layers.any { it.kind == kind },
                         onClick = { viewModel.toggleLayer(kind) }
@@ -139,7 +139,7 @@ fun NoiseSection(
             }
         } else {
             Spacer(Modifier.height(8.dp))
-            Text("Pick a sound to start", style = YuyuType.caption, color = Yuyu.textMuted)
+            Text("Pick a sound to start", style = NbType.caption, color = Nb.textMuted)
         }
         LofiSlider(
             label = "Tone",
@@ -153,46 +153,46 @@ fun NoiseSection(
             },
         )
         LofiSlider(label = "Volume", value = settings.masterVolume, onValueChange = { viewModel.setMaster(it) })
-        YuyuSettingRow(
+        NbSettingRow(
             title = "Natural movement",
             subtitle = "A gentle, slow swell",
-            trailing = { YuyuSwitch(checked = settings.swell, onCheckedChange = { viewModel.setSwell(it) }) },
+            trailing = { NbSwitch(checked = settings.swell, onCheckedChange = { viewModel.setSwell(it) }) },
         )
 
-        YuyuDivider()
-        YuyuSettingRow(
+        NbDivider()
+        NbSettingRow(
             title = if (more) "Fewer options" else "More options",
             subtitle = "Fade-in, under music, binaural tones",
             icon = rememberVectorPainter(if (more) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore),
             onClick = { more = !more },
         )
         if (more) {
-            Text("Fade in", style = YuyuType.label, color = Yuyu.text)
+            Text("Fade in", style = NbType.label, color = Nb.text)
             Spacer(Modifier.height(8.dp))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 NoiseSettings.FADE_IN_CHOICES.forEach { s ->
-                    YuyuChip(
+                    NbChip(
                         text = if (s == 0) "Off" else "$s s",
                         selected = settings.fadeInSeconds == s,
                         onClick = { viewModel.setFadeIn(s) }
                     )
                 }
             }
-            YuyuSettingRow(
+            NbSettingRow(
                 title = "Play under music",
                 subtitle = "Softly, only while your music plays",
-                trailing = { YuyuSwitch(checked = settings.underMusic, onCheckedChange = { viewModel.setUnderMusic(it) }) },
+                trailing = { NbSwitch(checked = settings.underMusic, onCheckedChange = { viewModel.setUnderMusic(it) }) },
             )
-            YuyuDivider()
+            NbDivider()
             Spacer(Modifier.height(12.dp))
-            Text("Binaural tones (headphones)", style = YuyuType.label, color = Yuyu.text)
+            Text("Binaural tones (headphones)", style = NbType.label, color = Nb.text)
             Text(
                 "Some people find these help; research is mixed. Use headphones.",
-                style = YuyuType.caption,
-                color = Yuyu.textMuted,
+                style = NbType.caption,
+                color = Nb.textMuted,
             )
             Spacer(Modifier.height(10.dp))
-            YuyuSegmented(
+            NbSegmented(
                 options = BinauralMode.entries.map { it.label },
                 selectedIndex = settings.binaural.ordinal,
                 onSelect = { viewModel.setBinaural(BinauralMode.entries[it]) },
@@ -200,33 +200,33 @@ fun NoiseSection(
             )
             if (settings.binaural != BinauralMode.Off) {
                 Spacer(Modifier.height(8.dp))
-                Text("${settings.binaural.blurb} · carrier tone", style = YuyuType.caption, color = Yuyu.textMuted)
+                Text("${settings.binaural.blurb} · carrier tone", style = NbType.caption, color = Nb.textMuted)
                 Spacer(Modifier.height(6.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     NoiseSettings.CARRIERS.forEach { hz ->
-                        YuyuChip(text = "$hz Hz", selected = settings.carrierHz == hz, onClick = { viewModel.setCarrier(hz) })
+                        NbChip(text = "$hz Hz", selected = settings.carrierHz == hz, onClick = { viewModel.setCarrier(hz) })
                     }
                 }
             }
         }
         if (showFocusOptions) {
             Spacer(Modifier.height(8.dp))
-            YuyuDivider()
-            YuyuSettingRow(
+            NbDivider()
+            NbSettingRow(
                 title = "Stop at end of session",
                 subtitle = "Fades out when the last round ends",
                 trailing = {
-                    YuyuSwitch(
+                    NbSwitch(
                         checked = focusOptions.stopAtSessionEnd,
                         onCheckedChange = { viewModel.setFocusOptions(focusOptions.copy(stopAtSessionEnd = it)) }
                     )
                 },
             )
-            YuyuSettingRow(
+            NbSettingRow(
                 title = "Keep playing through breaks",
                 subtitle = if (focusOptions.keepThroughBreaks) "Noise carries on during breaks" else "Pauses during breaks",
                 trailing = {
-                    YuyuSwitch(
+                    NbSwitch(
                         checked = focusOptions.keepThroughBreaks,
                         onCheckedChange = { viewModel.setFocusOptions(focusOptions.copy(keepThroughBreaks = it)) }
                     )
@@ -247,14 +247,14 @@ fun NoiseSection(
 @Composable
 private fun SavePresetDialog(initial: String, onDismiss: () -> Unit, onSave: (String) -> Unit) {
     var name by remember { mutableStateOf(initial) }
-    YuyuDialog(
+    NbDialog(
         onDismissRequest = onDismiss,
         title = "Save preset",
         actions = {
-            YuyuButton(text = "Cancel", onClick = onDismiss, style = YuyuButtonStyle.Quiet)
-            YuyuButton(text = "Save", onClick = { onSave(name) }, enabled = name.isNotBlank())
+            NbButton(text = "Cancel", onClick = onDismiss, style = NbButtonStyle.Quiet)
+            NbButton(text = "Save", onClick = { onSave(name) }, enabled = name.isNotBlank())
         }
     ) {
-        YuyuTextField(value = name, onValueChange = { name = it.take(40) }, label = "Name")
+        NbTextField(value = name, onValueChange = { name = it.take(40) }, label = "Name")
     }
 }

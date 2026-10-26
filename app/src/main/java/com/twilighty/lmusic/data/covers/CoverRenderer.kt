@@ -28,7 +28,7 @@ object CoverRenderer {
 
     private fun typeface(context: Context): Typeface {
         cachedTypeface?.let { return it }
-        val loaded = runCatching { ResourcesCompat.getFont(context, R.font.bricolage_variable) }.getOrNull()
+        val loaded = runCatching { ResourcesCompat.getFont(context, R.font.gilroy_extrabold) }.getOrNull()
             ?: Typeface.DEFAULT_BOLD
         cachedTypeface = loaded
         return loaded
@@ -96,7 +96,7 @@ object CoverRenderer {
         canvas.restore()
     }
 
-    /** Bottom-left title in Bricolage ExtraBold, shrunk until it fits in two lines. */
+    /** Bottom-left title in Gilroy ExtraBold, shrunk until it fits in two lines. */
     private fun drawText(context: Context, canvas: Canvas, text: CoverText) {
         val paint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = text.color

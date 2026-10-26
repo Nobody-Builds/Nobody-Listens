@@ -1200,11 +1200,18 @@ class SettingsViewModel @Inject constructor(
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            com.twilighty.lmusic.data.preferences.AppColorStyle.YUYU
+            com.twilighty.lmusic.data.preferences.AppColorStyle.DAYLIGHT
         )
 
     fun setAppColorStyle(style: String) {
         viewModelScope.launch { themePreferencesRepository.setAppColorStyle(style) }
+    }
+
+    val appPitchBlack: StateFlow<Boolean> = themePreferencesRepository.appPitchBlackFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    fun setAppPitchBlack(enabled: Boolean) {
+        viewModelScope.launch { themePreferencesRepository.setAppPitchBlack(enabled) }
     }
 
     val tapBackgroundClosesPlayer: StateFlow<Boolean> = userPreferencesRepository.tapBackgroundClosesPlayerFlow

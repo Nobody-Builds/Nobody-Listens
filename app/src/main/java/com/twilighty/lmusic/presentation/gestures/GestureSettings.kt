@@ -34,7 +34,7 @@ import com.twilighty.lmusic.data.gestures.GesturePreferences
 import com.twilighty.lmusic.data.gestures.GestureSettings
 import com.twilighty.lmusic.data.gestures.ShakeSensitivity
 import com.twilighty.lmusic.presentation.screens.SwitchSettingItem
-import com.twilighty.lmusic.presentation.yuyu.YuyuSegmented
+import com.twilighty.lmusic.presentation.nb.NbSegmented
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -169,7 +169,7 @@ private fun ShakeSensitivityCard(selected: ShakeSensitivity, onSelect: (ShakeSen
                     )
                 }
             }
-            YuyuSegmented(
+            NbSegmented(
                 options = options.map { it.label },
                 selectedIndex = options.indexOf(selected),
                 onSelect = { index -> onSelect(options[index]) },

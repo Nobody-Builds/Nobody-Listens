@@ -422,14 +422,14 @@ fun ExpressiveCategoryItem(
                 Text(
                     text = stringResource(category.titleRes),
                     overflow = TextOverflow.Ellipsis,
-                    style = com.twilighty.lmusic.presentation.yuyu.YuyuType.title,
+                    style = com.twilighty.lmusic.presentation.nb.NbType.title,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1
                 )
                 Text(
                     text = stringResource(category.subtitleRes),
                     overflow = TextOverflow.Ellipsis,
-                    style = com.twilighty.lmusic.presentation.yuyu.YuyuType.meta,
+                    style = com.twilighty.lmusic.presentation.nb.NbType.meta,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2
                 )
@@ -460,13 +460,9 @@ fun ExpressiveCategoryItem(
     }
 }
 
-private fun getAccountsColors(isDark: Boolean): Pair<Color, Color> {
-    return if (isDark) {
-        Color(0xFF37474F) to Color(0xFFBBD9E8)
-    } else {
-        Color(0xFFD6EAF5) to Color(0xFF103548)
-    }
-}
+@Composable
+private fun getAccountsColors(@Suppress("UNUSED_PARAMETER") isDark: Boolean): Pair<Color, Color> =
+    MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
 
 @Composable
 fun ExpressiveSettingsGroup(content: @Composable () -> Unit) {
@@ -480,32 +476,10 @@ fun ExpressiveSettingsGroup(content: @Composable () -> Unit) {
     }
 }
 
-private fun getCategoryColors(category: SettingsCategory, isDark: Boolean): Pair<Color, Color> {
-    return if (isDark) {
-        when (category) {
-            SettingsCategory.LIBRARY -> Color(0xFF004A77) to Color(0xFFC2E7FF) 
-            SettingsCategory.APPEARANCE -> Color(0xFF7D5260) to Color(0xFFFFD8E4) 
-            SettingsCategory.PLAYBACK -> Color(0xFF633B48) to Color(0xFFFFD8EC) 
-            SettingsCategory.BEHAVIOR -> Color(0xFF3E4C63) to Color(0xFFD7E3FF)
-            SettingsCategory.AI_INTEGRATION -> Color(0xFF004F58) to Color(0xFF88FAFF) 
-            SettingsCategory.BACKUP_RESTORE -> Color(0xFF3B4869) to Color(0xFFD9E2FF)
-            SettingsCategory.DEVELOPER -> Color(0xFF324F34) to Color(0xFFCBEFD0) 
-            SettingsCategory.EQUALIZER -> Color(0xFF6E4E13) to Color(0xFFFFDEAC) 
-            SettingsCategory.DEVICE_CAPABILITIES -> Color(0xFF004D61) to Color(0xFFACEFEE) // Custom teal/cyan mix
-            SettingsCategory.ABOUT -> Color(0xFF3F474D) to Color(0xFFDEE3EB) 
-        }
-    } else {
-        when (category) {
-            SettingsCategory.LIBRARY -> Color(0xFFD7E3FF) to Color(0xFF005AC1)
-            SettingsCategory.APPEARANCE -> Color(0xFFFFD8E4) to Color(0xFF631835)
-            SettingsCategory.PLAYBACK -> Color(0xFFFFD8EC) to Color(0xFF631B4B)
-            SettingsCategory.BEHAVIOR -> Color(0xFFD7E3FF) to Color(0xFF253347)
-            SettingsCategory.AI_INTEGRATION -> Color(0xFFCCE8EA) to Color(0xFF004F58)
-            SettingsCategory.BACKUP_RESTORE -> Color(0xFFD9E2FF) to Color(0xFF27304E)
-            SettingsCategory.DEVELOPER -> Color(0xFFCBEFD0) to Color(0xFF042106)
-            SettingsCategory.EQUALIZER -> Color(0xFFFFDEAC) to Color(0xFF281900)
-            SettingsCategory.DEVICE_CAPABILITIES -> Color(0xFFACEFEE) to Color(0xFF002022)
-            SettingsCategory.ABOUT -> Color(0xFFEFF1F7) to Color(0xFF44474F)
-        }
-    }
-}
+// Daylight: one calm tile colour (Sky) for every category; the icon tells them apart.
+@Composable
+private fun getCategoryColors(
+    @Suppress("UNUSED_PARAMETER") category: SettingsCategory,
+    @Suppress("UNUSED_PARAMETER") isDark: Boolean
+): Pair<Color, Color> =
+    MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer

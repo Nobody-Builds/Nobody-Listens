@@ -27,9 +27,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DeleteForever
-import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Sync
+import androidx.compose.material.icons.rounded.DeleteForever
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.ButtonDefaults
@@ -82,7 +82,7 @@ fun SettingsSection(title: String, icon: @Composable () -> Unit, content: @Compo
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                     text = title,
-                    style = com.twilighty.lmusic.presentation.yuyu.YuyuType.overline,
+                    style = com.twilighty.lmusic.presentation.nb.NbType.overline,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -427,7 +427,7 @@ fun RefreshLibraryItem(
                         contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                            imageVector = Icons.Outlined.Sync,
+                            imageVector = Icons.Rounded.Sync,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.secondary
                     )
@@ -459,7 +459,7 @@ fun RefreshLibraryItem(
                     modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                        imageVector = Icons.Outlined.Refresh,
+                        imageVector = Icons.Rounded.Refresh,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                 )
@@ -480,7 +480,7 @@ fun RefreshLibraryItem(
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
             ) {
                 Icon(
-                        imageVector = Icons.Outlined.DeleteForever,
+                        imageVector = Icons.Rounded.DeleteForever,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                 )
@@ -596,7 +596,7 @@ fun RefreshLyricsItem(
                                 )
                 ) {
                     Icon(
-                            imageVector = Icons.Outlined.Sync,
+                            imageVector = Icons.Rounded.Sync,
                             contentDescription = stringResource(R.string.presentation_batch_f_cd_refresh_lyrics),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )

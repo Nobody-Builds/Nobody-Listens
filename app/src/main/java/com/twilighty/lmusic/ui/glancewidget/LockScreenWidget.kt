@@ -40,7 +40,7 @@ class LockScreenWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val info = currentState<PlayerInfo>().forDisplay()
-            androidx.glance.GlanceTheme(colors = YuyuGlanceColors) { Content(context, info) }
+            androidx.glance.GlanceTheme(colors = NbGlanceColors) { Content(context, info) }
         }
     }
 
@@ -53,13 +53,13 @@ class LockScreenWidget : GlanceAppWidget() {
         Column(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .background(YuyuWidget.LockSurface)
-                .cornerRadius(YuyuWidget.Radius)
+                .background(NbWidget.LockSurface)
+                .cornerRadius(NbWidget.Radius)
                 .padding(if (compact) 6.dp else 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
-                modifier = GlanceModifier.fillMaxWidth().clickable(YuyuWidget.openApp()),
+                modifier = GlanceModifier.fillMaxWidth().clickable(NbWidget.openApp()),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 val art = if (stacked) 56.dp else if (compact) 40.dp else 44.dp
@@ -69,12 +69,12 @@ class LockScreenWidget : GlanceAppWidget() {
                     albumArtUri = info.albumArtUri,
                     size = art,
                     context = context,
-                    cornerRadius = YuyuWidget.InnerRadius,
+                    cornerRadius = NbWidget.InnerRadius,
                 )
                 Spacer(GlanceModifier.width(12.dp))
                 Column(modifier = GlanceModifier.defaultWeight()) {
-                    WidgetTitle(info.songTitle, color = YuyuWidget.LockText, size = 15.sp)
-                    WidgetMeta(info.artistName, color = YuyuWidget.LockTextMuted, size = 12.sp)
+                    WidgetTitle(info.songTitle, color = NbWidget.LockText, size = 15.sp)
+                    WidgetMeta(info.artistName, color = NbWidget.LockTextMuted, size = 12.sp)
                 }
                 if (!stacked) {
                     Spacer(GlanceModifier.width(8.dp))
@@ -98,13 +98,13 @@ class LockScreenWidget : GlanceAppWidget() {
                 contentDescription = "Previous",
                 action = musicServiceAction(context, PlayerActions.PREVIOUS),
                 size = button, iconSize = 24.dp,
-                background = YuyuWidget.LockButton, tint = YuyuWidget.White,
+                background = NbWidget.LockButton, tint = NbWidget.White,
             )
             Spacer(GlanceModifier.width(8.dp))
             WidgetPlayPause(
                 context, info.isPlaying, size = button, iconSize = 26.dp,
-                background = androidx.glance.unit.ColorProvider(YuyuWidgetPalette.Ember),
-                tint = YuyuWidget.White,
+                background = androidx.glance.unit.ColorProvider(NbWidgetPalette.Accent),
+                tint = androidx.glance.unit.ColorProvider(NbWidgetPalette.OnAccent),
             )
             Spacer(GlanceModifier.width(8.dp))
             WidgetCircleButton(
@@ -112,7 +112,7 @@ class LockScreenWidget : GlanceAppWidget() {
                 contentDescription = "Next",
                 action = musicServiceAction(context, PlayerActions.NEXT),
                 size = button, iconSize = 24.dp,
-                background = YuyuWidget.LockButton, tint = YuyuWidget.White,
+                background = NbWidget.LockButton, tint = NbWidget.White,
             )
         }
     }

@@ -185,7 +185,7 @@ fun NavidromeLoginScreen(
                     color = androidx.compose.ui.graphics.Color.White,
                     modifier = Modifier.size(64.dp),
                     tonalElevation = 2.dp,
-                    shadowElevation = 2.dp
+                    shadowElevation = 0.dp
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
@@ -205,7 +205,7 @@ fun NavidromeLoginScreen(
                     color = androidx.compose.ui.graphics.Color.White,
                     modifier = Modifier.size(64.dp),
                     tonalElevation = 2.dp,
-                    shadowElevation = 2.dp
+                    shadowElevation = 0.dp
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(

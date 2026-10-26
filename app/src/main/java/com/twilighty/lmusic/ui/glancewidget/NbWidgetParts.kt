@@ -26,8 +26,8 @@ import androidx.glance.unit.ColorProvider
 import com.twilighty.lmusic.MainActivity
 import com.twilighty.lmusic.R
 
-/** Shared bits for the Yuyu-style widgets: flat surfaces, pill buttons, ink text, Ember accent. */
-internal object YuyuWidget {
+/** Shared bits for the Daylight-style widgets: flat surfaces, pill buttons, ink text, Hard Hat accent. */
+internal object NbWidget {
     val Radius = 24.dp
     val InnerRadius = 12.dp
 
@@ -35,11 +35,11 @@ internal object YuyuWidget {
     fun openApp(): Action = actionStartActivity<MainActivity>()
 
     /** Translucent dark surface for the lock screen (sits on the wallpaper, both themes). */
-    val LockSurface = ColorProvider(Color(0xB3111113))
+    val LockSurface = ColorProvider(Color(0xB3172033))
     val LockButton = ColorProvider(Color(0x33FFFFFF))
-    val LockText = ColorProvider(Color(0xFFF4F4F5))
-    val LockTextMuted = ColorProvider(Color(0xFFC4C4CC))
-    val OnArtScrim = ColorProvider(Color(0x99111113))
+    val LockText = ColorProvider(Color(0xFFF5F7FB))
+    val LockTextMuted = ColorProvider(Color(0xFFC3C8D2))
+    val OnArtScrim = ColorProvider(Color(0x99172033))
     val White = ColorProvider(Color.White)
 }
 
@@ -71,7 +71,7 @@ internal fun WidgetCircleButton(
     }
 }
 
-/** Ember play/pause button wired to the music service. */
+/** Hard Hat play/pause button wired to the music service. */
 @Composable
 internal fun WidgetPlayPause(
     context: android.content.Context,
@@ -100,7 +100,7 @@ internal fun WidgetMeta(text: String, color: ColorProvider = GlanceTheme.colors.
     Text(text = text, style = TextStyle(color = color, fontSize = size), maxLines = maxLines)
 }
 
-/** Small uppercase-free overline, Yuyu style (sentence case, muted, medium). */
+/** Small uppercase-free overline, Daylight style (sentence case, muted, medium). */
 @Composable
 internal fun WidgetOverline(text: String, color: ColorProvider = GlanceTheme.colors.onSurfaceVariant) {
     Text(text = text, style = TextStyle(color = color, fontSize = 11.sp, fontWeight = FontWeight.Medium), maxLines = 1)

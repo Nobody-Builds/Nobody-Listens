@@ -23,13 +23,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.twilighty.lmusic.R
 import com.twilighty.lmusic.data.library.MusicFoldersNoticePreferences
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -69,28 +69,28 @@ fun FoldersMigratedNotice(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .background(Yuyu.warningSoft, YuyuShapes.lg)
+            .background(Nb.warningSoft, NbShapes.lg)
             .padding(start = 14.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Icon(Icons.Rounded.Folder, contentDescription = null, tint = Yuyu.warningText, modifier = Modifier.size(18.dp))
+        Icon(Icons.Rounded.Folder, contentDescription = null, tint = Nb.warningText, modifier = Modifier.size(18.dp))
         Text(
             stringResource(R.string.folders_migrated_notice),
-            style = YuyuType.meta,
-            color = Yuyu.warningText,
+            style = NbType.meta,
+            color = Nb.warningText,
             modifier = Modifier.weight(1f)
         )
-        YuyuButton(
+        NbButton(
             text = stringResource(R.string.folders_migrated_review),
             onClick = {
                 viewModel.dismiss()
                 onReview()
             },
-            style = YuyuButtonStyle.Secondary,
-            size = YuyuButtonSize.Small
+            style = NbButtonStyle.Secondary,
+            size = NbButtonSize.Small
         )
-        YuyuIconButton(
+        NbIconButton(
             imageVector = Icons.Rounded.Close,
             contentDescription = stringResource(R.string.folders_migrated_dismiss),
             onClick = viewModel::dismiss,

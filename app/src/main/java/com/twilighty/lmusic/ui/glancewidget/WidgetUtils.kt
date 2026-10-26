@@ -41,18 +41,18 @@ data class WidgetColors(
 )
 
 /**
- * Widget colours, Yuyu style: flat canvas (white / #111113), ink title, muted artist,
- * Ember play button with a white icon, muted circles for the other controls.
+ * Widget colours, Daylight style: flat canvas (Paper / Night Shift), ink title, muted artist,
+ * Hard Hat play button with a Night Shift icon, muted circles for the other controls.
  * Album colours are no longer used so every widget matches the app.
  */
 @Suppress("UnusedReceiverParameter")
 @Composable
 fun PlayerInfo.getWidgetColors(): WidgetColors = WidgetColors(
-    surface = ColorProvider(day = YuyuWidgetPalette.LightCanvas, night = YuyuWidgetPalette.DarkCanvas),
-    onSurface = ColorProvider(day = YuyuWidgetPalette.LightText, night = YuyuWidgetPalette.DarkText),
-    artist = ColorProvider(day = YuyuWidgetPalette.LightTextMuted, night = YuyuWidgetPalette.DarkTextMuted),
-    playPauseBackground = ColorProvider(day = YuyuWidgetPalette.Ember, night = YuyuWidgetPalette.Ember),
-    playPauseIcon = ColorProvider(day = YuyuWidgetPalette.OnEmber, night = YuyuWidgetPalette.OnEmber),
-    prevNextBackground = ColorProvider(day = YuyuWidgetPalette.LightMuted, night = YuyuWidgetPalette.DarkMuted),
-    prevNextIcon = ColorProvider(day = YuyuWidgetPalette.LightText, night = YuyuWidgetPalette.DarkText),
+    surface = ColorProvider(day = NbWidgetPalette.LightCanvas, night = NbWidgetPalette.DarkCanvas),
+    onSurface = ColorProvider(day = NbWidgetPalette.LightText, night = NbWidgetPalette.DarkText),
+    artist = ColorProvider(day = NbWidgetPalette.LightTextMuted, night = NbWidgetPalette.DarkTextMuted),
+    playPauseBackground = ColorProvider(day = NbWidgetPalette.Accent, night = NbWidgetPalette.Accent),
+    playPauseIcon = ColorProvider(day = NbWidgetPalette.OnAccent, night = NbWidgetPalette.OnAccent),
+    prevNextBackground = ColorProvider(day = NbWidgetPalette.LightMuted, night = NbWidgetPalette.DarkMuted),
+    prevNextIcon = ColorProvider(day = NbWidgetPalette.LightText, night = NbWidgetPalette.DarkText),
 )

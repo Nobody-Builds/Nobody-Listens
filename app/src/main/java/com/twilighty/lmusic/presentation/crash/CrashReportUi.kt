@@ -22,8 +22,8 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BugReport
-import androidx.compose.material.icons.outlined.HealthAndSafety
+import androidx.compose.material.icons.rounded.BugReport
+import androidx.compose.material.icons.rounded.HealthAndSafety
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
@@ -50,16 +50,16 @@ import com.twilighty.lmusic.data.crash.CrashReport
 import com.twilighty.lmusic.data.crash.CrashReportStore
 import com.twilighty.lmusic.data.crash.SafeMode
 import com.twilighty.lmusic.presentation.screens.SettingsItem
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbTopBar
+import com.twilighty.lmusic.presentation.nb.NbType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -97,7 +97,7 @@ internal fun shareCrashDetails(context: Context, report: CrashReport) {
 // ---------------------------------------------------------------- full-screen report
 
 /**
- * Full-screen Yuyu dialog for a saved crash. On launch it shows "Something went wrong last
+ * Full-screen Daylight dialog for a saved crash. On launch it shows "Something went wrong last
  * time"; from Settings ([fromSettings]) it also offers Share and Clear.
  */
 @Composable
@@ -114,14 +114,14 @@ fun CrashReportFullScreen(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
     ) {
-        Surface(modifier = Modifier.fillMaxSize(), color = Yuyu.canvas) {
+        Surface(modifier = Modifier.fillMaxSize(), color = Nb.canvas) {
             Column(Modifier.fillMaxSize().systemBarsPadding()) {
-                YuyuTopBar(
+                NbTopBar(
                     title = if (fromSettings) "Last crash report" else "Something went wrong last time",
                     kicker = "Crash report",
-                    titleStyle = YuyuType.h2,
+                    titleStyle = NbType.h2,
                     actions = {
-                        YuyuIconButton(imageVector = Icons.Rounded.Close, contentDescription = "Close", onClick = onDismiss)
+                        NbIconButton(imageVector = Icons.Rounded.Close, contentDescription = "Close", onClick = onDismiss)
                     },
                 )
                 Column(
@@ -134,29 +134,29 @@ fun CrashReportFullScreen(
                     Text(
                         if (fromSettings) "The most recent time LMusic closed unexpectedly."
                         else "LMusic closed unexpectedly. Reporting it helps get it fixed. Nothing is sent unless you choose to.",
-                        style = YuyuType.body,
-                        color = Yuyu.textMuted,
+                        style = NbType.body,
+                        color = Nb.textMuted,
                     )
                     CrashSummaryCard(report)
-                    YuyuButton(
+                    NbButton(
                         text = if (showFull) "Hide full details" else "Show full details",
                         onClick = { showFull = !showFull },
-                        style = YuyuButtonStyle.Quiet,
-                        size = YuyuButtonSize.Small,
+                        style = NbButtonStyle.Quiet,
+                        size = NbButtonSize.Small,
                     )
                     if (showFull) {
                         Column(
                             Modifier
                                 .fillMaxWidth()
-                                .background(Yuyu.subtle, YuyuShapes.md)
-                                .border(1.dp, Yuyu.border, YuyuShapes.md)
+                                .background(Nb.subtle, NbShapes.md)
+                                .border(1.dp, Nb.border, NbShapes.md)
                                 .horizontalScroll(rememberScrollState())
                                 .padding(12.dp)
                         ) {
                             Text(
                                 report.fullText,
-                                style = YuyuType.caption.copy(fontFamily = FontFamily.Monospace, fontSize = 11.sp, lineHeight = 15.sp),
-                                color = Yuyu.text,
+                                style = NbType.caption.copy(fontFamily = FontFamily.Monospace, fontSize = 11.sp, lineHeight = 15.sp),
+                                color = Nb.text,
                             )
                         }
                     }
@@ -166,42 +166,42 @@ fun CrashReportFullScreen(
                     Modifier.fillMaxWidth().padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    YuyuButton(
+                    NbButton(
                         text = "Report on GitHub",
                         onClick = { openCrashIssue(context, report, SafeMode.isActive(context)) },
                         modifier = Modifier.fillMaxWidth(),
-                        size = YuyuButtonSize.Large,
-                        icon = rememberVectorPainter(Icons.Outlined.BugReport),
+                        size = NbButtonSize.Large,
+                        icon = rememberVectorPainter(Icons.Rounded.BugReport),
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        YuyuButton(
+                        NbButton(
                             text = "Copy details",
                             onClick = { copyCrashDetails(context, report) },
                             modifier = Modifier.weight(1f),
-                            style = YuyuButtonStyle.Secondary,
+                            style = NbButtonStyle.Secondary,
                         )
                         if (fromSettings) {
-                            YuyuButton(
+                            NbButton(
                                 text = "Share",
                                 onClick = { shareCrashDetails(context, report) },
                                 modifier = Modifier.weight(1f),
-                                style = YuyuButtonStyle.Secondary,
+                                style = NbButtonStyle.Secondary,
                             )
                         } else {
-                            YuyuButton(
+                            NbButton(
                                 text = "Dismiss",
                                 onClick = onDismiss,
                                 modifier = Modifier.weight(1f),
-                                style = YuyuButtonStyle.Quiet,
+                                style = NbButtonStyle.Quiet,
                             )
                         }
                     }
                     if (fromSettings && onClear != null) {
-                        YuyuButton(
+                        NbButton(
                             text = "Clear report",
                             onClick = onClear,
                             modifier = Modifier.fillMaxWidth(),
-                            style = YuyuButtonStyle.DangerQuiet,
+                            style = NbButtonStyle.DangerQuiet,
                         )
                     }
                 }
@@ -212,15 +212,15 @@ fun CrashReportFullScreen(
 
 @Composable
 private fun CrashSummaryCard(report: CrashReport) {
-    YuyuCard(modifier = Modifier.fillMaxWidth()) {
-        YuyuOverline(report.exceptionShortType, color = Yuyu.danger)
+    NbCard(modifier = Modifier.fillMaxWidth()) {
+        NbOverline(report.exceptionShortType, color = Nb.danger)
         if (report.message.isNotBlank()) {
             Spacer(Modifier.height(4.dp))
-            Text(report.message.take(300), style = YuyuType.title, color = Yuyu.text)
+            Text(report.message.take(300), style = NbType.title, color = Nb.text)
         }
         report.rootCause?.let { cause ->
             Spacer(Modifier.height(8.dp))
-            Text("Caused by ${cause.take(240)}", style = YuyuType.meta, color = Yuyu.textMuted)
+            Text("Caused by ${cause.take(240)}", style = NbType.meta, color = Nb.textMuted)
         }
         val frames = report.topAppFrames()
         if (frames.isNotEmpty()) {
@@ -228,15 +228,15 @@ private fun CrashSummaryCard(report: CrashReport) {
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .background(Yuyu.subtle, YuyuShapes.sm)
+                    .background(Nb.subtle, NbShapes.sm)
                     .padding(10.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 frames.forEach {
                     Text(
                         it,
-                        style = YuyuType.caption.copy(fontFamily = FontFamily.Monospace, fontSize = 11.sp, lineHeight = 15.sp),
-                        color = Yuyu.text,
+                        style = NbType.caption.copy(fontFamily = FontFamily.Monospace, fontSize = 11.sp, lineHeight = 15.sp),
+                        color = Nb.text,
                         maxLines = 2,
                     )
                 }
@@ -246,8 +246,8 @@ private fun CrashSummaryCard(report: CrashReport) {
         Text(
             listOf(report.appVersion.ifBlank { null }?.let { "LMusic $it" }, report.android.ifBlank { null }?.let { "Android $it" }, report.device.ifBlank { null }, report.time.ifBlank { null })
                 .filterNotNull().joinToString(" · "),
-            style = YuyuType.caption,
-            color = Yuyu.textMuted,
+            style = NbType.caption,
+            color = Nb.textMuted,
         )
     }
 }
@@ -286,30 +286,30 @@ fun SafeModeBanner(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(Yuyu.warningSoft, YuyuShapes.lg)
-            .border(1.dp, Yuyu.border, YuyuShapes.lg)
+            .background(Nb.warningSoft, NbShapes.lg)
+            .border(1.dp, Nb.border, NbShapes.lg)
             .padding(start = 14.dp, end = 4.dp, top = 8.dp, bottom = 12.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.HealthAndSafety, contentDescription = null, tint = Yuyu.warningText)
+            Icon(Icons.Rounded.HealthAndSafety, contentDescription = null, tint = Nb.warningText)
             Text(
                 "Safe mode: some features were turned off after repeated crashes",
-                style = YuyuType.label,
-                color = Yuyu.warningText,
+                style = NbType.label,
+                color = Nb.warningText,
                 modifier = Modifier.weight(1f).padding(start = 10.dp, end = 4.dp),
             )
-            YuyuIconButton(
+            NbIconButton(
                 imageVector = Icons.Rounded.Close,
                 contentDescription = "Hide",
                 onClick = { hidden = true },
                 size = 36.dp,
                 iconSize = 18.dp,
-                tint = Yuyu.warningText,
+                tint = Nb.warningText,
             )
         }
         Spacer(Modifier.height(6.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            YuyuButton(
+            NbButton(
                 text = "Report",
                 onClick = {
                     scope.launch {
@@ -317,18 +317,18 @@ fun SafeModeBanner(modifier: Modifier = Modifier) {
                         openCrashIssue(context, report, safeMode = true)
                     }
                 },
-                style = YuyuButtonStyle.Secondary,
-                size = YuyuButtonSize.Small,
+                style = NbButtonStyle.Secondary,
+                size = NbButtonSize.Small,
             )
-            YuyuButton(
+            NbButton(
                 text = "Turn features back on",
                 onClick = {
                     SafeMode.exit(context.applicationContext)
                     active = false
                     Toast.makeText(context, "Features are back on", Toast.LENGTH_SHORT).show()
                 },
-                style = YuyuButtonStyle.Primary,
-                size = YuyuButtonSize.Small,
+                style = NbButtonStyle.Primary,
+                size = NbButtonSize.Small,
             )
         }
     }
@@ -353,7 +353,7 @@ fun LastCrashReportSetting() {
         title = "Last crash report",
         subtitle = listOf(r.exceptionShortType, r.time.substringBeforeLast(' ').ifBlank { null })
             .filterNotNull().joinToString(" · "),
-        leadingIcon = { Icon(Icons.Outlined.BugReport, null, tint = MaterialTheme.colorScheme.secondary) },
+        leadingIcon = { Icon(Icons.Rounded.BugReport, null, tint = MaterialTheme.colorScheme.secondary) },
         trailingIcon = { Icon(Icons.Rounded.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
         onClick = { open = true },
     )

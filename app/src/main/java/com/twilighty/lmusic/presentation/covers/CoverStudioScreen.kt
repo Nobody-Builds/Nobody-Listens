@@ -56,26 +56,26 @@ import com.twilighty.lmusic.data.covers.CoverPaletteChoice
 import com.twilighty.lmusic.data.covers.CoverPalettes
 import com.twilighty.lmusic.data.covers.CoverStyle
 import com.twilighty.lmusic.presentation.haptics.LocalLMusicHaptics
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuEmptyState
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuMeter
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuSegmented
-import com.twilighty.lmusic.presentation.yuyu.YuyuSettingRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuSongRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuSwitch
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbEmptyState
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbMeter
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbSegmented
+import com.twilighty.lmusic.presentation.nb.NbSettingRow
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbSongRow
+import com.twilighty.lmusic.presentation.nb.NbSwitch
+import com.twilighty.lmusic.presentation.nb.NbTopBar
+import com.twilighty.lmusic.presentation.nb.NbType
 
 /**
- * Cover studio: makes pattern covers in Yuyu colours for songs without artwork.
+ * Cover studio: makes pattern covers in Daylight colours for songs without artwork.
  *
  * @param mode "batch" for every album missing artwork, anything else for the picker.
  * @param songId opens the studio for one song (and its album).
@@ -120,18 +120,18 @@ fun CoverStudioScreen(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .background(Yuyu.canvas)
+            .background(Nb.canvas)
             .statusBarsPadding(),
         contentPadding = PaddingValues(bottom = bottomInset + 120.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item(key = "top") {
-            YuyuTopBar(
+            NbTopBar(
                 title = title,
                 kicker = kicker,
-                titleStyle = YuyuType.h2,
+                titleStyle = NbType.h2,
                 navigationIcon = {
-                    YuyuIconButton(
+                    NbIconButton(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                         contentDescription = "Back",
                         onClick = goBack
@@ -154,7 +154,7 @@ fun CoverStudioScreen(
         if (state.loading) {
             item(key = "loading") {
                 Row(Modifier.fillMaxWidth().padding(32.dp), horizontalArrangement = Arrangement.Center) {
-                    CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 2.5.dp, color = Yuyu.ink)
+                    CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 2.5.dp, color = Nb.ink)
                 }
             }
             return@LazyColumn
@@ -175,25 +175,25 @@ private fun androidx.compose.foundation.lazy.LazyListScope.pickerItems(state: Co
     val shown = if (state.showAllInPicker) state.albums else missing
     item(key = "pick_filter") {
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            YuyuSegmented(
+            NbSegmented(
                 options = listOf("Missing artwork", "All"),
                 selectedIndex = if (state.showAllInPicker) 1 else 0,
                 onSelect = { viewModel.setShowAllInPicker(it == 1) }
             )
             if (missing.isNotEmpty()) {
-                YuyuButton(
+                NbButton(
                     text = "Make covers for all ${missing.size}…",
                     icon = rememberVectorPainter(Icons.Rounded.AutoAwesome),
                     onClick = viewModel::openBatch,
-                    style = YuyuButtonStyle.Primary,
-                    size = YuyuButtonSize.Small
+                    style = NbButtonStyle.Primary,
+                    size = NbButtonSize.Small
                 )
             }
         }
     }
     if (shown.isEmpty()) {
         item(key = "pick_empty") {
-            YuyuEmptyState(
+            NbEmptyState(
                 title = if (state.showAllInPicker) "No songs on this device" else "Every song has artwork",
                 body = if (state.showAllInPicker) "Covers can only be made for files on this phone." else "Switch to All to make a new cover anyway.",
                 icon = rememberVectorPainter(Icons.Rounded.Palette),
@@ -203,7 +203,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.pickerItems(state: Co
         return
     }
     items(shown, key = { "pick_${it.id}" }) { album ->
-        YuyuSongRow(
+        NbSongRow(
             title = album.label,
             subtitle = listOf(
                 album.artist,
@@ -231,16 +231,16 @@ private fun androidx.compose.foundation.lazy.LazyListScope.singleItems(
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .clip(YuyuShapes.xl)
-                .background(Yuyu.muted)
-                .border(1.dp, Yuyu.border, YuyuShapes.xl),
+                .clip(NbShapes.xl)
+                .background(Nb.muted)
+                .border(1.dp, Nb.border, NbShapes.xl),
             contentAlignment = Alignment.Center
         ) {
             val preview = state.preview
             if (preview != null) {
                 Image(bitmap = preview, contentDescription = "Cover preview", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
             } else {
-                CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 2.5.dp, color = Yuyu.ink)
+                CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 2.5.dp, color = Nb.ink)
             }
         }
     }
@@ -248,8 +248,8 @@ private fun androidx.compose.foundation.lazy.LazyListScope.singleItems(
         Text(
             text = listOf(album.artist, if (album.songs.size == 1) "1 song" else "${album.songs.size} songs")
                 .filter { it.isNotBlank() }.joinToString(" · ") + " · nothing is saved until you tap Save",
-            style = YuyuType.caption,
-            color = Yuyu.textMuted,
+            style = NbType.caption,
+            color = Nb.textMuted,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
@@ -257,17 +257,17 @@ private fun androidx.compose.foundation.lazy.LazyListScope.singleItems(
     item(key = "single_palette") { PalettePicker(selected = state.options.palette, previewKey = album.key, onSelect = viewModel::setPalette) }
     item(key = "single_toggles") {
         Column(Modifier.padding(horizontal = 16.dp)) {
-            YuyuSettingRow(
+            NbSettingRow(
                 title = "Show title",
                 subtitle = "Album name in the bottom-left corner",
-                trailing = { YuyuSwitch(checked = state.options.showText, onCheckedChange = viewModel::setShowText) },
+                trailing = { NbSwitch(checked = state.options.showText, onCheckedChange = viewModel::setShowText) },
                 onClick = { viewModel.setShowText(!state.options.showText) }
             )
             if (state.song != null && album.songs.size > 1) {
-                YuyuSettingRow(
+                NbSettingRow(
                     title = "Use for the whole album",
                     subtitle = "Every song of ${album.label} gets this cover (${album.songs.size} songs)",
-                    trailing = { YuyuSwitch(checked = state.applyToAlbum, onCheckedChange = viewModel::setApplyToAlbum) },
+                    trailing = { NbSwitch(checked = state.applyToAlbum, onCheckedChange = viewModel::setApplyToAlbum) },
                     onClick = { viewModel.setApplyToAlbum(!state.applyToAlbum) }
                 )
             }
@@ -280,19 +280,19 @@ private fun androidx.compose.foundation.lazy.LazyListScope.singleItems(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            YuyuButton(
+            NbButton(
                 text = "Shuffle",
                 icon = rememberVectorPainter(Icons.Rounded.Shuffle),
                 onClick = viewModel::shuffle,
                 enabled = !saving,
-                style = YuyuButtonStyle.Secondary,
+                style = NbButtonStyle.Secondary,
             )
-            YuyuButton(
+            NbButton(
                 text = if (count > 1) "Save to $count files" else "Save to file",
                 icon = rememberVectorPainter(Icons.Rounded.Save),
                 onClick = viewModel::saveSingle,
                 enabled = !saving && state.preview != null,
-                style = YuyuButtonStyle.Accent,
+                style = NbButtonStyle.Accent,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -308,7 +308,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.batchItems(
 ) {
     if (state.batchAlbums.isEmpty()) {
         item(key = "batch_empty") {
-            YuyuEmptyState(
+            NbEmptyState(
                 title = "Every song has artwork",
                 body = "There's nothing to make covers for.",
                 icon = rememberVectorPainter(Icons.Rounded.Palette),
@@ -320,8 +320,8 @@ private fun androidx.compose.foundation.lazy.LazyListScope.batchItems(
     item(key = "batch_intro") {
         Text(
             "${state.batchAlbums.size} albums · ${state.batchSongCount} songs without artwork. Files that already have artwork are left alone.",
-            style = YuyuType.meta,
-            color = Yuyu.textMuted,
+            style = NbType.meta,
+            color = Nb.textMuted,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
@@ -330,17 +330,17 @@ private fun androidx.compose.foundation.lazy.LazyListScope.batchItems(
         PalettePicker(selected = state.options.palette, previewKey = state.batchAlbums.first().key, onSelect = viewModel::setPalette)
     }
     item(key = "batch_text") {
-        YuyuSettingRow(
+        NbSettingRow(
             title = "Show title",
             subtitle = "Album name in the bottom-left corner",
-            trailing = { YuyuSwitch(checked = state.options.showText, onCheckedChange = viewModel::setShowText) },
+            trailing = { NbSwitch(checked = state.options.showText, onCheckedChange = viewModel::setShowText) },
             onClick = { viewModel.setShowText(!state.options.showText) },
             modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
     item(key = "batch_grid") {
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            YuyuOverline("Preview")
+            NbOverline("Preview")
             val previews = state.batchPreviews
             val slots = state.batchAlbums.take(CoverStudioViewModel.BATCH_PREVIEW_COUNT)
             slots.chunked(3).forEachIndexed { rowIndex, row ->
@@ -352,23 +352,23 @@ private fun androidx.compose.foundation.lazy.LazyListScope.batchItems(
                                 Modifier
                                     .fillMaxWidth()
                                     .aspectRatio(1f)
-                                    .clip(YuyuShapes.md)
-                                    .background(Yuyu.muted)
-                                    .border(1.dp, Yuyu.border, YuyuShapes.md),
+                                    .clip(NbShapes.md)
+                                    .background(Nb.muted)
+                                    .border(1.dp, Nb.border, NbShapes.md),
                                 contentAlignment = Alignment.Center
                             ) {
                                 if (preview != null) {
                                     Image(bitmap = preview.image, contentDescription = album.label, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
                                 }
                             }
-                            Text(album.label, style = YuyuType.caption, color = Yuyu.textSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 4.dp))
+                            Text(album.label, style = NbType.caption, color = Nb.textSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 4.dp))
                         }
                     }
                     repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
                 }
             }
             if (state.batchAlbums.size > slots.size) {
-                Text("and ${state.batchAlbums.size - slots.size} more", style = YuyuType.caption, color = Yuyu.textMuted)
+                Text("and ${state.batchAlbums.size - slots.size} more", style = NbType.caption, color = Nb.textMuted)
             }
         }
     }
@@ -378,19 +378,19 @@ private fun androidx.compose.foundation.lazy.LazyListScope.batchItems(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            YuyuButton(
+            NbButton(
                 text = "Shuffle",
                 icon = rememberVectorPainter(Icons.Rounded.Shuffle),
                 onClick = viewModel::shuffle,
                 enabled = !saving,
-                style = YuyuButtonStyle.Secondary,
+                style = NbButtonStyle.Secondary,
             )
-            YuyuButton(
+            NbButton(
                 text = "Save all",
                 icon = rememberVectorPainter(Icons.Rounded.Save),
                 onClick = viewModel::saveAll,
                 enabled = !saving,
-                style = YuyuButtonStyle.Accent,
+                style = NbButtonStyle.Accent,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -402,14 +402,14 @@ private fun androidx.compose.foundation.lazy.LazyListScope.batchItems(
 @Composable
 private fun StylePicker(selected: CoverStyle?, allowMixed: Boolean, onSelect: (CoverStyle?) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        YuyuOverline("Style", modifier = Modifier.padding(horizontal = 16.dp))
+        NbOverline("Style", modifier = Modifier.padding(horizontal = 16.dp))
         Row(
             Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            if (allowMixed) YuyuChip(text = "Mixed", selected = selected == null, onClick = { onSelect(null) })
+            if (allowMixed) NbChip(text = "Mixed", selected = selected == null, onClick = { onSelect(null) })
             CoverStyle.entries.forEach { style ->
-                YuyuChip(text = style.label, selected = selected == style, onClick = { onSelect(style) })
+                NbChip(text = style.label, selected = selected == style, onClick = { onSelect(style) })
             }
         }
     }
@@ -418,7 +418,7 @@ private fun StylePicker(selected: CoverStyle?, allowMixed: Boolean, onSelect: (C
 @Composable
 private fun PalettePicker(selected: CoverPaletteChoice, previewKey: String, onSelect: (CoverPaletteChoice) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        YuyuOverline("Colours", modifier = Modifier.padding(horizontal = 16.dp))
+        NbOverline("Colours", modifier = Modifier.padding(horizontal = 16.dp))
         Row(
             Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -439,9 +439,9 @@ private fun PaletteChip(choice: CoverPaletteChoice, previewKey: String, selected
     Row(
         modifier = Modifier
             .heightIn(min = 36.dp)
-            .clip(YuyuShapes.pill)
-            .background(if (selected) Yuyu.ink else Yuyu.canvas)
-            .then(if (!selected) Modifier.border(1.dp, Yuyu.borderStrong, YuyuShapes.pill) else Modifier)
+            .clip(NbShapes.pill)
+            .background(if (selected) Nb.ink else Nb.canvas)
+            .then(if (!selected) Modifier.border(1.dp, Nb.borderStrong, NbShapes.pill) else Modifier)
             .clickable(role = Role.Tab) { haptics.selection(); onClick() }
             .padding(start = 8.dp, end = 14.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -449,14 +449,14 @@ private fun PaletteChip(choice: CoverPaletteChoice, previewKey: String, selected
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy((-6).dp)) {
             if (swatches == null) {
-                Box(Modifier.size(20.dp).clip(CircleShape).background(Yuyu.accent).border(1.dp, Yuyu.border, CircleShape))
+                Box(Modifier.size(20.dp).clip(CircleShape).background(Nb.accent).border(1.dp, Nb.border, CircleShape))
             } else {
                 swatches.forEach { c ->
-                    Box(Modifier.size(20.dp).clip(CircleShape).background(c).border(1.dp, Yuyu.border, CircleShape))
+                    Box(Modifier.size(20.dp).clip(CircleShape).background(c).border(1.dp, Nb.border, CircleShape))
                 }
             }
         }
-        Text(choice.label, style = YuyuType.label, color = if (selected) Yuyu.onInk else Yuyu.text, maxLines = 1)
+        Text(choice.label, style = NbType.label, color = if (selected) Nb.onInk else Nb.text, maxLines = 1)
     }
 }
 
@@ -464,24 +464,24 @@ private fun PaletteChip(choice: CoverPaletteChoice, previewKey: String, selected
 
 @Composable
 private fun SaveProgressCard(progress: CoverProgress, onCancel: () -> Unit, modifier: Modifier = Modifier) {
-    YuyuCard(modifier = modifier.fillMaxWidth(), background = Yuyu.subtle) {
-        YuyuOverline("Saving covers")
+    NbCard(modifier = modifier.fillMaxWidth(), background = Nb.subtle) {
+        NbOverline("Saving covers")
         Spacer(Modifier.size(6.dp))
-        Text("${(progress.done + 1).coerceAtMost(progress.total)} of ${progress.total}", style = YuyuType.h3, color = Yuyu.text)
+        Text("${(progress.done + 1).coerceAtMost(progress.total)} of ${progress.total}", style = NbType.h3, color = Nb.text)
         progress.current?.let {
-            Text(it.title, style = YuyuType.meta, color = Yuyu.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(it.title, style = NbType.meta, color = Nb.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         Spacer(Modifier.size(10.dp))
-        YuyuMeter(progress = if (progress.total == 0) 0f else progress.done.toFloat() / progress.total)
+        NbMeter(progress = if (progress.total == 0) 0f else progress.done.toFloat() / progress.total)
         Spacer(Modifier.size(10.dp))
-        YuyuButton(text = "Cancel", onClick = onCancel, style = YuyuButtonStyle.Secondary, size = YuyuButtonSize.Small)
+        NbButton(text = "Cancel", onClick = onCancel, style = NbButtonStyle.Secondary, size = NbButtonSize.Small)
     }
 }
 
 @Composable
 private fun SaveSummaryCard(summary: CoverSummary, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
-    YuyuCard(modifier = modifier.fillMaxWidth()) {
-        YuyuOverline(if (summary.cancelled) "Stopped" else "Done")
+    NbCard(modifier = modifier.fillMaxWidth()) {
+        NbOverline(if (summary.cancelled) "Stopped" else "Done")
         Spacer(Modifier.size(6.dp))
         Text(
             when (summary.saved) {
@@ -489,20 +489,20 @@ private fun SaveSummaryCard(summary: CoverSummary, onDismiss: () -> Unit, modifi
                 1 -> "1 cover saved"
                 else -> "${summary.saved} covers saved"
             },
-            style = YuyuType.h3,
-            color = Yuyu.text
+            style = NbType.h3,
+            color = Nb.text
         )
         if (summary.skipped.isNotEmpty()) {
-            Text("${summary.skipped.size} skipped", style = YuyuType.meta, color = Yuyu.textMuted)
+            Text("${summary.skipped.size} skipped", style = NbType.meta, color = Nb.textMuted)
             Spacer(Modifier.size(6.dp))
             summary.skipped.groupBy { it.second }.forEach { (reason, list) ->
-                Text("${reason.label}: ${list.size}", style = YuyuType.caption, color = Yuyu.textSecondary)
+                Text("${reason.label}: ${list.size}", style = NbType.caption, color = Nb.textSecondary)
             }
             summary.skipped.take(6).forEach { (song, reason) ->
                 Text(
                     "${song.title} — ${reason.label.lowercase()}",
-                    style = YuyuType.caption,
-                    color = Yuyu.textMuted,
+                    style = NbType.caption,
+                    color = Nb.textMuted,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.widthIn(max = 480.dp)
@@ -510,6 +510,6 @@ private fun SaveSummaryCard(summary: CoverSummary, onDismiss: () -> Unit, modifi
             }
         }
         Spacer(Modifier.size(10.dp))
-        YuyuButton(text = "OK", onClick = onDismiss, style = YuyuButtonStyle.Secondary, size = YuyuButtonSize.Small)
+        NbButton(text = "OK", onClick = onDismiss, style = NbButtonStyle.Secondary, size = NbButtonSize.Small)
     }
 }

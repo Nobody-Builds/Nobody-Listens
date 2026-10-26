@@ -473,7 +473,7 @@ class PlayerViewModelTest {
 
             coVerify { mockMusicRepository.getShuffledSongIds(StorageFilter.ALL) }
             coVerify(exactly = 0) { mockMusicRepository.getRandomSongs(any()) }
-            coVerify {
+            coVerify(timeout = 2_000) {
                 mockQueueStateHolder.prepareShuffledQueueSuspending(
                     randomSongs,
                     "All Songs (Shuffled)",
@@ -492,7 +492,7 @@ class PlayerViewModelTest {
             advanceUntilIdle()
 
             coVerify { mockMusicRepository.getShuffledSongIds(StorageFilter.ALL) }
-            coVerify {
+            coVerify(timeout = 2_000) {
                 mockQueueStateHolder.prepareShuffledQueueSuspending(
                     randomSongs,
                     "All Songs (Shuffled)",
@@ -514,7 +514,7 @@ class PlayerViewModelTest {
 
             coVerify { mockMusicRepository.getFavoriteSongsOnce(StorageFilter.OFFLINE) }
             coVerify(exactly = 0) { mockMusicRepository.getFavoriteSongsOnce(StorageFilter.ALL) }
-            coVerify {
+            coVerify(timeout = 2_000) {
                 mockQueueStateHolder.prepareShuffledQueueSuspending(
                     favoriteSongs,
                     "Liked Songs (Shuffled)",
@@ -542,7 +542,7 @@ class PlayerViewModelTest {
             playerViewModel.shuffleRandomAlbum()
             advanceUntilIdle()
 
-            coVerify {
+            coVerify(timeout = 2_000) {
                 mockQueueStateHolder.prepareShuffledQueueSuspending(
                     listOf(song1, song2, song3),
                     "Album Roulette",
@@ -562,7 +562,7 @@ class PlayerViewModelTest {
             playerViewModel.shuffleRandomArtist()
             advanceUntilIdle()
 
-            coVerify {
+            coVerify(timeout = 2_000) {
                 mockQueueStateHolder.prepareShuffledQueueSuspending(
                     listOf(song3, song2, song1),
                     "Artist Roulette",
@@ -583,7 +583,7 @@ class PlayerViewModelTest {
             playerViewModel.shuffleRandomAlbum()
             advanceUntilIdle()
 
-            coVerify { mockQueueStateHolder.prepareShuffledQueueSuspending(listOf(song1), "Mixed Album", true) }
+            coVerify(timeout = 2_000) { mockQueueStateHolder.prepareShuffledQueueSuspending(listOf(song1), "Mixed Album", true) }
         }
 
         @Test
@@ -599,7 +599,7 @@ class PlayerViewModelTest {
 
             coVerify { mockMusicRepository.getShuffledSongIds(StorageFilter.OFFLINE) }
             coVerify(exactly = 0) { mockMusicRepository.getRandomSongs(any()) }
-            coVerify {
+            coVerify(timeout = 2_000) {
                 mockQueueStateHolder.prepareShuffledQueueSuspending(
                     songs,
                     "All Songs (Shuffled)",

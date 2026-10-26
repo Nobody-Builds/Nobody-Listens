@@ -25,15 +25,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.twilighty.lmusic.data.smart.SmartInsights
 import com.twilighty.lmusic.data.stats.StatsTimeRange
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuMeter
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatus
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatusChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbMeter
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbStatus
+import com.twilighty.lmusic.presentation.nb.NbStatusChip
+import com.twilighty.lmusic.presentation.nb.NbType
 import kotlin.math.roundToInt
 
 /**
@@ -59,50 +59,50 @@ fun SmartInsightsCard(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SmartInsightsContent(insights: SmartInsights?, modifier: Modifier = Modifier) {
-    YuyuCard(modifier = modifier.fillMaxWidth()) {
+    NbCard(modifier = modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            YuyuOverline("Smart insights", modifier = Modifier.weight(1f))
-            YuyuStatusChip(text = "Experimental", status = YuyuStatus.Neutral)
+            NbOverline("Smart insights", modifier = Modifier.weight(1f))
+            NbStatusChip(text = "Experimental", status = NbStatus.Neutral)
         }
 
         if (insights == null || insights.playCount == 0 || insights.moodMix.isEmpty()) {
             Text(
                 if (insights == null) "Loading…" else "Play a few analysed songs to see your mood mix here.",
-                style = YuyuType.body,
-                color = Yuyu.textSecondary,
+                style = NbType.body,
+                color = Nb.textSecondary,
                 modifier = Modifier.padding(top = 10.dp)
             )
-            return@YuyuCard
+            return@NbCard
         }
 
         // Taste drift
-        Text(insights.tasteDriftLabel, style = YuyuType.h3, color = Yuyu.text, modifier = Modifier.padding(top = 10.dp))
+        Text(insights.tasteDriftLabel, style = NbType.h3, color = Nb.text, modifier = Modifier.padding(top = 10.dp))
         Text(
             buildString {
                 append("Compared with the previous period")
                 append(" · ")
                 append("${(insights.discoveryRate * 100).roundToInt()}% of plays were new to you")
             },
-            style = YuyuType.meta,
-            color = Yuyu.textMuted
+            style = NbType.meta,
+            color = Nb.textMuted
         )
 
         // Mood mix
-        YuyuDivider(Modifier.padding(vertical = 14.dp))
-        Text("Mood mix", style = YuyuType.title, color = Yuyu.text)
+        NbDivider(Modifier.padding(vertical = 14.dp))
+        Text("Mood mix", style = NbType.title, color = Nb.text)
         Column(Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             insights.moodMix.entries.take(5).forEachIndexed { index, (mood, share) ->
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(mood, style = YuyuType.meta, color = Yuyu.text, modifier = Modifier.width(92.dp), maxLines = 1)
-                    YuyuMeter(
+                    Text(mood, style = NbType.meta, color = Nb.text, modifier = Modifier.width(92.dp), maxLines = 1)
+                    NbMeter(
                         progress = share.coerceIn(0f, 1f),
                         modifier = Modifier.weight(1f),
-                        color = if (index == 0) Yuyu.accent else Yuyu.ink.copy(alpha = 0.55f)
+                        color = if (index == 0) Nb.ink else Nb.ink.copy(alpha = 0.55f)
                     )
                     Text(
                         "${(share * 100).roundToInt()}%",
-                        style = YuyuType.caption,
-                        color = Yuyu.textMuted,
+                        style = NbType.caption,
+                        color = Nb.textMuted,
                         modifier = Modifier.width(36.dp),
                         textAlign = TextAlign.End
                     )
@@ -111,14 +111,14 @@ fun SmartInsightsContent(insights: SmartInsights?, modifier: Modifier = Modifier
         }
 
         // Energy by hour
-        YuyuDivider(Modifier.padding(vertical = 14.dp))
-        Text("Energy by hour", style = YuyuType.title, color = Yuyu.text)
+        NbDivider(Modifier.padding(vertical = 14.dp))
+        Text("Energy by hour", style = NbType.title, color = Nb.text)
         EnergyByHourBars(insights.energyByHour, Modifier.padding(top = 10.dp))
 
         // Top genres
         if (insights.topGenres.isNotEmpty()) {
-            YuyuDivider(Modifier.padding(vertical = 14.dp))
-            Text("Top genres", style = YuyuType.title, color = Yuyu.text)
+            NbDivider(Modifier.padding(vertical = 14.dp))
+            Text("Top genres", style = NbType.title, color = Nb.text)
             FlowRow(
                 modifier = Modifier.padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -127,11 +127,11 @@ fun SmartInsightsContent(insights: SmartInsights?, modifier: Modifier = Modifier
                 insights.topGenres.forEach { (genre, share) ->
                     Text(
                         "$genre ${(share * 100).roundToInt()}%",
-                        style = YuyuType.caption,
-                        color = Yuyu.text,
+                        style = NbType.caption,
+                        color = Nb.text,
                         modifier = Modifier
-                            .clip(YuyuShapes.pill)
-                            .background(Yuyu.muted)
+                            .clip(NbShapes.pill)
+                            .background(Nb.muted)
                             .padding(horizontal = 10.dp, vertical = 5.dp)
                     )
                 }
@@ -141,8 +141,8 @@ fun SmartInsightsContent(insights: SmartInsights?, modifier: Modifier = Modifier
         if (insights.coverage < 0.6f) {
             Text(
                 "Based on ${(insights.coverage * 100).roundToInt()}% of your plays. Indexing continues while charging.",
-                style = YuyuType.caption,
-                color = Yuyu.textMuted,
+                style = NbType.caption,
+                color = Nb.textMuted,
                 modifier = Modifier.padding(top = 14.dp)
             )
         }
@@ -165,12 +165,12 @@ private fun EnergyByHourBars(values: List<Float?>, modifier: Modifier = Modifier
                     Modifier
                         .weight(1f)
                         .fillMaxHeight(fraction)
-                        .clip(YuyuShapes.sm)
+                        .clip(NbShapes.sm)
                         .background(
                             when {
-                                v == null -> Yuyu.emphasis
-                                hour == peakHour -> Yuyu.accent
-                                else -> Yuyu.ink.copy(alpha = 0.45f)
+                                v == null -> Nb.emphasis
+                                hour == peakHour -> Nb.ink
+                                else -> Nb.ink.copy(alpha = 0.45f)
                             }
                         )
                 )
@@ -178,7 +178,7 @@ private fun EnergyByHourBars(values: List<Float?>, modifier: Modifier = Modifier
         }
         Row(Modifier.fillMaxWidth().padding(top = 4.dp)) {
             listOf("12a", "6a", "12p", "6p").forEach { label ->
-                Text(label, style = YuyuType.caption, color = Yuyu.textMuted, modifier = Modifier.weight(1f))
+                Text(label, style = NbType.caption, color = Nb.textMuted, modifier = Modifier.weight(1f))
             }
         }
     }

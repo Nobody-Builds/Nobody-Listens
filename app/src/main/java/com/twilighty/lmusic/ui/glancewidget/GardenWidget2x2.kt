@@ -60,7 +60,7 @@ class GardenWidget2x2 : GlanceAppWidget() {
             .onFailure { Timber.w(it, "Garden widget: load failed") }
             .getOrElse { GardenWidgetData(null, "Garden") }
         provideContent {
-            GlanceTheme(colors = YuyuGlanceColors) {
+            GlanceTheme(colors = NbGlanceColors) {
                 GardenContent(data)
             }
         }

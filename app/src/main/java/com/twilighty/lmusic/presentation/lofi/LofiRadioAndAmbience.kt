@@ -49,25 +49,25 @@ import com.twilighty.lmusic.data.lofi.AmbienceKind
 import com.twilighty.lmusic.data.lofi.LofiSource
 import com.twilighty.lmusic.data.lofi.LofiState
 import com.twilighty.lmusic.data.lofi.RadioStation
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuActionRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuEmptyState
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuSectionHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuSheetHandle
-import com.twilighty.lmusic.presentation.yuyu.YuyuSheetShape
-import com.twilighty.lmusic.presentation.yuyu.YuyuSongRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatus
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatusChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuTextField
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbActionRow
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbEmptyState
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbIconButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbSectionHeader
+import com.twilighty.lmusic.presentation.nb.NbSheetHandle
+import com.twilighty.lmusic.presentation.nb.NbSheetShape
+import com.twilighty.lmusic.presentation.nb.NbSongRow
+import com.twilighty.lmusic.presentation.nb.NbStatus
+import com.twilighty.lmusic.presentation.nb.NbStatusChip
+import com.twilighty.lmusic.presentation.nb.NbTextField
+import com.twilighty.lmusic.presentation.nb.NbType
 
 // ==================================================================== Radio
 
@@ -89,21 +89,21 @@ internal fun LazyListScope.radioItems(
     item(key = "radio_picks") { StationSection("Picks", vm.curatedStations, favIds, state, vm) }
     item(key = "radio_browse") {
         Column(Modifier.padding(horizontal = 16.dp)) {
-            YuyuSectionHeader(
+            NbSectionHeader(
                 title = "Tagged “${browse.tag}”",
                 actionLabel = if (browse.loaded) "Refresh" else null,
                 onAction = { vm.loadTag(browse.tag, force = true) }
             )
             Spacer(Modifier.height(4.dp))
             when {
-                browse.loading -> Text("Loading stations…", style = YuyuType.meta, color = Yuyu.textMuted, modifier = Modifier.padding(vertical = 12.dp))
-                browse.error != null -> YuyuEmptyState(
+                browse.loading -> Text("Loading stations…", style = NbType.meta, color = Nb.textMuted, modifier = Modifier.padding(vertical = 12.dp))
+                browse.error != null -> NbEmptyState(
                     title = "No connection",
                     body = browse.error,
                     icon = rememberVectorPainter(Icons.Rounded.Radio),
-                    actions = { YuyuButton("Try again", onClick = { vm.loadTag(browse.tag, force = true) }, style = YuyuButtonStyle.Secondary, size = YuyuButtonSize.Small) }
+                    actions = { NbButton("Try again", onClick = { vm.loadTag(browse.tag, force = true) }, style = NbButtonStyle.Secondary, size = NbButtonSize.Small) }
                 )
-                browse.loaded && browse.stations.isEmpty() -> YuyuEmptyState(
+                browse.loaded && browse.stations.isEmpty() -> NbEmptyState(
                     title = "Nothing here",
                     body = "No working stations use this tag. Try lofi or chillhop.",
                     icon = rememberVectorPainter(Icons.Rounded.Radio)
@@ -119,7 +119,7 @@ internal fun LazyListScope.radioItems(
     item(key = "radio_credit") {
         Text(
             "Station directory by radio-browser.info. Streams come from each station.",
-            style = YuyuType.caption, color = Yuyu.textMuted,
+            style = NbType.caption, color = Nb.textMuted,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
     }
@@ -128,12 +128,12 @@ internal fun LazyListScope.radioItems(
 @Composable
 private fun RadioNowPlaying(state: LofiState, vm: LofiViewModel) {
     val st = state.station ?: return
-    YuyuCard(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(), background = Yuyu.subtle) {
+    NbCard(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(), background = Nb.subtle) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            YuyuArt(model = st.favicon, title = st.name, size = 56.dp)
+            NbArt(model = st.favicon, title = st.name, size = 56.dp)
             Column(Modifier.weight(1f)) {
-                Text("NOW PLAYING", style = YuyuType.overline, color = Yuyu.accentText)
-                Text(st.name, style = YuyuType.title, color = Yuyu.text, maxLines = 1)
+                Text("NOW PLAYING", style = NbType.overline, color = Nb.accentText)
+                Text(st.name, style = NbType.title, color = Nb.text, maxLines = 1)
                 Text(
                     when {
                         state.isBuffering -> "Connecting…"
@@ -141,16 +141,16 @@ private fun RadioNowPlaying(state: LofiState, vm: LofiViewModel) {
                         state.isPlaying -> "Live"
                         else -> "Paused"
                     },
-                    style = YuyuType.meta, color = Yuyu.textMuted, maxLines = 2
+                    style = NbType.meta, color = Nb.textMuted, maxLines = 2
                 )
             }
-            YuyuIconButton(
+            NbIconButton(
                 imageVector = if (state.isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                 contentDescription = if (state.isPlaying) "Pause" else "Play",
                 onClick = vm::toggleRadioPlayback,
-                style = YuyuIconButtonStyle.Filled
+                style = NbIconButtonStyle.Filled
             )
-            YuyuIconButton(imageVector = Icons.Rounded.Stop, contentDescription = "Stop", onClick = vm::stop, style = YuyuIconButtonStyle.Tonal)
+            NbIconButton(imageVector = Icons.Rounded.Stop, contentDescription = "Stop", onClick = vm::stop, style = NbIconButtonStyle.Tonal)
         }
     }
 }
@@ -161,17 +161,17 @@ private fun RadioSearch(vm: LofiViewModel) {
     var query by rememberSaveable { mutableStateOf("") }
     val focus = LocalFocusManager.current
     Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        YuyuTextField(
+        NbTextField(
             value = query,
             onValueChange = { query = it },
             placeholder = "Search by tag, like jazzhop",
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { vm.loadTag(query); focus.clearFocus() }),
-            leading = { Icon(Icons.Rounded.Search, contentDescription = null, tint = Yuyu.textMuted, modifier = Modifier.size(20.dp)) }
+            leading = { Icon(Icons.Rounded.Search, contentDescription = null, tint = Nb.textMuted, modifier = Modifier.size(20.dp)) }
         )
         Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             for (tag in vm.suggestedTags) {
-                YuyuChip(text = tag, selected = browse.tag == tag, onClick = { query = ""; vm.loadTag(tag) })
+                NbChip(text = tag, selected = browse.tag == tag, onClick = { query = ""; vm.loadTag(tag) })
             }
         }
     }
@@ -180,7 +180,7 @@ private fun RadioSearch(vm: LofiViewModel) {
 @Composable
 private fun StationSection(title: String, stations: List<RadioStation>, favIds: Set<String>, state: LofiState, vm: LofiViewModel) {
     Column(Modifier.padding(horizontal = 16.dp)) {
-        YuyuSectionHeader(title)
+        NbSectionHeader(title)
         Spacer(Modifier.height(4.dp))
         for (st in stations) StationRow(st, st.id in favIds, state, vm)
     }
@@ -194,7 +194,7 @@ private fun StationRow(station: RadioStation, isFav: Boolean, state: LofiState, 
         station.country?.let { add(it) }
         station.tags?.split(',')?.firstOrNull()?.trim()?.takeIf { it.isNotEmpty() }?.let { add(it) }
     }.joinToString(" · ").ifEmpty { "Live radio" }
-    YuyuSongRow(
+    NbSongRow(
         title = station.name,
         subtitle = if (isCurrent && state.isPlaying) "Playing · $subtitle" else subtitle,
         artModel = station.favicon,
@@ -204,13 +204,13 @@ private fun StationRow(station: RadioStation, isFav: Boolean, state: LofiState, 
         onClick = { vm.playStation(station) },
         trailing = {
             if (isCurrent && state.isPlaying) {
-                Icon(Icons.Rounded.GraphicEq, contentDescription = null, tint = Yuyu.accentText, modifier = Modifier.size(20.dp))
+                Icon(Icons.Rounded.GraphicEq, contentDescription = null, tint = Nb.accentText, modifier = Modifier.size(20.dp))
             }
-            YuyuIconButton(
+            NbIconButton(
                 imageVector = if (isFav) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
                 contentDescription = if (isFav) "Remove from favourites" else "Add to favourites",
                 onClick = { vm.toggleFavourite(station) },
-                tint = if (isFav) Yuyu.accentText else null,
+                tint = if (isFav) Nb.accentText else null,
                 size = 40.dp,
                 iconSize = 20.dp
             )
@@ -225,24 +225,24 @@ internal fun LazyListScope.ambienceItems(vm: LofiViewModel) {
         val sounding by vm.ambienceSounding.collectAsStateWithLifecycle()
         val layers by vm.ambienceLayers.collectAsStateWithLifecycle()
         val anyOn = layers.values.any { it.enabled }
-        YuyuCard(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(), background = Yuyu.subtle) {
-            Text("Ambience over your music", style = YuyuType.h3, color = Yuyu.text)
+        NbCard(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(), background = Nb.subtle) {
+            Text("Ambience over your music", style = NbType.h3, color = Nb.text)
             Spacer(Modifier.height(4.dp))
             Text(
                 "Mix rain, café, fireplace or waves over any song or lofi radio. It plays only while music plays.",
-                style = YuyuType.meta, color = Yuyu.textMuted
+                style = NbType.meta, color = Nb.textMuted
             )
             Spacer(Modifier.height(10.dp))
-            YuyuStatusChip(
+            NbStatusChip(
                 text = when {
                     !anyOn -> "Off"
                     sounding -> "Playing over your music"
                     else -> "Waiting for music"
                 },
                 status = when {
-                    !anyOn -> YuyuStatus.Neutral
-                    sounding -> YuyuStatus.Success
-                    else -> YuyuStatus.Warning
+                    !anyOn -> NbStatus.Neutral
+                    sounding -> NbStatus.Success
+                    else -> NbStatus.Warning
                 }
             )
         }
@@ -253,12 +253,12 @@ internal fun LazyListScope.ambienceItems(vm: LofiViewModel) {
             AmbienceLayerControls(layers, vm::setAmbienceEnabled, vm::setAmbienceVolume)
             if (layers.values.any { it.enabled }) {
                 Spacer(Modifier.height(8.dp))
-                YuyuButton("Turn all off", onClick = vm::ambienceAllOff, style = YuyuButtonStyle.Secondary, size = YuyuButtonSize.Small)
+                NbButton("Turn all off", onClick = vm::ambienceAllOff, style = NbButtonStyle.Secondary, size = NbButtonSize.Small)
             }
             Spacer(Modifier.height(12.dp))
             Text(
                 "The generator has its own rain and café sliders under Generate › Texture.",
-                style = YuyuType.caption, color = Yuyu.textMuted
+                style = NbType.caption, color = Nb.textMuted
             )
         }
     }
@@ -273,12 +273,12 @@ fun LofiSongActions(modifier: Modifier = Modifier, viewModel: AmbienceViewModel 
     val layers by viewModel.layers.collectAsStateWithLifecycle()
     var open by remember { mutableStateOf(false) }
     val on = AmbienceKind.entries.filter { layers[it]?.enabled == true }
-    YuyuActionRow(
+    NbActionRow(
         text = "Ambience",
         subtitle = if (on.isEmpty()) "Rain, café, fireplace or waves over your music" else on.joinToString(", ") { it.label },
         icon = rememberVectorPainter(Icons.Rounded.Waves),
         modifier = modifier,
-        trailing = if (on.isNotEmpty()) ({ YuyuStatusChip(text = "On", status = YuyuStatus.Accent) }) else null,
+        trailing = if (on.isNotEmpty()) ({ NbStatusChip(text = "On", status = NbStatus.Accent) }) else null,
         onClick = { open = true }
     )
     if (open) AmbienceSheet(viewModel = viewModel, onDismiss = { open = false })
@@ -292,21 +292,21 @@ fun AmbienceSheet(onDismiss: () -> Unit, viewModel: AmbienceViewModel = hiltView
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        shape = YuyuSheetShape,
-        containerColor = Yuyu.canvas,
-        dragHandle = { YuyuSheetHandle() },
+        shape = NbSheetShape,
+        containerColor = Nb.canvas,
+        dragHandle = { NbSheetHandle() },
     ) {
         Column(Modifier.padding(horizontal = 20.dp).navigationBarsPadding().padding(bottom = 16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("Ambience", style = YuyuType.h2, color = Yuyu.text)
+                    Text("Ambience", style = NbType.h2, color = Nb.text)
                     Text(
                         if (sounding) "Playing over your music" else "Plays while music plays",
-                        style = YuyuType.meta, color = Yuyu.textMuted
+                        style = NbType.meta, color = Nb.textMuted
                     )
                 }
                 if (layers.values.any { it.enabled }) {
-                    YuyuButton("All off", onClick = viewModel::allOff, style = YuyuButtonStyle.Quiet, size = YuyuButtonSize.Small)
+                    NbButton("All off", onClick = viewModel::allOff, style = NbButtonStyle.Quiet, size = NbButtonSize.Small)
                 }
             }
             Spacer(Modifier.height(8.dp))

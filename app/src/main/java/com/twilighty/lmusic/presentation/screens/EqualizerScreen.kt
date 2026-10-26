@@ -135,7 +135,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.rounded.Edit // Added
 import androidx.compose.material.icons.rounded.ExpandMore // Added
 import androidx.compose.material.icons.rounded.Save // Added
-import androidx.compose.material.icons.filled.Star // Added
+import androidx.compose.material.icons.rounded.Star // Added
 import androidx.compose.material3.Surface
 import com.twilighty.lmusic.presentation.components.CustomPresetsSheet
 import com.twilighty.lmusic.presentation.components.ReorderPresetsSheet
@@ -497,7 +497,7 @@ private fun PresetTabsRow(
                     if (isPinnedCustom) {
                         Spacer(modifier = Modifier.width(4.dp))
                         Icon(
-                            imageVector = Icons.Filled.Star,
+                            imageVector = Icons.Rounded.Star,
                             contentDescription = stringResource(R.string.presentation_batch_d_eq_custom_preset_cd),
                             modifier = Modifier.size(10.dp), // Slightly smaller
                             tint = if (selectedIndex == index) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="nb_widget_canvas">#FF172033</color>
+    <color name="nb_widget_muted">#FF22304B</color>
+    <color name="nb_widget_text">#FFF5F7FB</color>
+    <color name="nb_widget_text_muted">#FFC3C8D2</color>
+    <color name="nb_widget_accent">#FFFDC521</color>
+    <color name="nb_widget_on_accent">#FF172033</color>
+    <color name="nb_widget_accent_soft">#FF263A5C</color>
+    <color name="nb_widget_accent_text">#FFA9C8F0</color>
+</resources>

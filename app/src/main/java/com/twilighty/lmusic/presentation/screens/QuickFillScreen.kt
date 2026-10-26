@@ -200,7 +200,7 @@ fun QuickFillContent(
             shape = AbsoluteSmoothCornerShape(32.dp, 60),
             color = MaterialTheme.colorScheme.surfaceContainerHighest,
             tonalElevation = 6.dp,
-            shadowElevation = 4.dp
+            shadowElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp), // Symmetric 10dp horizontal padding

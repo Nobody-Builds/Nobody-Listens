@@ -85,7 +85,7 @@ object GardenColors {
         else -> null
     }
 
-    /** Yuyu accents for when Smart features are off. */
+    /** Daylight accents for when Smart features are off. */
     val AccentFlowers = listOf(
         Color(0xFFD9541E), Color(0xFFB9AEFF), Color(0xFFF59E7A), Color(0xFFF07FAE), Color(0xFFF2B53A)
     )

@@ -132,7 +132,7 @@ private fun libraryEmptySpec(
         }
 
         LibraryTabId.FOLDERS -> LibraryEmptySpec(
-            iconRes = R.drawable.ic_folder,
+            iconRes = R.drawable.rounded_folder_24,
             titleRes = R.string.lib_empty_folders_title,
             subtitleRes = R.string.lib_empty_folders_subtitle
         )

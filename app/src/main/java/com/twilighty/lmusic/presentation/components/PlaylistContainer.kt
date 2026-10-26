@@ -372,16 +372,16 @@ fun PlaylistItem(
         label = "playlistSelectionBorderAnimation"
     )
 
-    // Yuyu playlist row: flat, no card fill; a muted fill marks selection.
+    // Daylight playlist row: flat, no card fill; a muted fill marks selection.
     val containerColor by animateColorAsState(
         targetValue = when {
-            isSelected -> com.twilighty.lmusic.presentation.yuyu.Yuyu.muted
+            isSelected -> com.twilighty.lmusic.presentation.nb.Nb.muted
             else -> Color.Transparent
         },
         animationSpec = tween(durationMillis = 300),
         label = "playlistContainerColorAnimation"
     )
-    val rowShape = com.twilighty.lmusic.presentation.yuyu.YuyuShapes.lg
+    val rowShape = com.twilighty.lmusic.presentation.nb.NbShapes.lg
 
     Box(
         modifier = Modifier
@@ -393,7 +393,7 @@ fun PlaylistItem(
                 if (isSelected && !isAddingToPlaylist) {
                     Modifier.border(
                         width = selectionBorderWidth,
-                        color = com.twilighty.lmusic.presentation.yuyu.Yuyu.ink,
+                        color = com.twilighty.lmusic.presentation.nb.Nb.ink,
                         shape = rowShape
                     )
                 } else {
@@ -432,8 +432,8 @@ fun PlaylistItem(
                 ) {
                     Text(
                         text = playlist.name,
-                        style = com.twilighty.lmusic.presentation.yuyu.YuyuType.title,
-                        color = com.twilighty.lmusic.presentation.yuyu.Yuyu.text,
+                        style = com.twilighty.lmusic.presentation.nb.NbType.title,
+                        color = com.twilighty.lmusic.presentation.nb.Nb.text,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
@@ -479,7 +479,7 @@ fun PlaylistItem(
                         Icon(
                             imageVector = Icons.Rounded.Album,
                             contentDescription = "QQ Music",
-                            tint = Color(0xFF2E7D32), // 修改为绿色
+                            tint = com.twilighty.lmusic.presentation.nb.Nb.successText,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -495,8 +495,8 @@ fun PlaylistItem(
                 }
                 Text(
                     text = formatSongCount(playlist.songIds.size),
-                    style = com.twilighty.lmusic.presentation.yuyu.YuyuType.meta,
-                    color = com.twilighty.lmusic.presentation.yuyu.Yuyu.textMuted
+                    style = com.twilighty.lmusic.presentation.nb.NbType.meta,
+                    color = com.twilighty.lmusic.presentation.nb.Nb.textMuted
                 )
             }
 
@@ -549,23 +549,23 @@ fun CreatePlaylistDialogRedesigned(
 ) {
     var playlistName by remember { mutableStateOf("") }
 
-    com.twilighty.lmusic.presentation.yuyu.YuyuDialog(
+    com.twilighty.lmusic.presentation.nb.NbDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.create_playlist_dialog_title),
         actions = {
-            com.twilighty.lmusic.presentation.yuyu.YuyuButton(
+            com.twilighty.lmusic.presentation.nb.NbButton(
                 text = stringResource(R.string.cancel),
                 onClick = onDismiss,
-                style = com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle.Secondary
+                style = com.twilighty.lmusic.presentation.nb.NbButtonStyle.Secondary
             )
-            com.twilighty.lmusic.presentation.yuyu.YuyuButton(
+            com.twilighty.lmusic.presentation.nb.NbButton(
                 text = stringResource(R.string.action_create),
                 onClick = { onCreate(playlistName) },
                 enabled = playlistName.isNotBlank()
             )
         }
     ) {
-        com.twilighty.lmusic.presentation.yuyu.YuyuTextField(
+        com.twilighty.lmusic.presentation.nb.NbTextField(
             value = playlistName,
             onValueChange = { playlistName = it },
             label = stringResource(R.string.create_playlist_name_label),

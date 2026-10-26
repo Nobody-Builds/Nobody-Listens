@@ -66,7 +66,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.LightMode
+import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Check
@@ -111,7 +111,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -644,18 +643,18 @@ fun WelcomePage() {
         ) {
             Text(
                 text = stringResource(R.string.setup_welcome_prefix).trim(),
-                style = com.twilighty.lmusic.presentation.yuyu.YuyuType.h2,
+                style = com.twilighty.lmusic.presentation.nb.NbType.h2,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = stringResource(R.string.app_name),
-                style = com.twilighty.lmusic.presentation.yuyu.YuyuType.display(56.sp),
+                style = com.twilighty.lmusic.presentation.nb.NbType.display(56.sp),
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
             )
             Text(
                 text = "Your music, on your phone.",
-                style = com.twilighty.lmusic.presentation.yuyu.YuyuType.bodyLarge,
+                style = com.twilighty.lmusic.presentation.nb.NbType.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
@@ -953,7 +952,7 @@ fun ThemeSelectionPage(
             mode = AppThemeMode.LIGHT,
             title = stringResource(R.string.setup_theme_light_title),
             description = stringResource(R.string.setup_theme_light_description),
-            icon = Icons.Outlined.LightMode
+            icon = Icons.Rounded.LightMode
         ),
         ThemeOptionItem(
             mode = AppThemeMode.FOLLOW_SYSTEM,
@@ -2045,7 +2044,7 @@ fun SetupBottomBar(
 
     Surface(
         modifier = modifier
-            .shadow(elevation = 8.dp, shape = shape, clip = true),
+            .clip(shape),
         color = MaterialTheme.colorScheme.surfaceContainer,
         shape = AbsoluteSmoothCornerShape(
             cornerRadiusTR = 36.dp,

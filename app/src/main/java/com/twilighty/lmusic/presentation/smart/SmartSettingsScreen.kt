@@ -45,22 +45,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.twilighty.lmusic.data.smart.IndexProgress
 import com.twilighty.lmusic.presentation.components.MiniPlayerHeight
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuMeter
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuSettingRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatus
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatusChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuSwitch
-import com.twilighty.lmusic.presentation.yuyu.YuyuTile
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbMeter
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbSettingRow
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbStatus
+import com.twilighty.lmusic.presentation.nb.NbStatusChip
+import com.twilighty.lmusic.presentation.nb.NbSwitch
+import com.twilighty.lmusic.presentation.nb.NbTile
+import com.twilighty.lmusic.presentation.nb.NbTopBar
+import com.twilighty.lmusic.presentation.nb.NbType
 
 const val SMART_CONDITIONS_TEXT = "Indexes while charging, idle and above 50% battery"
 
@@ -80,15 +80,15 @@ fun SmartSettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Yuyu.canvas)
+            .background(Nb.canvas)
             .statusBarsPadding()
     ) {
-        YuyuTopBar(
+        NbTopBar(
             title = "Smart features",
             kicker = "Experimental",
-            titleStyle = YuyuType.h2,
+            titleStyle = NbType.h2,
             navigationIcon = {
-                YuyuIconButton(
+                NbIconButton(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                     contentDescription = "Back",
                     onClick = onNavigationIconClick
@@ -103,30 +103,30 @@ fun SmartSettingsScreen(
                 .padding(bottom = bottomPad),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            YuyuTile(background = Yuyu.tintLavender) {
-                Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = Yuyu.text, modifier = Modifier.size(28.dp))
+            NbTile(background = Nb.tintLavender) {
+                Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = Nb.text, modifier = Modifier.size(28.dp))
                 Text(
                     "Your library, understood on this phone",
-                    style = YuyuType.h3,
-                    color = Yuyu.text,
+                    style = NbType.h3,
+                    color = Nb.text,
                     modifier = Modifier.padding(top = 12.dp)
                 )
                 Text(
                     "LMusic listens to a few seconds of each song to learn its mood, genre, energy and tempo. " +
                         "That powers song radio, daily mixes and mood insights.",
-                    style = YuyuType.body,
-                    color = Yuyu.textSecondary,
+                    style = NbType.body,
+                    color = Nb.textSecondary,
                     modifier = Modifier.padding(top = 6.dp)
                 )
             }
 
-            YuyuCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
-                YuyuSettingRow(
+            NbCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
+                NbSettingRow(
                     title = "Smart features",
                     subtitle = if (enabled) "On · works offline" else "Off",
                     icon = rememberVectorPainter(Icons.Rounded.GraphicEq),
                     trailing = {
-                        YuyuSwitch(
+                        NbSwitch(
                             checked = enabled,
                             onCheckedChange = { on ->
                                 if (on) showEnableDialog = true else viewModel.setEnabled(false)
@@ -141,37 +141,37 @@ fun SmartSettingsScreen(
                 IndexProgressCard(progress = progress, enabled = enabled)
             }
 
-            YuyuCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
-                YuyuOverline("What you get", modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
+            NbCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
+                NbOverline("What you get", modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
                 FeatureRow(Icons.Rounded.Radio, "Song radio", "Play similar songs from any song's menu")
-                YuyuDivider()
+                NbDivider()
                 FeatureRow(Icons.AutoMirrored.Rounded.QueueMusic, "Mixes made for you", "Daily mixes, Calm, Focus, Workout, Late night")
-                YuyuDivider()
+                NbDivider()
                 FeatureRow(Icons.Rounded.Insights, "Mood insights", "Your mood mix, energy by hour and taste drift in Stats")
             }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(YuyuShapes.lg)
-                    .background(Yuyu.subtle)
+                    .clip(NbShapes.lg)
+                    .background(Nb.subtle)
                     .padding(horizontal = 14.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Rounded.Lock, contentDescription = null, tint = Yuyu.textSecondary, modifier = Modifier.size(18.dp))
+                Icon(Icons.Rounded.Lock, contentDescription = null, tint = Nb.textSecondary, modifier = Modifier.size(18.dp))
                 Text(
                     "Everything stays on this phone. No audio or data is uploaded.",
-                    style = YuyuType.meta,
-                    color = Yuyu.textSecondary
+                    style = NbType.meta,
+                    color = Nb.textSecondary
                 )
             }
 
             if (progress.analyzed > 0 || progress.failed > 0) {
-                YuyuButton(
+                NbButton(
                     text = if (isDeleting) "Deleting…" else "Delete smart data",
                     onClick = { showDeleteDialog = true },
-                    style = YuyuButtonStyle.Danger,
+                    style = NbButtonStyle.Danger,
                     enabled = !isDeleting,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -189,7 +189,7 @@ fun SmartSettingsScreen(
         )
     }
     if (showDeleteDialog) {
-        YuyuConfirmDialog(
+        NbConfirmDialog(
             title = "Delete smart data?",
             body = "This removes the mood, genre and energy data for every song. " +
                 if (enabled) "Indexing will start again while charging." else "You can index again later.",
@@ -206,24 +206,24 @@ fun SmartSettingsScreen(
 
 @Composable
 private fun IndexProgressCard(progress: IndexProgress, enabled: Boolean) {
-    YuyuCard {
+    NbCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            YuyuOverline("Library index", modifier = Modifier.weight(1f))
+            NbOverline("Library index", modifier = Modifier.weight(1f))
             val (label, status) = when {
-                !enabled -> "Paused" to YuyuStatus.Neutral
-                progress.running -> "Indexing now" to YuyuStatus.Accent
-                progress.total > 0 && progress.analyzed + progress.failed >= progress.total -> "Up to date" to YuyuStatus.Success
-                else -> "Waiting to charge" to YuyuStatus.Warning
+                !enabled -> "Paused" to NbStatus.Neutral
+                progress.running -> "Indexing now" to NbStatus.Accent
+                progress.total > 0 && progress.analyzed + progress.failed >= progress.total -> "Up to date" to NbStatus.Success
+                else -> "Waiting to charge" to NbStatus.Warning
             }
-            YuyuStatusChip(text = label, status = status)
+            NbStatusChip(text = label, status = status)
         }
         Text(
             "${progress.analyzed} of ${progress.total} songs",
-            style = YuyuType.h3,
-            color = Yuyu.text,
+            style = NbType.h3,
+            color = Nb.text,
             modifier = Modifier.padding(top = 10.dp)
         )
-        YuyuMeter(progress = progress.fraction, modifier = Modifier.fillMaxWidth().padding(top = 10.dp))
+        NbMeter(progress = progress.fraction, modifier = Modifier.fillMaxWidth().padding(top = 10.dp))
         val last = if (progress.lastIndexedAt > 0L) {
             "Last run " + DateUtils.getRelativeTimeSpanString(
                 progress.lastIndexedAt, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS
@@ -232,21 +232,21 @@ private fun IndexProgressCard(progress: IndexProgress, enabled: Boolean) {
             "Not run yet"
         }
         val failed = if (progress.failed > 0) " · ${progress.failed} couldn't be read" else ""
-        Text(last + failed, style = YuyuType.meta, color = Yuyu.textMuted, modifier = Modifier.padding(top = 8.dp))
+        Text(last + failed, style = NbType.meta, color = Nb.textMuted, modifier = Modifier.padding(top = 8.dp))
         Row(
             modifier = Modifier.padding(top = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(Icons.Rounded.BatteryChargingFull, contentDescription = null, tint = Yuyu.textSecondary, modifier = Modifier.size(16.dp))
-            Text(SMART_CONDITIONS_TEXT, style = YuyuType.caption, color = Yuyu.textSecondary)
+            Icon(Icons.Rounded.BatteryChargingFull, contentDescription = null, tint = Nb.textSecondary, modifier = Modifier.size(16.dp))
+            Text(SMART_CONDITIONS_TEXT, style = NbType.caption, color = Nb.textSecondary)
         }
     }
 }
 
 @Composable
 private fun FeatureRow(icon: ImageVector, title: String, subtitle: String) {
-    YuyuSettingRow(title = title, subtitle = subtitle, icon = rememberVectorPainter(icon))
+    NbSettingRow(title = title, subtitle = subtitle, icon = rememberVectorPainter(icon))
 }
 
 @Composable
@@ -255,18 +255,18 @@ fun SmartEnableDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(YuyuShapes.xxl)
-                .background(Yuyu.canvas)
+                .clip(NbShapes.xxl)
+                .background(Nb.canvas)
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Box(
-                Modifier.size(48.dp).clip(YuyuShapes.md).background(Yuyu.accentSoft),
+                Modifier.size(48.dp).clip(NbShapes.md).background(Nb.accentSoft),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = Yuyu.accentText, modifier = Modifier.size(24.dp))
+                Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = Nb.accentText, modifier = Modifier.size(24.dp))
             }
-            Text("Turn on smart features?", style = YuyuType.h3, color = Yuyu.text)
+            Text("Turn on smart features?", style = NbType.h3, color = Nb.text)
             DialogPoint("What it does", "Listens to three short clips of each song to tag mood, genre, energy and tempo.")
             DialogPoint("On-device only", "A 4 MB model runs on this phone. Nothing is uploaded.")
             DialogPoint("Battery friendly", "$SMART_CONDITIONS_TEXT. It may take a few nights for a big library.")
@@ -275,8 +275,8 @@ fun SmartEnableDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
             ) {
-                YuyuButton(text = "Not now", onClick = onDismiss, style = YuyuButtonStyle.Quiet)
-                YuyuButton(text = "Turn on", onClick = onConfirm, style = YuyuButtonStyle.Primary)
+                NbButton(text = "Not now", onClick = onDismiss, style = NbButtonStyle.Quiet)
+                NbButton(text = "Turn on", onClick = onConfirm, style = NbButtonStyle.Primary)
             }
         }
     }
@@ -285,13 +285,13 @@ fun SmartEnableDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
 @Composable
 private fun DialogPoint(title: String, body: String) {
     Column {
-        Text(title, style = YuyuType.label, color = Yuyu.text)
-        Text(body, style = YuyuType.meta, color = Yuyu.textSecondary)
+        Text(title, style = NbType.label, color = Nb.text)
+        Text(body, style = NbType.meta, color = Nb.textSecondary)
     }
 }
 
 @Composable
-private fun YuyuConfirmDialog(
+private fun NbConfirmDialog(
     title: String,
     body: String,
     confirmLabel: String,
@@ -303,22 +303,22 @@ private fun YuyuConfirmDialog(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(YuyuShapes.xxl)
-                .background(Yuyu.canvas)
+                .clip(NbShapes.xxl)
+                .background(Nb.canvas)
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(title, style = YuyuType.h3, color = Yuyu.text)
-            Text(body, style = YuyuType.body, color = Yuyu.textSecondary)
+            Text(title, style = NbType.h3, color = Nb.text)
+            Text(body, style = NbType.body, color = Nb.textSecondary)
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
             ) {
-                YuyuButton(text = "Cancel", onClick = onDismiss, style = YuyuButtonStyle.Quiet)
-                YuyuButton(
+                NbButton(text = "Cancel", onClick = onDismiss, style = NbButtonStyle.Quiet)
+                NbButton(
                     text = confirmLabel,
                     onClick = onConfirm,
-                    style = if (danger) YuyuButtonStyle.Danger else YuyuButtonStyle.Primary
+                    style = if (danger) NbButtonStyle.Danger else NbButtonStyle.Primary
                 )
             }
         }

@@ -21,7 +21,7 @@ import com.twilighty.lmusic.data.update.backupUpdateDataStore
 import com.twilighty.lmusic.di.BackupGson
 import com.twilighty.lmusic.presentation.components.player.backupLivingArtworkDataStore
 import com.twilighty.lmusic.presentation.haptics.backupHapticsDataStore
-import com.twilighty.lmusic.presentation.yuyu.backupHomeDataStore
+import com.twilighty.lmusic.presentation.nb.backupHomeDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first

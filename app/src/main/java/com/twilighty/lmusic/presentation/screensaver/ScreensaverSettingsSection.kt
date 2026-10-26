@@ -53,9 +53,9 @@ import com.twilighty.lmusic.data.screensaver.ScreensaverWeatherRepository
 import com.twilighty.lmusic.presentation.screens.SettingsItem
 import com.twilighty.lmusic.presentation.screens.SwitchSettingItem
 import com.twilighty.lmusic.presentation.screens.ThemeSelectorItem
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -214,11 +214,11 @@ fun ScreensaverSettingsSection() {
                             keyboardActions = KeyboardActions(onSearch = { vm.search(cityQuery) }),
                             modifier = Modifier.weight(1f)
                         )
-                        YuyuButton(
+                        NbButton(
                             text = if (searching) "…" else "Search",
                             onClick = { vm.search(cityQuery) },
-                            style = YuyuButtonStyle.Secondary,
-                            size = YuyuButtonSize.Small,
+                            style = NbButtonStyle.Secondary,
+                            size = NbButtonSize.Small,
                             enabled = !searching && cityQuery.isNotBlank()
                         )
                     }

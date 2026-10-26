@@ -53,9 +53,9 @@ fun WavyLinearProgressIndicator(
     modifier: GlanceModifier = GlanceModifier,
     height: Dp = 24.dp, // Parámetro para controlar la altura
     phaseShift: Float = 0f,
-    activeTrackColor: Color = Color(0xFF6200EE),
-    trackBackgroundColor: Color = Color(0xFF6200EE).copy(alpha = 0.24f),
-    thumbColor: Color = Color(0xFF6200EE),
+    activeTrackColor: Color = Color(0xFF2457A6),
+    trackBackgroundColor: Color = Color(0xFF2457A6).copy(alpha = 0.24f),
+    thumbColor: Color = Color(0xFF2457A6),
     hideInactiveTrackPortion: Boolean = true, // Nuevo parámetro
     trackHeight: Dp = 6.dp,
     thumbRadius: Dp = 8.dp,

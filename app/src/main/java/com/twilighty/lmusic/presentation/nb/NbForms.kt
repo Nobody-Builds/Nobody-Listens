@@ -1,4 +1,4 @@
-package com.twilighty.lmusic.presentation.yuyu
+package com.twilighty.lmusic.presentation.nb
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,26 +49,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.twilighty.lmusic.ui.theme.YuyuBody
+import com.twilighty.lmusic.ui.theme.NbBody
 
 // =====================================================================================
-// Yuyu form parts: fields (label above, 12dp radius, 1dp border), check / radio marks,
+// Daylight form parts: fields (label above, 12dp radius, 1dp border), check / radio marks,
 // compare rows (autofill review), sheet handle, dialog shell and toast.
 // =====================================================================================
 
 private val FieldShape = RoundedCornerShape(12.dp)
 
 @Composable
-fun YuyuFieldLabel(label: String, optional: Boolean = false, modifier: Modifier = Modifier) {
+fun NbFieldLabel(label: String, optional: Boolean = false, modifier: Modifier = Modifier) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(label, style = YuyuType.label, color = Yuyu.text)
-        if (optional) Text("Optional", style = YuyuType.caption, color = Yuyu.textMuted)
+        Text(label, style = NbType.label, color = Nb.text)
+        if (optional) Text("Optional", style = NbType.caption, color = Nb.textMuted)
     }
 }
 
-/** Container used by both [YuyuTextField] overloads. */
+/** Container used by both [NbTextField] overloads. */
 @Composable
-private fun YuyuFieldFrame(
+private fun NbFieldFrame(
     label: String?,
     optional: Boolean,
     helper: String?,
@@ -81,19 +82,19 @@ private fun YuyuFieldFrame(
     inner: @Composable () -> Unit,
 ) {
     val borderColor = when {
-        isError -> Yuyu.danger
-        focused -> Yuyu.ink
-        highlighted -> Yuyu.accentText
-        else -> Yuyu.borderStrong
+        isError -> Nb.danger
+        focused -> Nb.ink
+        highlighted -> Nb.accentText
+        else -> Nb.borderStrong
     }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        if (label != null) YuyuFieldLabel(label, optional)
+        if (label != null) NbFieldLabel(label, optional)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 48.dp)
                 .clip(FieldShape)
-                .background(if (enabled) Yuyu.canvas else Yuyu.subtle)
+                .background(if (enabled) Nb.canvas else Nb.subtle)
                 .border(if (focused || isError) 1.5.dp else 1.dp, borderColor, FieldShape)
                 .padding(start = if (leading != null) 10.dp else 14.dp, end = if (trailing != null) 6.dp else 14.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -104,17 +105,17 @@ private fun YuyuFieldFrame(
             trailing?.invoke()
         }
         if (helper != null) {
-            Text(helper, style = YuyuType.caption, color = if (isError) Yuyu.danger else Yuyu.textMuted)
+            Text(helper, style = NbType.caption, color = if (isError) Nb.danger else Nb.textMuted)
         }
     }
 }
 
 private val FieldTextStyle: TextStyle
-    @Composable get() = YuyuType.body.copy(color = Yuyu.text, fontSize = 16.sp)
+    @Composable get() = NbType.body.copy(color = Nb.text, fontSize = 16.sp)
 
-/** Yuyu text field: label above, 1dp border, 12dp radius. */
+/** Daylight text field: label above, 1dp border, 12dp radius. */
 @Composable
-fun YuyuTextField(
+fun NbTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -152,11 +153,11 @@ fun YuyuTextField(
         keyboardActions = keyboardActions,
         visualTransformation = visualTransformation,
         interactionSource = interaction,
-        cursorBrush = SolidColor(Yuyu.ink),
+        cursorBrush = SolidColor(Nb.ink),
         decorationBox = { inner ->
-            YuyuFieldFrame(label, optional, helper, isError, highlighted, focused, enabled, Modifier.fillMaxWidth(), leading, trailing) {
+            NbFieldFrame(label, optional, helper, isError, highlighted, focused, enabled, Modifier.fillMaxWidth(), leading, trailing) {
                 if (value.isEmpty() && placeholder != null) {
-                    Text(placeholder, style = style.copy(color = Yuyu.textMuted), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(placeholder, style = style.copy(color = Nb.textMuted), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 inner()
             }
@@ -164,9 +165,9 @@ fun YuyuTextField(
     )
 }
 
-/** [TextFieldValue] version of [YuyuTextField] (keeps cursor / selection). */
+/** [TextFieldValue] version of [NbTextField] (keeps cursor / selection). */
 @Composable
-fun YuyuTextField(
+fun NbTextField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
@@ -201,11 +202,11 @@ fun YuyuTextField(
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         interactionSource = interaction,
-        cursorBrush = SolidColor(Yuyu.ink),
+        cursorBrush = SolidColor(Nb.ink),
         decorationBox = { inner ->
-            YuyuFieldFrame(label, optional, helper, isError, highlighted, focused, enabled, Modifier.fillMaxWidth(), leading, trailing) {
+            NbFieldFrame(label, optional, helper, isError, highlighted, focused, enabled, Modifier.fillMaxWidth(), leading, trailing) {
                 if (value.text.isEmpty() && placeholder != null) {
-                    Text(placeholder, style = style.copy(color = Yuyu.textMuted), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(placeholder, style = style.copy(color = Nb.textMuted), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 inner()
             }
@@ -217,38 +218,38 @@ fun YuyuTextField(
 
 /** Square check mark (24dp, 7dp radius): ink when on, outlined when off. */
 @Composable
-fun YuyuCheckbox(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, modifier: Modifier = Modifier, enabled: Boolean = true) {
+fun NbCheckbox(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, modifier: Modifier = Modifier, enabled: Boolean = true) {
     val shape = RoundedCornerShape(7.dp)
     Box(
         modifier = modifier
             .size(24.dp)
             .clip(shape)
-            .background(if (checked) Yuyu.ink else Yuyu.canvas)
-            .then(if (!checked) Modifier.border(1.5.dp, Yuyu.borderStrong, shape) else Modifier)
+            .background(if (checked) Nb.ink else Nb.canvas)
+            .then(if (!checked) Modifier.border(1.5.dp, Nb.borderStrong, shape) else Modifier)
             .then(
                 if (onCheckedChange != null) Modifier.clickable(enabled = enabled, role = Role.Checkbox) { onCheckedChange(!checked) }
                 else Modifier
             ),
         contentAlignment = Alignment.Center
     ) {
-        if (checked) Icon(Icons.Rounded.Check, contentDescription = null, tint = Yuyu.onInk, modifier = Modifier.size(16.dp))
+        if (checked) Icon(Icons.Rounded.Check, contentDescription = null, tint = Nb.onInk, modifier = Modifier.size(16.dp))
     }
 }
 
 /** Round radio mark (22dp): thick ink ring when selected. */
 @Composable
-fun YuyuRadio(selected: Boolean, modifier: Modifier = Modifier) {
+fun NbRadio(selected: Boolean, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .size(22.dp)
             .clip(CircleShape)
-            .border(if (selected) 7.dp else 1.5.dp, if (selected) Yuyu.ink else Yuyu.borderStrong, CircleShape)
+            .border(if (selected) 7.dp else 1.5.dp, if (selected) Nb.ink else Nb.borderStrong, CircleShape)
     )
 }
 
 /** List row with a radio on the end, used for option lists in sheets. */
 @Composable
-fun YuyuRadioRow(
+fun NbRadioRow(
     title: String,
     selected: Boolean,
     onClick: () -> Unit,
@@ -266,10 +267,10 @@ fun YuyuRadioRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Column(Modifier.weight(1f)) {
-            Text(title, style = YuyuType.title.copy(fontWeight = FontWeight.Medium), color = Yuyu.text)
-            if (subtitle != null) Text(subtitle, style = YuyuType.meta, color = Yuyu.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(title, style = NbType.title.copy(fontWeight = FontWeight.Medium), color = Nb.text)
+            if (subtitle != null) Text(subtitle, style = NbType.meta, color = Nb.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
-        if (trailing != null) trailing() else YuyuRadio(selected)
+        if (trailing != null) trailing() else NbRadio(selected)
     }
 }
 
@@ -280,7 +281,7 @@ fun YuyuRadioRow(
  * value below, and a check mark. The card outline turns ink when picked.
  */
 @Composable
-fun YuyuCompareRow(
+fun NbCompareRow(
     label: String,
     current: String,
     proposed: String,
@@ -292,8 +293,8 @@ fun YuyuCompareRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(YuyuShapes.lg)
-            .border(if (checked) 1.5.dp else 1.dp, if (checked) Yuyu.ink else Yuyu.border, YuyuShapes.lg)
+            .clip(NbShapes.lg)
+            .border(if (checked) 1.5.dp else 1.dp, if (checked) Nb.ink else Nb.border, NbShapes.lg)
             .clickable(role = Role.Checkbox) { onCheckedChange(!checked) }
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -301,40 +302,40 @@ fun YuyuCompareRow(
     ) {
         leading?.invoke()
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(1.dp)) {
-            YuyuOverline(label)
+            NbOverline(label)
             if (current.isBlank()) {
-                Text("Empty", style = YuyuType.caption.copy(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic), color = Yuyu.textMuted)
+                Text("Empty", style = NbType.caption.copy(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic), color = Nb.textMuted)
             } else if (current != proposed) {
-                Text(current, style = YuyuType.caption.copy(textDecoration = TextDecoration.LineThrough), color = Yuyu.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(current, style = NbType.caption.copy(textDecoration = TextDecoration.LineThrough), color = Nb.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
-            Text(proposed, style = YuyuType.title, color = Yuyu.text, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(proposed, style = NbType.title, color = Nb.text, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
-        YuyuCheckbox(checked = checked, onCheckedChange = null)
+        NbCheckbox(checked = checked, onCheckedChange = null)
     }
 }
 
 // ---------------------------------------------------------------- Sheet / dialog / toast
 
 @Composable
-fun YuyuSheetHandle(modifier: Modifier = Modifier) {
+fun NbSheetHandle(modifier: Modifier = Modifier) {
     Box(
         modifier
             .padding(top = 10.dp, bottom = 6.dp)
             .width(40.dp)
             .height(4.dp)
             .clip(CircleShape)
-            .background(Yuyu.borderStrong)
+            .background(Nb.borderStrong)
     )
 }
 
-val YuyuSheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+val NbSheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
 
 /**
- * Yuyu dialog shell: canvas card, 24dp radius, h3 title, content, actions aligned end.
+ * Daylight dialog shell: canvas card, 24dp radius, h3 title, content, actions aligned end.
  * Buttons go in [actions] (usually a Secondary "Cancel" and a Primary confirm).
  */
 @Composable
-fun YuyuDialog(
+fun NbDialog(
     onDismissRequest: () -> Unit,
     title: String,
     modifier: Modifier = Modifier,
@@ -349,14 +350,14 @@ fun YuyuDialog(
             modifier = modifier
                 .widthIn(max = 420.dp)
                 .fillMaxWidth()
-                .clip(YuyuShapes.xxl)
-                .background(Yuyu.canvas)
-                .border(1.dp, Yuyu.border, YuyuShapes.xxl)
+                .clip(NbShapes.xxl)
+                .background(Nb.canvas)
+                .border(1.dp, Nb.border, NbShapes.xxl)
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Text(title, style = YuyuType.h3, color = Yuyu.text)
-            if (body != null) Text(body, style = YuyuType.body, color = Yuyu.textSecondary)
+            Text(title, style = NbType.h3, color = Nb.text)
+            if (body != null) Text(body, style = NbType.body, color = Nb.textSecondary)
             Column(
                 modifier = if (scrollable) Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()) else Modifier,
                 verticalArrangement = Arrangement.spacedBy(14.dp),
@@ -374,7 +375,7 @@ fun YuyuDialog(
 
 /** Dark toast with an underlined action (Undo). Always dark in both themes. */
 @Composable
-fun YuyuToast(
+fun NbToast(
     text: String,
     modifier: Modifier = Modifier,
     actionLabel: String? = null,
@@ -383,8 +384,8 @@ fun YuyuToast(
 ) {
     Row(
         modifier = modifier
-            .clip(YuyuShapes.lg)
-            .background(Color(0xFF18181B))
+            .clip(NbShapes.lg)
+            .background(MaterialTheme.colorScheme.inverseSurface)
             .padding(start = 16.dp, end = 8.dp, top = 6.dp, bottom = 6.dp)
             .heightIn(min = 40.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -393,8 +394,8 @@ fun YuyuToast(
         icon?.invoke()
         Text(
             text,
-            style = TextStyle(fontFamily = YuyuBody, fontWeight = FontWeight.Medium, fontSize = 14.sp),
-            color = Color.White,
+            style = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.Medium, fontSize = 14.sp),
+            color = MaterialTheme.colorScheme.inverseOnSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f, fill = false)
@@ -402,10 +403,10 @@ fun YuyuToast(
         if (actionLabel != null && onAction != null) {
             Text(
                 actionLabel,
-                style = TextStyle(fontFamily = YuyuBody, fontWeight = FontWeight.Bold, fontSize = 14.sp, textDecoration = TextDecoration.Underline),
-                color = Color.White,
+                style = TextStyle(fontFamily = NbBody, fontWeight = FontWeight.Bold, fontSize = 14.sp, textDecoration = TextDecoration.Underline),
+                color = MaterialTheme.colorScheme.inversePrimary,
                 modifier = Modifier
-                    .clip(YuyuShapes.sm)
+                    .clip(NbShapes.sm)
                     .clickable(role = Role.Button, onClick = onAction)
                     .padding(horizontal = 6.dp, vertical = 6.dp)
             )
@@ -415,7 +416,7 @@ fun YuyuToast(
 
 /** Plain action row for menus: 24dp icon, label, optional trailing. Danger tints red. */
 @Composable
-fun YuyuActionRow(
+fun NbActionRow(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -426,15 +427,15 @@ fun YuyuActionRow(
     trailing: (@Composable () -> Unit)? = null,
 ) {
     val fg = when {
-        !enabled -> Yuyu.textMuted
-        danger -> Yuyu.danger
-        else -> Yuyu.text
+        !enabled -> Nb.textMuted
+        danger -> Nb.danger
+        else -> Nb.text
     }
     Row(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 52.dp)
-            .clip(YuyuShapes.md)
+            .clip(NbShapes.md)
             .clickable(enabled = enabled, role = Role.Button, onClick = {
                 if (danger) com.twilighty.lmusic.presentation.haptics.LMusicHaptics.get().selection() else com.twilighty.lmusic.presentation.haptics.LMusicHaptics.get().tap()
                 onClick()
@@ -444,11 +445,11 @@ fun YuyuActionRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         if (icon != null) {
-            Icon(icon, contentDescription = null, tint = if (danger || !enabled) fg else Yuyu.textSecondary, modifier = Modifier.size(24.dp))
+            Icon(icon, contentDescription = null, tint = if (danger || !enabled) fg else Nb.textSecondary, modifier = Modifier.size(24.dp))
         }
         Column(Modifier.weight(1f)) {
-            Text(text, style = YuyuType.title.copy(fontWeight = if (danger) FontWeight.SemiBold else FontWeight.Medium), color = fg)
-            if (subtitle != null) Text(subtitle, style = YuyuType.caption, color = Yuyu.textMuted, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(text, style = NbType.title.copy(fontWeight = if (danger) FontWeight.SemiBold else FontWeight.Medium), color = fg)
+            if (subtitle != null) Text(subtitle, style = NbType.caption, color = Nb.textMuted, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
         trailing?.invoke()
     }

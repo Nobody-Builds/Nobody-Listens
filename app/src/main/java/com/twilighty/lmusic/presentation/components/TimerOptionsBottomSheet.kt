@@ -57,20 +57,20 @@ import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.ui.unit.sp
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuDialog
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuRadioRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuSegmented
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuSheetHandle
-import com.twilighty.lmusic.presentation.yuyu.YuyuSheetShape
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbDialog
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbRadioRow
+import com.twilighty.lmusic.presentation.nb.NbSegmented
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbSheetHandle
+import com.twilighty.lmusic.presentation.nb.NbSheetShape
+import com.twilighty.lmusic.presentation.nb.NbType
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.twilighty.lmusic.R
@@ -127,10 +127,10 @@ fun TimerOptionsBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Yuyu.canvas,
+        containerColor = Nb.canvas,
         tonalElevation = 0.dp,
-        shape = YuyuSheetShape,
-        dragHandle = { YuyuSheetHandle() }
+        shape = NbSheetShape,
+        dragHandle = { NbSheetHandle() }
     ) {
         Column(
             modifier = Modifier
@@ -144,11 +144,11 @@ fun TimerOptionsBottomSheet(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.padding(top = 4.dp)
             ) {
-                Icon(Icons.Rounded.Bedtime, contentDescription = null, tint = Yuyu.text)
+                Icon(Icons.Rounded.Bedtime, contentDescription = null, tint = Nb.text)
                 Text(
                     text = stringResource(R.string.sleep_timer_ui_title),
-                    style = YuyuType.h2,
-                    color = Yuyu.text,
+                    style = NbType.h2,
+                    color = Nb.text,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -157,8 +157,8 @@ fun TimerOptionsBottomSheet(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(YuyuShapes.lg)
-                        .background(Yuyu.accentSoft)
+                        .clip(NbShapes.lg)
+                        .background(Nb.accentSoft)
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -166,46 +166,46 @@ fun TimerOptionsBottomSheet(
                     Column(Modifier.weight(1f)) {
                         Text(
                             text = if (isCounterActive && activeTimerValueDisplay == null) "Music stops after" else "Music stops in",
-                            style = YuyuType.label,
-                            color = Yuyu.accentText
+                            style = NbType.label,
+                            color = Nb.accentText
                         )
                         Text(
                             text = when {
                                 activeTimerValueDisplay != null -> activeTimerValueDisplay
                                 else -> pluralStringResource(R.plurals.sleep_timer_play_count_times, playCount.toInt(), playCount.toInt())
                             },
-                            style = YuyuType.display(30.sp),
-                            color = Yuyu.accentText,
+                            style = NbType.display(30.sp),
+                            color = Nb.accentText,
                             maxLines = 1
                         )
                     }
-                    YuyuButton(
+                    NbButton(
                         text = "Turn off",
                         onClick = {
                             onCancelTimer()
                             onDismiss()
                             onCancelCountedPlay()
                         },
-                        style = YuyuButtonStyle.DangerQuiet,
-                        size = YuyuButtonSize.Small
+                        style = NbButtonStyle.DangerQuiet,
+                        size = NbButtonSize.Small
                     )
                 }
             }
 
-            YuyuSegmented(
+            NbSegmented(
                 options = listOf(stringResource(R.string.sleep_timer_ui_slider_label_timer), "Song count"),
                 selectedIndex = if (isTimerMode) 0 else 1,
                 onSelect = { isTimerMode = it == 0 }
             )
 
             if (isTimerMode) {
-                YuyuOverline("Stop after")
+                NbOverline("Stop after")
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     timerPresets.forEach { minutes ->
-                        YuyuChip(
+                        NbChip(
                             text = if (minutes >= 60 && minutes % 60 == 0) "${minutes / 60} h" else "$minutes min",
                             selected = activeTimerDurationMinutes == minutes && !isEndOfTrackTimerActive,
                             onClick = {
@@ -220,13 +220,13 @@ fun TimerOptionsBottomSheet(
                     }
                 }
                 Column {
-                    YuyuRadioRow(
+                    NbRadioRow(
                         title = stringResource(R.string.sleep_timer_ui_end_of_current_track),
                         selected = isEndOfTrackTimerActive,
                         onClick = { onSetEndOfTrackTimer(!isEndOfTrackTimerActive) }
                     )
-                    YuyuDivider()
-                    YuyuRadioRow(
+                    NbDivider()
+                    NbRadioRow(
                         title = stringResource(R.string.sleep_timer_ui_custom_time),
                         selected = false,
                         onClick = { showCustomTimePicker = true },
@@ -234,7 +234,7 @@ fun TimerOptionsBottomSheet(
                             Icon(
                                 Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                                 contentDescription = null,
-                                tint = Yuyu.textMuted
+                                tint = Nb.textMuted
                             )
                         }
                     )
@@ -250,13 +250,13 @@ fun TimerOptionsBottomSheet(
                         currentPlayCount
                     )
                 }
-                YuyuOverline(stringResource(R.string.sleep_timer_ui_play_count_label, timesPart))
+                NbOverline(stringResource(R.string.sleep_timer_ui_play_count_label, timesPart))
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     countPresets.forEach { count ->
-                        YuyuChip(
+                        NbChip(
                             text = count.toString(),
                             selected = isCounterActive && playCount.toInt() == count,
                             onClick = {
@@ -271,16 +271,16 @@ fun TimerOptionsBottomSheet(
                 }
                 Text(
                     "Playback stops after this many songs.",
-                    style = YuyuType.caption,
-                    color = Yuyu.textMuted
+                    style = NbType.caption,
+                    color = Nb.textMuted
                 )
             }
 
-            YuyuButton(
+            NbButton(
                 text = "Done",
                 onClick = onDismiss,
-                style = YuyuButtonStyle.Accent,
-                size = YuyuButtonSize.Large,
+                style = NbButtonStyle.Accent,
+                size = NbButtonSize.Large,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -296,16 +296,16 @@ fun TimerOptionsBottomSheet(
             is24Hour = true
         )
 
-        YuyuDialog(
+        NbDialog(
             onDismissRequest = { showCustomTimePicker = false },
             title = stringResource(R.string.sleep_timer_ui_set_custom_duration),
             actions = {
-                YuyuButton(
+                NbButton(
                     text = stringResource(R.string.cancel),
                     onClick = { showCustomTimePicker = false },
-                    style = YuyuButtonStyle.Secondary
+                    style = NbButtonStyle.Secondary
                 )
-                YuyuButton(
+                NbButton(
                     text = "Start timer",
                     onClick = {
                         val totalMinutes = timePickerState.hour * 60 + timePickerState.minute
@@ -316,20 +316,20 @@ fun TimerOptionsBottomSheet(
                         showCustomTimePicker = false
                         onDismiss()
                     },
-                    style = YuyuButtonStyle.Accent
+                    style = NbButtonStyle.Accent
                 )
             }
         ) {
             TimePicker(
                 state = timePickerState,
                 colors = TimePickerDefaults.colors(
-                    clockDialColor = Yuyu.muted,
-                    selectorColor = Yuyu.accent,
-                    containerColor = Yuyu.canvas,
-                    timeSelectorSelectedContainerColor = Yuyu.accentSoft,
-                    timeSelectorSelectedContentColor = Yuyu.accentText,
-                    timeSelectorUnselectedContainerColor = Yuyu.muted,
-                    timeSelectorUnselectedContentColor = Yuyu.text,
+                    clockDialColor = Nb.muted,
+                    selectorColor = Nb.accent,
+                    containerColor = Nb.canvas,
+                    timeSelectorSelectedContainerColor = Nb.accentSoft,
+                    timeSelectorSelectedContentColor = Nb.accentText,
+                    timeSelectorUnselectedContainerColor = Nb.muted,
+                    timeSelectorUnselectedContentColor = Nb.text,
                 )
             )
         }

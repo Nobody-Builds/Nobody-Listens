@@ -243,7 +243,16 @@ class MainActivity : ComponentActivity() {
                 AppThemeMode.LIGHT -> false
                 else -> systemDarkTheme
             }
-            val appColorStyle by themePreferencesRepository.appColorStyleFlow.collectAsStateWithLifecycle(initialValue = com.twilighty.lmusic.data.preferences.AppColorStyle.YUYU)
+            val appColorStyle by themePreferencesRepository.appColorStyleFlow.collectAsStateWithLifecycle(initialValue = com.twilighty.lmusic.data.preferences.AppColorStyle.DAYLIGHT)
+            val appPitchBlack by themePreferencesRepository.appPitchBlackFlow.collectAsStateWithLifecycle(initialValue = false)
+            // The content fades in over the window background, so match it to stop a navy flash.
+            LaunchedEffect(useDarkTheme, appPitchBlack) {
+                if (useDarkTheme && appPitchBlack) {
+                    window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.BLACK))
+                } else {
+                    window.setBackgroundDrawableResource(R.color.nb_window_background)
+                }
+            }
             val isSetupComplete by mainViewModel.isSetupComplete.collectAsStateWithLifecycle()
             
             
@@ -275,7 +284,8 @@ class MainActivity : ComponentActivity() {
 
             LMusicTheme(
                 darkTheme = useDarkTheme,
-                useYuyuColors = appColorStyle != com.twilighty.lmusic.data.preferences.AppColorStyle.MATERIAL_YOU
+                useBrandColors = appColorStyle != com.twilighty.lmusic.data.preferences.AppColorStyle.MATERIAL_YOU,
+                pitchBlack = appPitchBlack
             ) {
                 var contentVisible by remember { mutableStateOf(false) }
                 val contentAlpha by animateFloatAsState(
@@ -807,7 +817,7 @@ class MainActivity : ComponentActivity() {
                                 .distinctUntilChanged()
                         }.collectAsStateWithLifecycle(initialValue = null)
                         val showPlayerContentArea = currentSongId != null
-                        val navBarElevation = 3.dp
+                        val navBarElevation = 0.dp // Daylight: no shadows, the bar has a hairline border
 
                         val playerContentActualBottomRadiusTargetValue by remember(
                             navBarStyle,
@@ -906,7 +916,8 @@ class MainActivity : ComponentActivity() {
                                     .padding(horizontal = horizontalPadding),
                                 color = NavigationBarDefaults.containerColor,
                                 shape = actualShape,
-                                shadowElevation = navBarElevation
+                                shadowElevation = navBarElevation,
+                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                             ) {
                                 PlayerInternalNavigationBar(
                                     navController = navController,

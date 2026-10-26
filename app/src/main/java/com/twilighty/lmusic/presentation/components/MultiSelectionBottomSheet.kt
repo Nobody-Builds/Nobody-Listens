@@ -25,9 +25,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.QueueMusic
-import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
+import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
@@ -343,7 +342,7 @@ fun MultiSelectionBottomSheet(
                                 }
                             ) {
                                 Icon(
-                                    Icons.AutoMirrored.Filled.QueueMusic,
+                                    Icons.AutoMirrored.Rounded.QueueMusic,
                                     contentDescription = stringResource(R.string.cd_play_next_in_queue)
                                 )
                                 Spacer(Modifier.width(8.dp))

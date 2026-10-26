@@ -60,20 +60,20 @@ import com.twilighty.lmusic.R
 import com.twilighty.lmusic.data.model.Song
 import com.twilighty.lmusic.presentation.components.MetadataAutofillDialog
 import com.twilighty.lmusic.presentation.viewmodel.PlayerViewModel
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuMeter
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuSongRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatus
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatusChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbMeter
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbSongRow
+import com.twilighty.lmusic.presentation.nb.NbStatus
+import com.twilighty.lmusic.presentation.nb.NbStatusChip
+import com.twilighty.lmusic.presentation.nb.NbTopBar
+import com.twilighty.lmusic.presentation.nb.NbType
 
 private const val SECTION_PAGE = 60
 
@@ -127,7 +127,7 @@ fun LibraryHealthScreen(
     Box(
         Modifier
             .fillMaxSize()
-            .background(Yuyu.canvas)
+            .background(Nb.canvas)
     ) {
         LazyColumn(
             modifier = Modifier
@@ -137,13 +137,13 @@ fun LibraryHealthScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item(key = "top") {
-                YuyuTopBar(
+                NbTopBar(
                     title = stringResource(R.string.health_title),
                     kicker = report?.let {
                         pluralStringResource(R.plurals.health_songs_checked, it.totalSongs, it.totalSongs)
                     },
                     navigationIcon = {
-                        YuyuIconButton(
+                        NbIconButton(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.health_back),
                             onClick = onBack
@@ -155,8 +155,8 @@ fun LibraryHealthScreen(
             item(key = "intro") {
                 Text(
                     text = stringResource(R.string.health_intro, LibraryHealthViewModel.HIGH_CONFIDENCE),
-                    style = YuyuType.meta,
-                    color = Yuyu.textMuted,
+                    style = NbType.meta,
+                    color = Nb.textMuted,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
@@ -192,7 +192,7 @@ fun LibraryHealthScreen(
                         Modifier.fillMaxWidth().padding(32.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 2.5.dp, color = Yuyu.ink)
+                        CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 2.5.dp, color = Nb.ink)
                     }
                 }
             } else {
@@ -241,13 +241,13 @@ fun LibraryHealthScreen(
                             }
                             if (section == HealthSection.MISSING_ARTWORK && songs.isNotEmpty() && onMakeCovers != null) {
                                 item(key = "make_covers") {
-                                    YuyuButton(
+                                    NbButton(
                                         text = "Make covers…",
                                         icon = rememberVectorPainter(Icons.Rounded.Palette),
                                         onClick = onMakeCovers,
                                         enabled = !running,
-                                        style = YuyuButtonStyle.Secondary,
-                                        size = YuyuButtonSize.Small,
+                                        style = NbButtonStyle.Secondary,
+                                        size = NbButtonSize.Small,
                                         modifier = Modifier.padding(horizontal = 16.dp)
                                     )
                                 }
@@ -255,7 +255,7 @@ fun LibraryHealthScreen(
                             val limit = shownPerSection[section] ?: SECTION_PAGE
                             items(songs.take(limit), key = { "${section.name}_${it.id}" }) { song ->
                                 val checked = song.id in selectedIds
-                                YuyuSongRow(
+                                NbSongRow(
                                     title = song.title.ifBlank { song.path.substringAfterLast('/') },
                                     subtitle = listOf(song.displayArtist, song.album)
                                         .filter { it.isNotBlank() && it != "<unknown>" }
@@ -269,7 +269,7 @@ fun LibraryHealthScreen(
                                             Icon(
                                                 painter = rememberVectorPainter(if (checked) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked),
                                                 contentDescription = null,
-                                                tint = if (checked) Yuyu.ink else Yuyu.textMuted,
+                                                tint = if (checked) Nb.ink else Nb.textMuted,
                                                 modifier = Modifier.size(24.dp)
                                             )
                                         }
@@ -281,11 +281,11 @@ fun LibraryHealthScreen(
                             }
                             if (songs.size > limit) {
                                 item(key = "more_${section.name}") {
-                                    YuyuButton(
+                                    NbButton(
                                         text = stringResource(R.string.health_show_more, songs.size - limit),
                                         onClick = { shownPerSection = shownPerSection + (section to limit + SECTION_PAGE) },
-                                        style = YuyuButtonStyle.Quiet,
-                                        size = YuyuButtonSize.Small,
+                                        style = NbButtonStyle.Quiet,
+                                        size = NbButtonSize.Small,
                                         modifier = Modifier.padding(horizontal = 16.dp)
                                     )
                                 }
@@ -305,24 +305,24 @@ fun LibraryHealthScreen(
                     .navigationBarsPadding()
                     .padding(16.dp)
                     .fillMaxWidth()
-                    .clip(YuyuShapes.xl)
-                    .background(Yuyu.canvas)
-                    .border(1.dp, Yuyu.border, YuyuShapes.xl)
+                    .clip(NbShapes.xl)
+                    .background(Nb.canvas)
+                    .border(1.dp, Nb.border, NbShapes.xl)
                     .padding(horizontal = 16.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
                     pluralStringResource(R.plurals.health_selected, selectedIds.size, selectedIds.size),
-                    style = YuyuType.label,
-                    color = Yuyu.text,
+                    style = NbType.label,
+                    color = Nb.text,
                     modifier = Modifier.weight(1f)
                 )
-                YuyuButton(
+                NbButton(
                     text = stringResource(R.string.health_autofill_selected),
                     icon = rememberVectorPainter(Icons.Rounded.AutoAwesome),
-                    style = YuyuButtonStyle.Accent,
-                    size = YuyuButtonSize.Small,
+                    style = NbButtonStyle.Accent,
+                    size = NbButtonSize.Small,
                     onClick = {
                         val chosen = selectedIds.mapNotNull { songsById[it] }
                         viewModel.startBatch(chosen)
@@ -376,24 +376,24 @@ private fun SectionHeaderCard(
     onToggle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    YuyuCard(
+    NbCard(
         modifier = modifier.fillMaxWidth().animateContentSize(),
         onClick = onToggle,
-        background = if (expanded) Yuyu.subtle else Yuyu.canvas,
+        background = if (expanded) Nb.subtle else Nb.canvas,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Column(Modifier.weight(1f)) {
-                Text(sectionTitle(section), style = YuyuType.title, color = Yuyu.text)
-                Text(sectionSubtitle(section), style = YuyuType.caption, color = Yuyu.textMuted)
+                Text(sectionTitle(section), style = NbType.title, color = Nb.text)
+                Text(sectionSubtitle(section), style = NbType.caption, color = Nb.textMuted)
             }
-            YuyuStatusChip(
+            NbStatusChip(
                 text = count.toString(),
-                status = if (count == 0) YuyuStatus.Success else if (section == HealthSection.DUPLICATES) YuyuStatus.Warning else YuyuStatus.Neutral
+                status = if (count == 0) NbStatus.Success else if (section == HealthSection.DUPLICATES) NbStatus.Warning else NbStatus.Neutral
             )
             Icon(
                 painter = rememberVectorPainter(if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore),
                 contentDescription = null,
-                tint = Yuyu.textMuted
+                tint = Nb.textMuted
             )
         }
     }
@@ -412,64 +412,64 @@ private fun SectionActions(
     if (count == 0) {
         Text(
             stringResource(R.string.health_section_clean),
-            style = YuyuType.meta,
-            color = Yuyu.successText,
+            style = NbType.meta,
+            color = Nb.successText,
             modifier = modifier.padding(vertical = 4.dp)
         )
         return
     }
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-        YuyuButton(
+        NbButton(
             text = stringResource(R.string.health_fix_all, count),
             icon = rememberVectorPainter(Icons.Rounded.AutoAwesome),
             onClick = onFixAll,
             enabled = enabled,
-            style = YuyuButtonStyle.Primary,
-            size = YuyuButtonSize.Small
+            style = NbButtonStyle.Primary,
+            size = NbButtonSize.Small
         )
-        YuyuButton(
+        NbButton(
             text = stringResource(if (selecting) R.string.health_select_done else R.string.health_select),
             onClick = onToggleSelect,
             enabled = enabled,
-            style = YuyuButtonStyle.Secondary,
-            size = YuyuButtonSize.Small
+            style = NbButtonStyle.Secondary,
+            size = NbButtonSize.Small
         )
         if (selecting && selectedCount == 0) {
-            Text(stringResource(R.string.health_select_hint), style = YuyuType.caption, color = Yuyu.textMuted)
+            Text(stringResource(R.string.health_select_hint), style = NbType.caption, color = Nb.textMuted)
         }
     }
 }
 
 @Composable
 private fun BatchProgressCard(progress: BatchProgress, onCancel: () -> Unit, modifier: Modifier = Modifier) {
-    YuyuCard(modifier = modifier.fillMaxWidth(), background = Yuyu.subtle) {
-        YuyuOverline(stringResource(R.string.health_progress_overline))
+    NbCard(modifier = modifier.fillMaxWidth(), background = Nb.subtle) {
+        NbOverline(stringResource(R.string.health_progress_overline))
         Spacer(Modifier.size(6.dp))
         Text(
             stringResource(R.string.health_progress, (progress.done + 1).coerceAtMost(progress.total), progress.total),
-            style = YuyuType.h3,
-            color = Yuyu.text
+            style = NbType.h3,
+            color = Nb.text
         )
         progress.current?.let {
             Text(
                 "${it.title} · ${it.displayArtist}",
-                style = YuyuType.meta,
-                color = Yuyu.textMuted,
+                style = NbType.meta,
+                color = Nb.textMuted,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
         Spacer(Modifier.size(12.dp))
-        YuyuMeter(progress = if (progress.total == 0) 0f else progress.done.toFloat() / progress.total)
+        NbMeter(progress = if (progress.total == 0) 0f else progress.done.toFloat() / progress.total)
         Spacer(Modifier.size(12.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 stringResource(R.string.health_progress_hint),
-                style = YuyuType.caption,
-                color = Yuyu.textMuted,
+                style = NbType.caption,
+                color = Nb.textMuted,
                 modifier = Modifier.weight(1f)
             )
-            YuyuButton(text = stringResource(R.string.health_cancel), onClick = onCancel, style = YuyuButtonStyle.Secondary, size = YuyuButtonSize.Small)
+            NbButton(text = stringResource(R.string.health_cancel), onClick = onCancel, style = NbButtonStyle.Secondary, size = NbButtonSize.Small)
         }
     }
 }
@@ -492,32 +492,32 @@ private fun skipReasonText(reason: SkipReason): String = stringResource(
 @Composable
 private fun BatchSummaryCard(summary: BatchSummary, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
     var showDetails by remember(summary) { mutableStateOf(false) }
-    YuyuCard(modifier = modifier.fillMaxWidth().animateContentSize()) {
-        YuyuOverline(stringResource(if (summary.cancelled) R.string.health_summary_cancelled else R.string.health_summary_overline))
+    NbCard(modifier = modifier.fillMaxWidth().animateContentSize()) {
+        NbOverline(stringResource(if (summary.cancelled) R.string.health_summary_cancelled else R.string.health_summary_overline))
         Spacer(Modifier.size(6.dp))
         Text(
             stringResource(R.string.health_summary, summary.fixed.size, summary.skipped.size),
-            style = YuyuType.h3,
-            color = Yuyu.text
+            style = NbType.h3,
+            color = Nb.text
         )
         val reasons = summary.skipped.groupingBy { it.reason }.eachCount()
         if (reasons.isNotEmpty()) {
             Spacer(Modifier.size(6.dp))
             reasons.entries.sortedByDescending { it.value }.forEach { (reason, count) ->
-                Text("$count · ${skipReasonText(reason)}", style = YuyuType.meta, color = Yuyu.textMuted)
+                Text("$count · ${skipReasonText(reason)}", style = NbType.meta, color = Nb.textMuted)
             }
         }
         Spacer(Modifier.size(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             if (summary.fixed.isNotEmpty() || summary.skipped.isNotEmpty()) {
-                YuyuButton(
+                NbButton(
                     text = stringResource(if (showDetails) R.string.health_hide_details else R.string.health_show_details),
                     onClick = { showDetails = !showDetails },
-                    style = YuyuButtonStyle.Secondary,
-                    size = YuyuButtonSize.Small
+                    style = NbButtonStyle.Secondary,
+                    size = NbButtonSize.Small
                 )
             }
-            YuyuButton(text = stringResource(R.string.health_done), onClick = onDismiss, style = YuyuButtonStyle.Quiet, size = YuyuButtonSize.Small)
+            NbButton(text = stringResource(R.string.health_done), onClick = onDismiss, style = NbButtonStyle.Quiet, size = NbButtonSize.Small)
         }
         if (showDetails) {
             Spacer(Modifier.size(8.dp))
@@ -541,13 +541,13 @@ private fun DetailLine(title: String, detail: String, good: Boolean) {
         Box(
             Modifier
                 .size(8.dp)
-                .clip(YuyuShapes.pill)
-                .background(if (good) Yuyu.successText else Yuyu.borderStrong)
+                .clip(NbShapes.pill)
+                .background(if (good) Nb.successText else Nb.borderStrong)
         )
         Spacer(Modifier.width(10.dp))
-        Text(title, style = YuyuType.meta, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        Text(title, style = NbType.meta, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         Spacer(Modifier.width(8.dp))
-        Text(detail, style = YuyuType.caption, color = Yuyu.textMuted, maxLines = 1)
+        Text(detail, style = NbType.caption, color = Nb.textMuted, maxLines = 1)
     }
 }
 
@@ -560,38 +560,38 @@ private fun ReviewCard(
     modifier: Modifier = Modifier,
 ) {
     var open by rememberSaveable { mutableStateOf(true) }
-    YuyuCard(modifier = modifier.fillMaxWidth().animateContentSize(), background = Yuyu.tintPeach, borderColor = Yuyu.border) {
+    NbCard(modifier = modifier.fillMaxWidth().animateContentSize(), background = Nb.tintPeach, borderColor = Nb.border) {
         Row(
             Modifier.fillMaxWidth().clickable { open = !open },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.health_review_title), style = YuyuType.title, color = Yuyu.text)
-                Text(stringResource(R.string.health_review_desc), style = YuyuType.caption, color = Yuyu.textMuted)
+                Text(stringResource(R.string.health_review_title), style = NbType.title, color = Nb.text)
+                Text(stringResource(R.string.health_review_desc), style = NbType.caption, color = Nb.textMuted)
             }
-            YuyuStatusChip(text = items.size.toString(), status = YuyuStatus.Accent)
+            NbStatusChip(text = items.size.toString(), status = NbStatus.Accent)
         }
         if (open) {
             Spacer(Modifier.size(4.dp))
             items.forEach { item ->
-                YuyuSongRow(
+                NbSongRow(
                     title = item.song.title,
                     subtitle = item.confidence?.let { stringResource(R.string.health_review_match, it) } ?: item.song.displayArtist,
                     artModel = item.song.albumArtUriString,
                     artKey = item.song.album.ifBlank { item.song.title },
                     trailing = {
-                        YuyuButton(
+                        NbButton(
                             text = stringResource(R.string.health_review_action),
                             onClick = { onReview(item.song) },
                             enabled = enabled,
-                            style = YuyuButtonStyle.Secondary,
-                            size = YuyuButtonSize.Small
+                            style = NbButtonStyle.Secondary,
+                            size = NbButtonSize.Small
                         )
-                        YuyuButton(
+                        NbButton(
                             text = stringResource(R.string.health_review_skip),
                             onClick = { onDismissItem(item.song) },
-                            style = YuyuButtonStyle.Quiet,
-                            size = YuyuButtonSize.Small
+                            style = NbButtonStyle.Quiet,
+                            size = NbButtonSize.Small
                         )
                     }
                 )
@@ -605,8 +605,8 @@ private fun LazyListScope.duplicateItems(groups: List<DuplicateGroup>, onDelete:
         item(key = "dup_empty") {
             Text(
                 stringResource(R.string.health_duplicates_none),
-                style = YuyuType.meta,
-                color = Yuyu.successText,
+                style = NbType.meta,
+                color = Nb.successText,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
             )
         }
@@ -615,8 +615,8 @@ private fun LazyListScope.duplicateItems(groups: List<DuplicateGroup>, onDelete:
     item(key = "dup_hint") {
         Text(
             stringResource(R.string.health_duplicates_hint),
-            style = YuyuType.caption,
-            color = Yuyu.textMuted,
+            style = NbType.caption,
+            color = Nb.textMuted,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
@@ -628,20 +628,20 @@ private fun LazyListScope.duplicateItems(groups: List<DuplicateGroup>, onDelete:
 @Composable
 private fun DuplicateGroupCard(group: DuplicateGroup, onDelete: (Song) -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    YuyuCard(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(14.dp)) {
-        Text(group.title, style = YuyuType.title, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    NbCard(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(14.dp)) {
+        Text(group.title, style = NbType.title, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Text(
             pluralStringResource(R.plurals.health_copies, group.copies.size, group.artist, group.copies.size),
-            style = YuyuType.caption,
-            color = Yuyu.textMuted
+            style = NbType.caption,
+            color = Nb.textMuted
         )
         group.copies.forEach { copy ->
             Spacer(Modifier.size(10.dp))
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .clip(YuyuShapes.md)
-                    .background(Yuyu.subtle)
+                    .clip(NbShapes.md)
+                    .background(Nb.subtle)
                     .padding(horizontal = 12.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -649,8 +649,8 @@ private fun DuplicateGroupCard(group: DuplicateGroup, onDelete: (Song) -> Unit, 
                 Column(Modifier.weight(1f)) {
                     Text(
                         copy.song.path,
-                        style = YuyuType.caption,
-                        color = Yuyu.text,
+                        style = NbType.caption,
+                        color = Nb.text,
                         maxLines = 2,
                         overflow = TextOverflow.MiddleEllipsis
                     )
@@ -661,15 +661,15 @@ private fun DuplicateGroupCard(group: DuplicateGroup, onDelete: (Song) -> Unit, 
                     val duration = copy.song.duration / 1000
                     Text(
                         listOfNotNull(format.ifBlank { null }, bitrate, size, "%d:%02d".format(duration / 60, duration % 60)).joinToString(" · "),
-                        style = YuyuType.caption,
-                        color = Yuyu.textMuted
+                        style = NbType.caption,
+                        color = Nb.textMuted
                     )
                 }
-                YuyuButton(
+                NbButton(
                     text = stringResource(R.string.health_delete),
                     onClick = { onDelete(copy.song) },
-                    style = YuyuButtonStyle.DangerQuiet,
-                    size = YuyuButtonSize.Small
+                    style = NbButtonStyle.DangerQuiet,
+                    size = NbButtonSize.Small
                 )
             }
         }

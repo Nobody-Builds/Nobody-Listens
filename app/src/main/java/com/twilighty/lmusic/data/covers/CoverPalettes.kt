@@ -4,26 +4,30 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
-/** Yuyu colours as ARGB ints (pure Kotlin so the generator and its tests need no Android). */
-object YuyuCoverColors {
-    const val INK: Int = 0xFF18181B.toInt()
-    const val PAPER: Int = 0xFFFFFFFF.toInt()
-    const val PAPER_WARM: Int = 0xFFFAFAF9.toInt()
-    const val EMBER: Int = 0xFFC2410C.toInt()
-    const val LAVENDER: Int = 0xFFB9AEFF.toInt()
-    const val MINT: Int = 0xFF7EE8C4.toInt()
-    const val PEACH: Int = 0xFFFDE7C8.toInt()
-    const val HIGHLIGHT_MINT: Int = 0xFFBDF3DF.toInt()
-    const val HIGHLIGHT_LAVENDER: Int = 0xFFF1EFFF.toInt()
-    const val HIGHLIGHT_PEACH: Int = 0xFFFDE7C8.toInt()
+/** Daylight colours as ARGB ints (pure Kotlin so the generator and its tests need no Android). */
+object NbCoverColors {
+    const val NIGHT_SHIFT: Int = 0xFF172033.toInt()
+    const val PAPER: Int = 0xFFF5F7FB.toInt()
+    const val WHITE: Int = 0xFFFFFFFF.toInt()
+    const val BLUEPRINT: Int = 0xFF2457A6.toInt()
+    const val HARD_HAT: Int = 0xFFFDC521.toInt()
+    const val BRICK: Int = 0xFFEA724A.toInt()
+    const val SKY: Int = 0xFFCFE0F7.toInt()
+    const val BUTTER: Int = 0xFFFFE8A3.toInt()
+    const val GREEN: Int = 0xFFA6D98F.toInt()
+    const val ACCENT_SOFT: Int = 0xFFE3ECF8.toInt()
+    const val EMPHASIS_SOFT: Int = 0xFFFFF6D6.toInt()
 
-    /** Same values and order as the YuyuArt placeholder palette (YuyuComponents.kt ArtPalette). */
+    /**
+     * Deep Daylight colours that carry Paper initials at 4.5:1 or more. Same values and order
+     * as the NbArt placeholder palette (NbComponents.kt reads this list).
+     */
     val ART_PALETTE: List<Int> = listOf(
-        0xFFC2410C, 0xFF4B3FA8, 0xFF0F766E, 0xFF27272A,
-        0xFF4D6B2F, 0xFF7E2F5E, 0xFF1D4E89, 0xFF8A4B2A,
+        0xFF2457A6, 0xFF172033, 0xFFA3412A, 0xFF3B6B2B,
+        0xFF4F5A70, 0xFF1A417E, 0xFF6B4E0E, 0xFF7A3324,
     ).map { it.toInt() }
 
-    /** The colour YuyuArt uses as the placeholder for [key], so a made cover matches what was shown. */
+    /** The colour NbArt uses as the placeholder for [key], so a made cover matches what was shown. */
     fun artColorFor(key: String): Int = ART_PALETTE[(key.hashCode() and 0x7fffffff) % ART_PALETTE.size]
 }
 
@@ -35,11 +39,11 @@ data class ResolvedPalette(val background: Int, val primary: Int, val secondary:
 /** A palette chip in the studio. [AUTO] picks one per album from the seed. */
 enum class CoverPaletteChoice(val label: String) {
     AUTO("Auto"),
-    EMBER("Ember"),
-    INK("Ink"),
-    LAVENDER("Lavender"),
-    MINT("Mint"),
-    PEACH("Peach"),
+    BRICK("Brick"),
+    NIGHT_SHIFT("Night Shift"),
+    SKY("Sky"),
+    GREEN("Green"),
+    BUTTER("Butter"),
     PAPER("Paper"),
     PASTEL("Pastel"),
     COVER("Cover");
@@ -50,7 +54,7 @@ enum class CoverPaletteChoice(val label: String) {
 }
 
 object CoverPalettes {
-    private val C = YuyuCoverColors
+    private val C = NbCoverColors
 
     fun resolve(choice: CoverPaletteChoice, key: String, rng: SeededRandom? = null): ResolvedPalette = when (choice) {
         CoverPaletteChoice.AUTO -> {
@@ -58,16 +62,16 @@ object CoverPalettes {
             else CoverPaletteChoice.fixed[(key.hashCode() and 0x7fffffff) % CoverPaletteChoice.fixed.size]
             resolve(pick, key, null)
         }
-        CoverPaletteChoice.EMBER -> ResolvedPalette(C.PAPER_WARM, C.EMBER, C.INK)
-        CoverPaletteChoice.INK -> ResolvedPalette(C.INK, C.EMBER, C.PEACH)
-        CoverPaletteChoice.LAVENDER -> ResolvedPalette(C.LAVENDER, C.INK, C.PAPER)
-        CoverPaletteChoice.MINT -> ResolvedPalette(C.MINT, C.INK, C.PAPER_WARM)
-        CoverPaletteChoice.PEACH -> ResolvedPalette(C.PEACH, C.EMBER, C.INK)
-        CoverPaletteChoice.PAPER -> ResolvedPalette(C.PAPER, C.INK, C.LAVENDER)
-        CoverPaletteChoice.PASTEL -> ResolvedPalette(C.HIGHLIGHT_MINT, C.LAVENDER, C.INK)
+        CoverPaletteChoice.BRICK -> ResolvedPalette(C.WHITE, C.BRICK, C.NIGHT_SHIFT)
+        CoverPaletteChoice.NIGHT_SHIFT -> ResolvedPalette(C.NIGHT_SHIFT, C.HARD_HAT, C.SKY)
+        CoverPaletteChoice.SKY -> ResolvedPalette(C.SKY, C.BLUEPRINT, C.WHITE)
+        CoverPaletteChoice.GREEN -> ResolvedPalette(C.GREEN, C.NIGHT_SHIFT, C.PAPER)
+        CoverPaletteChoice.BUTTER -> ResolvedPalette(C.BUTTER, C.BRICK, C.NIGHT_SHIFT)
+        CoverPaletteChoice.PAPER -> ResolvedPalette(C.PAPER, C.BLUEPRINT, C.SKY)
+        CoverPaletteChoice.PASTEL -> ResolvedPalette(C.ACCENT_SOFT, C.SKY, C.NIGHT_SHIFT)
         CoverPaletteChoice.COVER -> {
             val bg = C.artColorFor(key)
-            ResolvedPalette(bg, C.PEACH, C.PAPER)
+            ResolvedPalette(bg, C.BUTTER, C.PAPER)
         }
     }
 }
@@ -92,11 +96,11 @@ object CoverContrast {
         return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
     }
 
-    /** Ink or paper, whichever reads better on [background]. */
+    /** Night Shift or Paper, whichever reads better on [background]. */
     fun textColorOn(background: Int): Int =
-        if (ratio(YuyuCoverColors.INK, background) >= ratio(YuyuCoverColors.PAPER, background)) {
-            YuyuCoverColors.INK
+        if (ratio(NbCoverColors.NIGHT_SHIFT, background) >= ratio(NbCoverColors.PAPER, background)) {
+            NbCoverColors.NIGHT_SHIFT
         } else {
-            YuyuCoverColors.PAPER
+            NbCoverColors.PAPER
         }
 }

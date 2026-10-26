@@ -20,11 +20,14 @@ from **Artifacts**.
 
 ## What LMusic adds
 
-**Yuyu design system**
-- Ink-and-paper palette from Yuyu (light and dark), Ember accent, Yuyu radius scale.
-- Bricolage Grotesque headings and Figtree text, bundled in the app.
+**Nobody Builds "Daylight" design, on Material 3**
+- The [NobodyBuilds-Design](https://github.com/Nobody-Builds/NobodyBuilds-Design) tokens mapped onto
+  Material 3 colour roles: Paper and Night Shift canvases, Blueprint blue does the work, Hard Hat yellow
+  is the one bold moment per screen. Flat: no shadows, 10/16/20 dp radii, pills for buttons and chips.
+- Gilroy (open Light and ExtraBold weights) for headings, Google Sans Flex for text, Unbounded for an
+  accent phrase. Material Rounded icons only; service logos keep their own artwork.
 - The now-playing screen still takes its colors from the album art.
-- Settings → Appearance → **App colors** switches back to Material You wallpaper colors.
+- Settings → Appearance → **App colors** switches to Material You wallpaper colors.
 
 **Tag editor writes into the file**
 - Title, artist, album, **album artist**, **year**, genre, track, disc, **composer**,
@@ -119,9 +122,9 @@ the tag). Pushing a `v*` tag yourself works too. Other pushes just build an APK 
 - [PixelPlayer](https://github.com/theovilardo/PixelPlayer) by theovilardo and
   contributors — this project is based on upstream commit `3903015` (12 May 2026),
   the last version released under the MIT License. See [LICENSE](LICENSE).
-- Fonts: [Figtree](https://github.com/erikdkennedy/figtree) and
-  [Bricolage Grotesque](https://github.com/ateliertriay/bricolage), SIL Open Font
-  License — see [licenses/](licenses/).
+- Fonts: Gilroy Light and ExtraBold by Radomir Tinkov (free font EULA), and
+  [Unbounded](https://github.com/googlefonts/unbounded) (SIL Open Font License) — see
+  [licenses/](licenses/). Google Sans Flex for body text.
 - On-device audio model: [YAMNet](https://github.com/tensorflow/models/tree/master/research/audioset/yamnet) (Apache-2.0), run with TensorFlow Lite.
 - Metadata: [MusicBrainz](https://musicbrainz.org) (CC0) and
   [Cover Art Archive](https://coverartarchive.org).

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Daylight widget colours (light). Dark values live in values-night. -->
+    <color name="nb_widget_canvas">#FFF5F7FB</color>
+    <color name="nb_widget_muted">#FFECF0F7</color>
+    <color name="nb_widget_text">#FF172033</color>
+    <color name="nb_widget_text_muted">#FF4F5A70</color>
+    <color name="nb_widget_accent">#FFFDC521</color>
+    <color name="nb_widget_on_accent">#FF172033</color>
+    <color name="nb_widget_accent_soft">#FFE3ECF8</color>
+    <color name="nb_widget_accent_text">#FF2457A6</color>
+</resources>

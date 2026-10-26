@@ -84,10 +84,10 @@ import androidx.compose.material3.MediumExtendedFloatingActionButton
 import androidx.compose.material3.MediumFloatingActionButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.ClearAll
-import androidx.compose.material.icons.filled.LibraryAdd
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.ClearAll
+import androidx.compose.material.icons.rounded.LibraryAdd
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.SkipNext
@@ -173,7 +173,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -193,19 +192,19 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.border
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonSize
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCheckbox
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuDialog
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuSheetHandle
-import com.twilighty.lmusic.presentation.yuyu.YuyuTextField
-import com.twilighty.lmusic.presentation.yuyu.YuyuToast
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonSize
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCheckbox
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbDialog
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbSheetHandle
+import com.twilighty.lmusic.presentation.nb.NbTextField
+import com.twilighty.lmusic.presentation.nb.NbToast
+import com.twilighty.lmusic.presentation.nb.NbType
+import com.twilighty.lmusic.presentation.nb.Nb
 
 private data class QueueUndoBarProjection(
     val isVisible: Boolean = false,
@@ -763,7 +762,7 @@ fun QueueBottomSheet(
                     ) {
                         Text(
                             stringResource(R.string.presentation_batch_e_queue_empty),
-                            style = YuyuType.body,
+                            style = NbType.body,
                             color = colors.onSurfaceVariant
                         )
                     }
@@ -933,7 +932,7 @@ fun QueueBottomSheet(
                 enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
                 exit = fadeOut() + slideOutVertically(targetOffsetY = { it })
             ) {
-                YuyuToast(
+                NbToast(
                     text = "${queueUndoBarState.removedSongTitle} ${stringResource(R.string.presentation_batch_e_removed)}",
                     actionLabel = stringResource(R.string.action_undo),
                     onAction = { viewModel.undoRemoveSongFromQueue() },
@@ -959,23 +958,23 @@ fun QueueBottomSheet(
         }
 
         if (showClearQueueDialog) {
-            YuyuDialog(
+            NbDialog(
                 onDismissRequest = { showClearQueueDialog = false },
                 title = stringResource(R.string.presentation_batch_e_clear_queue_dialog_title),
                 body = stringResource(R.string.presentation_batch_e_clear_queue_dialog_message),
                 actions = {
-                    YuyuButton(
+                    NbButton(
                         text = stringResource(R.string.cancel),
                         onClick = { showClearQueueDialog = false },
-                        style = YuyuButtonStyle.Secondary
+                        style = NbButtonStyle.Secondary
                     )
-                    YuyuButton(
+                    NbButton(
                         text = stringResource(R.string.presentation_batch_b_clear),
                         onClick = {
                             onClearQueue()
                             showClearQueueDialog = false
                         },
-                        style = YuyuButtonStyle.Danger
+                        style = NbButtonStyle.Danger
                     )
                 }
             )
@@ -1010,7 +1009,7 @@ private fun QueueToolbarMenuButton(
         shape = RoundedCornerShape(18.dp),
         color = containerColor,
         tonalElevation = 8.dp,
-        shadowElevation = 8.dp
+        shadowElevation = 0.dp
     ) {
         Row(
             modifier = Modifier
@@ -1051,7 +1050,7 @@ private fun QueueHeaderSection(
             .fillMaxWidth()
             .padding(top = topPadding - 6.dp, bottom = 8.dp)
     ) {
-        YuyuSheetHandle(Modifier.align(Alignment.CenterHorizontally))
+        NbSheetHandle(Modifier.align(Alignment.CenterHorizontally))
         QueueHeader(
             queueSourceName = queueSourceName,
             queueCount = queueCount,
@@ -1083,7 +1082,7 @@ private fun QueueHeader(
         ) {
             Text(
                 text = "Up next",
-                style = YuyuType.h2,
+                style = NbType.h2,
                 color = MaterialTheme.colorScheme.onSurface
             )
             val countText = when {
@@ -1097,24 +1096,24 @@ private fun QueueHeader(
             val source = queueSourceName.ifBlank { stringResource(R.string.presentation_batch_e_queue_source_fallback) }
             Text(
                 text = "$countText · $source",
-                style = YuyuType.meta,
+                style = NbType.meta,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
         if (queueCount > 0) {
-            YuyuButton(
+            NbButton(
                 text = "Save",
                 onClick = onSaveClick,
-                style = YuyuButtonStyle.Quiet,
-                size = YuyuButtonSize.Small
+                style = NbButtonStyle.Quiet,
+                size = NbButtonSize.Small
             )
-            YuyuButton(
+            NbButton(
                 text = stringResource(R.string.presentation_batch_b_clear),
                 onClick = onClearClick,
-                style = YuyuButtonStyle.Quiet,
-                size = YuyuButtonSize.Small
+                style = NbButtonStyle.Quiet,
+                size = NbButtonSize.Small
             )
         }
     }
@@ -1134,7 +1133,7 @@ private fun QueueControlsToolbar(
     Column(
         modifier = modifier.background(MaterialTheme.colorScheme.surface)
     ) {
-        YuyuDivider()
+        NbDivider()
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -1143,13 +1142,13 @@ private fun QueueControlsToolbar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            YuyuChip(
+            NbChip(
                 text = stringResource(R.string.shortcut_shuffle_short),
                 selected = isShuffleOn,
                 onClick = onToggleShuffle,
                 icon = rememberVectorPainter(Icons.Rounded.Shuffle)
             )
-            YuyuChip(
+            NbChip(
                 text = if (repeatMode == Player.REPEAT_MODE_ONE) "Repeat one" else "Repeat",
                 selected = repeatMode != Player.REPEAT_MODE_OFF,
                 onClick = onToggleRepeat,
@@ -1158,7 +1157,7 @@ private fun QueueControlsToolbar(
                 )
             )
             Spacer(Modifier.weight(1f))
-            YuyuChip(
+            NbChip(
                 text = if (isTimerActive.value) timerLabel ?: "Timer" else "Timer",
                 selected = isTimerActive.value,
                 onClick = onTimerClick,
@@ -1254,13 +1253,13 @@ fun SaveQueueAsPlaylistSheet(
                             }
                             Text(
                                 text = stringResource(R.string.presentation_batch_e_save_as_playlist_sheet_title),
-                                style = YuyuType.h2,
+                                style = NbType.h2,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier.weight(1f)
                             )
-                            YuyuButton(
+                            NbButton(
                                 text = if (allSelected) {
                                     stringResource(R.string.presentation_batch_e_deselect_all)
                                 } else {
@@ -1270,8 +1269,8 @@ fun SaveQueueAsPlaylistSheet(
                                     val target = !allSelected
                                     selectedSongIds.keys.forEach { selectedSongIds[it] = target }
                                 },
-                                style = YuyuButtonStyle.Secondary,
-                                size = YuyuButtonSize.Small,
+                                style = NbButtonStyle.Secondary,
+                                size = NbButtonSize.Small,
                                 modifier = Modifier.padding(end = 8.dp)
                             )
                         }
@@ -1281,14 +1280,14 @@ fun SaveQueueAsPlaylistSheet(
                                 .padding(horizontal = 16.dp, vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            YuyuTextField(
+                            NbTextField(
                                 value = playlistName,
                                 onValueChange = { playlistName = it },
                                 label = stringResource(R.string.presentation_batch_e_playlist_name_label),
                                 singleLine = true,
                                 fieldModifier = Modifier.focusRequester(focusRequester)
                             )
-                            YuyuTextField(
+                            NbTextField(
                                 value = searchQuery,
                                 onValueChange = { searchQuery = it },
                                 placeholder = stringResource(R.string.presentation_batch_e_search_songs_to_include_placeholder),
@@ -1305,7 +1304,7 @@ fun SaveQueueAsPlaylistSheet(
                                     {
                                         IconButton(onClick = { searchQuery = "" }, modifier = Modifier.size(36.dp)) {
                                             Icon(
-                                                Icons.Filled.Clear,
+                                                Icons.Rounded.Clear,
                                                 contentDescription = stringResource(R.string.cd_clear_search),
                                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
@@ -1314,7 +1313,7 @@ fun SaveQueueAsPlaylistSheet(
                                 } else null
                             )
                         }
-                        YuyuDivider()
+                        NbDivider()
                     }
                 },
                 bottomBar = {
@@ -1325,7 +1324,7 @@ fun SaveQueueAsPlaylistSheet(
                             .windowInsetsPadding(WindowInsets.ime)
                             .windowInsetsPadding(WindowInsets.navigationBars)
                     ) {
-                        YuyuDivider()
+                        NbDivider()
                         Row(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 12.dp)
@@ -1340,7 +1339,7 @@ fun SaveQueueAsPlaylistSheet(
                                         selectedSongIds.count { it.value },
                                         selectedSongIds.count { it.value }
                                     ),
-                                    style = YuyuType.label,
+                                    style = NbType.label,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
@@ -1352,14 +1351,14 @@ fun SaveQueueAsPlaylistSheet(
                                     } else {
                                         stringResource(R.string.presentation_batch_e_enter_playlist_name)
                                     },
-                                    style = YuyuType.caption,
+                                    style = NbType.caption,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
 
-                            YuyuButton(
+                            NbButton(
                                 text = stringResource(R.string.action_save),
                                 onClick = {
                                     if (hasSelection) {
@@ -1373,7 +1372,7 @@ fun SaveQueueAsPlaylistSheet(
                                     }
                                 },
                                 enabled = hasSelection,
-                                size = YuyuButtonSize.Large,
+                                size = NbButtonSize.Large,
                                 icon = rememberVectorPainter(Icons.Rounded.Check)
                             )
                         }
@@ -1412,7 +1411,7 @@ fun SaveQueueAsPlaylistSheet(
                                         R.string.presentation_batch_e_no_songs_match_query,
                                         searchQuery
                                     ),
-                                    style = YuyuType.body,
+                                    style = NbType.body,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -1432,23 +1431,23 @@ fun SaveQueueAsPlaylistSheet(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                YuyuCheckbox(
+                                NbCheckbox(
                                     checked = checked,
                                     onCheckedChange = { isChecked ->
                                         selectedSongIds[song.id] = isChecked
                                     }
                                 )
-                                YuyuArt(
+                                NbArt(
                                     model = song.albumArtUriString,
                                     title = song.album.ifBlank { song.title },
                                     size = 44.dp,
                                     shape = RoundedCornerShape(10.dp)
                                 )
                                 Column(Modifier.weight(1f)) {
-                                    Text(song.title, style = YuyuType.title, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    Text(song.title, style = NbType.title, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                     Text(
                                         song.displayArtist,
-                                        style = YuyuType.meta,
+                                        style = NbType.meta,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
@@ -1610,7 +1609,7 @@ fun QueuePlaylistSongItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                YuyuArt(
+                NbArt(
                     model = song.albumArtUriString,
                     title = song.album.ifBlank { song.title },
                     size = 48.dp,
@@ -1622,11 +1621,11 @@ fun QueuePlaylistSongItem(
                     Text(
                         song.title, maxLines = 1, overflow = TextOverflow.Ellipsis,
                         color = if (isCurrentSong) colors.tertiary else colors.onSurface,
-                        style = YuyuType.title
+                        style = NbType.title
                     )
                     Text(
                         song.displayArtist, maxLines = 1, overflow = TextOverflow.Ellipsis,
-                        style = YuyuType.meta,
+                        style = NbType.meta,
                         color = colors.onSurfaceVariant
                     )
                 }

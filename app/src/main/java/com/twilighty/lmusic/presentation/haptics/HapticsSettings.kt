@@ -23,7 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.twilighty.lmusic.R
 import com.twilighty.lmusic.presentation.screens.SwitchSettingItem
-import com.twilighty.lmusic.presentation.yuyu.YuyuSegmented
+import com.twilighty.lmusic.presentation.nb.NbSegmented
 
 /**
  * Settings → Behavior → Haptics. "Off / Subtle / Full / Strong" plus the seek-tick switch.
@@ -86,7 +86,7 @@ fun HapticsSettingsSection() {
                         )
                     }
                 }
-                YuyuSegmented(
+                NbSegmented(
                     options = labels,
                     selectedIndex = levels.indexOf(level),
                     onSelect = { index ->

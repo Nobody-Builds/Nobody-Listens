@@ -24,7 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
-import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Album
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.FileDownload
@@ -32,7 +32,6 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Headphones
 import androidx.compose.material.icons.rounded.Merge
 import androidx.compose.material.icons.rounded.MicExternalOn
-import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Piano
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Speaker
@@ -334,7 +333,7 @@ private fun StackedPlaylistCovers(
                             
                             if (playlist.coverIconName != null) {
                                 Icon(
-                                    imageVector = getPlaylistIconByName(playlist.coverIconName) ?: androidx.compose.material.icons.Icons.Filled.MusicNote,
+                                    imageVector = getPlaylistIconByName(playlist.coverIconName) ?: androidx.compose.material.icons.Icons.Rounded.MusicNote,
                                     contentDescription = null,
                                     tint = contentColor,
                                     modifier = Modifier.size(24.dp)

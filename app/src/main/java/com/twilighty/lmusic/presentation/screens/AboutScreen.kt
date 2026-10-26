@@ -45,20 +45,20 @@ import com.twilighty.lmusic.presentation.components.MiniPlayerHeight
 import com.twilighty.lmusic.presentation.navigation.Screen
 import com.twilighty.lmusic.presentation.navigation.navigateSafely
 import com.twilighty.lmusic.presentation.viewmodel.PlayerViewModel
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuCard
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuSettingRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatus
-import com.twilighty.lmusic.presentation.yuyu.YuyuStatusChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuTile
-import com.twilighty.lmusic.presentation.yuyu.YuyuTopBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbCard
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbSettingRow
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbStatus
+import com.twilighty.lmusic.presentation.nb.NbStatusChip
+import com.twilighty.lmusic.presentation.nb.NbTile
+import com.twilighty.lmusic.presentation.nb.NbTopBar
+import com.twilighty.lmusic.presentation.nb.NbType
 
 private const val DeveloperName = "Abhiram NJ"
 private const val DeveloperHandle = "Twilight Abhi"
@@ -86,14 +86,14 @@ fun AboutScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Yuyu.canvas)
+            .background(Nb.canvas)
             .statusBarsPadding()
     ) {
-        YuyuTopBar(
+        NbTopBar(
             title = "About",
-            titleStyle = YuyuType.h2,
+            titleStyle = NbType.h2,
             navigationIcon = {
-                YuyuIconButton(
+                NbIconButton(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                     contentDescription = "Back",
                     onClick = onNavigationIconClick
@@ -113,53 +113,53 @@ fun AboutScreen(
                 onVersionLongPress = { navController.navigateSafely(Screen.EasterEgg.route) }
             )
 
-            YuyuCard {
-                YuyuOverline("Developer")
+            NbCard {
+                NbOverline("Developer")
                 Spacer(Modifier.height(10.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                     Box(
-                        Modifier.size(52.dp).clip(YuyuShapes.pill).background(Yuyu.ink),
+                        Modifier.size(52.dp).clip(NbShapes.pill).background(Nb.ink),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("AN", style = YuyuType.h3, color = Yuyu.onInk)
+                        Text("AN", style = NbType.h3, color = Nb.onInk)
                     }
                     Column(Modifier.weight(1f)) {
-                        Text(DeveloperName, style = YuyuType.h3, color = Yuyu.text)
-                        Text("$DeveloperHandle · @twilighty-abhi", style = YuyuType.meta, color = Yuyu.textMuted)
+                        Text(DeveloperName, style = NbType.h3, color = Nb.text)
+                        Text("$DeveloperHandle · @twilighty-abhi", style = NbType.meta, color = Nb.textMuted)
                     }
                 }
                 Spacer(Modifier.height(14.dp))
-                YuyuButton(
+                NbButton(
                     text = "GitHub profile",
                     onClick = { openUrl(context, DeveloperGitHub) },
-                    style = YuyuButtonStyle.Secondary,
+                    style = NbButtonStyle.Secondary,
                     icon = painterResource(R.drawable.github),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            YuyuCard(contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
+            NbCard(contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
                 AboutLinkRow(title = "Source code", subtitle = "github.com/twilighty-abhi/lmusic-player") { openUrl(context, RepoUrl) }
-                YuyuDivider()
+                NbDivider()
                 AboutLinkRow(title = "Updates", subtitle = "Every release, with the APK to install") { openUrl(context, ReleasesUrl) }
-                YuyuDivider()
+                NbDivider()
                 AboutLinkRow(title = "Report a problem", subtitle = "Open an issue on GitHub") { openUrl(context, IssuesUrl) }
             }
 
-            YuyuTile(background = Yuyu.subtle) {
-                Text("Made for listening, not for engagement.", style = YuyuType.title, color = Yuyu.text)
+            NbTile(background = Nb.subtle) {
+                Text("Made for listening, not for engagement.", style = NbType.title, color = Nb.text)
                 Spacer(Modifier.height(6.dp))
                 Text(
                     "LMusic plays the music on your phone. No accounts, no ads, no tracking — your listening stats stay on this device.",
-                    style = YuyuType.body,
-                    color = Yuyu.textSecondary
+                    style = NbType.body,
+                    color = Nb.textSecondary
                 )
             }
 
             Text(
                 "© $DeveloperName. Released under the MIT License.",
-                style = YuyuType.caption,
-                color = Yuyu.textMuted,
+                style = NbType.caption,
+                color = Nb.textMuted,
                 modifier = Modifier.padding(horizontal = 4.dp)
             )
         }
@@ -170,26 +170,26 @@ fun AboutScreen(
 @Composable
 private fun AboutHero(versionName: String, onVersionLongPress: () -> Unit) {
     val haptic = LocalHapticFeedback.current
-    YuyuTile(background = Yuyu.accentSoft, modifier = Modifier.fillMaxWidth()) {
+    NbTile(background = Nb.accentSoft, modifier = Modifier.fillMaxWidth()) {
         Box(
-            Modifier.size(64.dp).clip(YuyuShapes.xl).background(Yuyu.accent),
+            Modifier.size(64.dp).clip(NbShapes.xl).background(Nb.accent),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 painter = painterResource(R.drawable.lmusic_base_monochrome),
                 contentDescription = null,
-                tint = Yuyu.onAccent,
+                tint = Nb.onAccent,
                 modifier = Modifier.size(36.dp)
             )
         }
         Spacer(Modifier.height(16.dp))
-        Text("LMusic", style = YuyuType.display(40.sp()), color = Yuyu.text)
+        Text("LMusic", style = NbType.display(40.sp()), color = Nb.text)
         Spacer(Modifier.height(4.dp))
-        Text("Your music, on your phone.", style = YuyuType.bodyLarge, color = Yuyu.textSecondary)
+        Text("Your music, on your phone.", style = NbType.bodyLarge, color = Nb.textSecondary)
         Spacer(Modifier.height(14.dp))
         Box(
             Modifier
-                .clip(YuyuShapes.pill)
+                .clip(NbShapes.pill)
                 .combinedClickable(
                     onClick = {},
                     onLongClick = {
@@ -198,14 +198,14 @@ private fun AboutHero(versionName: String, onVersionLongPress: () -> Unit) {
                     }
                 )
         ) {
-            YuyuStatusChip(text = "Version $versionName", status = YuyuStatus.Accent)
+            NbStatusChip(text = "Version $versionName", status = NbStatus.Accent)
         }
     }
 }
 
 @Composable
 private fun AboutLinkRow(title: String, subtitle: String, onClick: () -> Unit) {
-    YuyuSettingRow(
+    NbSettingRow(
         title = title,
         subtitle = subtitle,
         onClick = onClick,
@@ -213,7 +213,7 @@ private fun AboutLinkRow(title: String, subtitle: String, onClick: () -> Unit) {
             Icon(
                 Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                 contentDescription = null,
-                tint = Yuyu.textMuted
+                tint = Nb.textMuted
             )
         }
     )

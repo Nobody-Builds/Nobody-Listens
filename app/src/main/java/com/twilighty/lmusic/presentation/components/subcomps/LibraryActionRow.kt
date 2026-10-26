@@ -21,12 +21,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.ui.semantics.Role
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbIconButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbType
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -117,7 +117,7 @@ fun LibraryActionRow(
     showStorageFilterButton: Boolean = false,
     currentStorageFilter: com.twilighty.lmusic.data.model.StorageFilter = com.twilighty.lmusic.data.model.StorageFilter.ALL,
     onStorageFilterClick: () -> Unit = {},
-    /** Optional: the current sort's name, shown as a Yuyu chip ("Recently added ⌄"). */
+    /** Optional: the current sort's name, shown as a Daylight chip ("Recently added ⌄"). */
     sortLabel: String? = null,
     /** Optional: a count line shown at the start ("1,284 songs"). */
     countLabel: String? = null,
@@ -169,12 +169,12 @@ fun LibraryActionRow(
                     } else {
                         stringResource(R.string.cd_shuffle_play)
                     }
-                    // Yuyu primary pill (ink), small.
+                    // Daylight primary pill (ink), small.
                     Row(
                         modifier = Modifier
                             .height(36.dp)
-                            .clip(YuyuShapes.pill)
-                            .background(Yuyu.ink)
+                            .clip(NbShapes.pill)
+                            .background(Nb.ink)
                             .clickable(role = Role.Button, onClick = onMainActionClick)
                             .padding(horizontal = 14.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -183,7 +183,7 @@ fun LibraryActionRow(
                         Icon(
                             imageVector = icon,
                             contentDescription = contentDesc,
-                            tint = Yuyu.onInk,
+                            tint = Nb.onInk,
                             modifier = Modifier.size(16.dp).rotate(iconRotation)
                         )
                         Text(
@@ -191,8 +191,8 @@ fun LibraryActionRow(
                             text = text,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            style = YuyuType.label.copy(fontWeight = FontWeight.Bold),
-                            color = Yuyu.onInk
+                            style = NbType.label.copy(fontWeight = FontWeight.Bold),
+                            color = Nb.onInk
                         )
                     }
 
@@ -201,7 +201,7 @@ fun LibraryActionRow(
                         enter = fadeIn() + expandHorizontally(expandFrom = Alignment.Start, clip = false),
                         exit = fadeOut() + shrinkHorizontally(shrinkTowards = Alignment.Start, clip = false)
                     ) {
-                        YuyuChip(
+                        NbChip(
                             text = stringResource(R.string.import_file),
                             selected = false,
                             onClick = onImportM3uClick,
@@ -212,8 +212,8 @@ fun LibraryActionRow(
                     if (countLabel != null) {
                         Text(
                             text = countLabel,
-                            style = YuyuType.caption,
-                            color = Yuyu.textMuted,
+                            style = NbType.caption,
+                            color = Nb.textMuted,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -232,11 +232,11 @@ fun LibraryActionRow(
                     enter = slideInHorizontally(initialOffsetX = { it / 2 }) + fadeIn(),
                     exit = slideOutHorizontally(targetOffsetX = { it / 2 }) + fadeOut()
                 ) {
-                    YuyuIconButton(
+                    NbIconButton(
                         imageVector = Icons.Rounded.MyLocation,
                         contentDescription = stringResource(R.string.cd_locate_current_song),
                         onClick = onLocateClick,
-                        style = YuyuIconButtonStyle.Outline,
+                        style = NbIconButtonStyle.Outline,
                         size = 36.dp,
                         iconSize = 18.dp
                     )
@@ -267,12 +267,12 @@ fun LibraryActionRow(
                         tooltip = { PlainTooltip { Text(tooltipText) } },
                         state = tooltipState
                     ) {
-                        YuyuIconButton(
+                        NbIconButton(
                             imageVector = finalIcon,
                             contentDescription = tooltipText,
                             onClick = onStorageFilterClick,
                             style = if (currentStorageFilter == com.twilighty.lmusic.data.model.StorageFilter.ALL)
-                                YuyuIconButtonStyle.Outline else YuyuIconButtonStyle.Filled,
+                                NbIconButtonStyle.Outline else NbIconButtonStyle.Filled,
                             size = 36.dp,
                             iconSize = 18.dp
                         )
@@ -280,14 +280,14 @@ fun LibraryActionRow(
                 }
 
                 if (sortLabel != null) {
-                    // Yuyu sort chip: "<sort> ⌄"
+                    // Daylight sort chip: "<sort> ⌄"
                     Row(
                         modifier = Modifier
                             .height(36.dp)
                             .widthIn(max = 168.dp)
-                            .clip(YuyuShapes.pill)
-                            .background(Yuyu.canvas)
-                            .border(1.dp, Yuyu.borderStrong, YuyuShapes.pill)
+                            .clip(NbShapes.pill)
+                            .background(Nb.canvas)
+                            .border(1.dp, Nb.borderStrong, NbShapes.pill)
                             .clickable(role = Role.Button, onClick = onSortClick)
                             .padding(start = 12.dp, end = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -295,8 +295,8 @@ fun LibraryActionRow(
                     ) {
                         Text(
                             text = sortLabel,
-                            style = YuyuType.caption.copy(fontWeight = FontWeight.SemiBold),
-                            color = Yuyu.text,
+                            style = NbType.caption.copy(fontWeight = FontWeight.SemiBold),
+                            color = Nb.text,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f, fill = false)
@@ -304,16 +304,16 @@ fun LibraryActionRow(
                         Icon(
                             imageVector = Icons.Rounded.KeyboardArrowDown,
                             contentDescription = stringResource(R.string.cd_sort_options),
-                            tint = Yuyu.text,
+                            tint = Nb.text,
                             modifier = Modifier.size(16.dp)
                         )
                     }
                 } else {
-                    YuyuIconButton(
+                    NbIconButton(
                         imageVector = Icons.AutoMirrored.Rounded.Sort,
                         contentDescription = stringResource(R.string.cd_sort_options),
                         onClick = onSortClick,
-                        style = YuyuIconButtonStyle.Outline,
+                        style = NbIconButtonStyle.Outline,
                         size = 36.dp,
                         iconSize = 18.dp
                     )
@@ -367,11 +367,11 @@ fun Breadcrumbs(
             .padding(start = 2.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        YuyuIconButton(
+        NbIconButton(
             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
             contentDescription = stringResource(R.string.auth_cd_back),
             onClick = onNavigateBack,
-            style = YuyuIconButtonStyle.Tonal,
+            style = NbIconButtonStyle.Tonal,
             size = 36.dp,
             iconSize = 18.dp,
             enabled = currentFolder != null
@@ -425,8 +425,8 @@ fun Breadcrumbs(
                 val isLast = index == pathSegments.lastIndex
                 Text(
                     text = name,
-                    style = YuyuType.label.copy(fontWeight = if (isLast) FontWeight.Bold else FontWeight.Normal),
-                    color = if (isLast) Yuyu.text else Yuyu.textMuted,
+                    style = NbType.label.copy(fontWeight = if (isLast) FontWeight.Bold else FontWeight.Normal),
+                    color = if (isLast) Nb.text else Nb.textMuted,
                     modifier = Modifier
                         .clip(CircleShape)
                         .clickable(enabled = !isLast) { onFolderClick(path) }

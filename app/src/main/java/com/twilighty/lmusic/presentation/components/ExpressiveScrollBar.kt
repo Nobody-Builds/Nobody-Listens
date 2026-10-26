@@ -719,7 +719,7 @@ fun ExpressiveScrollBar(
                     color = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     tonalElevation = 6.dp,
-                    shadowElevation = 2.dp
+                    shadowElevation = 0.dp
                 ) {
                     Box(
                         modifier = Modifier.fillMaxSize(),

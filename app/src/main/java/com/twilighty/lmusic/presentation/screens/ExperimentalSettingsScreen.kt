@@ -34,10 +34,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.LinearScale
-import androidx.compose.material.icons.outlined.PlayCircle
-import androidx.compose.material.icons.outlined.Style
 import androidx.compose.material.icons.rounded.LinearScale
+import androidx.compose.material.icons.rounded.PlayCircle
+import androidx.compose.material.icons.rounded.Style
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Rectangle
 import androidx.compose.material.icons.rounded.Title
@@ -185,7 +184,7 @@ fun ExperimentalSettingsScreen(
                     title = stringResource(R.string.presentation_batch_f_exp_player_ui_tweaks_section),
                     icon = {
                         Icon(
-                            imageVector = Icons.Outlined.Style,
+                            imageVector = Icons.Rounded.Style,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -268,7 +267,7 @@ fun ExperimentalSettingsScreen(
                                                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                                                 ) {
                                                     Icon(
-                                                        imageVector = Icons.Outlined.LinearScale,
+                                                        imageVector = Icons.Rounded.LinearScale,
                                                         contentDescription = null,
                                                         tint = MaterialTheme.colorScheme.secondary
                                                     )
@@ -387,7 +386,7 @@ fun ExperimentalSettingsScreen(
                                         onCheckedChange = settingsViewModel::setDelayProgressBar,
                                         leadingIcon = {
                                             Icon(
-                                                imageVector = Icons.Outlined.LinearScale,
+                                                imageVector = Icons.Rounded.LinearScale,
                                                 contentDescription = null,
                                                 tint = MaterialTheme.colorScheme.secondary
                                             )
@@ -401,7 +400,7 @@ fun ExperimentalSettingsScreen(
                                         onCheckedChange = settingsViewModel::setDelayControls,
                                         leadingIcon = {
                                             Icon(
-                                                imageVector = Icons.Outlined.PlayCircle,
+                                                imageVector = Icons.Rounded.PlayCircle,
                                                 contentDescription = null,
                                                 tint = MaterialTheme.colorScheme.secondary
                                             )
@@ -613,7 +612,7 @@ fun ExperimentalSettingsScreen(
                                                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                                                         ) {
                                                             Icon(
-                                                                imageVector = Icons.Outlined.LinearScale,
+                                                                imageVector = Icons.Rounded.LinearScale,
                                                                 contentDescription = null,
                                                                 tint = MaterialTheme.colorScheme.secondary
                                                             )

@@ -272,7 +272,7 @@ class YouTubeMusicVideoActivity : ComponentActivity() {
         val toggle = RemoteAction(
             android.graphics.drawable.Icon.createWithResource(
                 this,
-                if (playing) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play,
+                if (playing) com.twilighty.lmusic.R.drawable.rounded_pause_24 else com.twilighty.lmusic.R.drawable.rounded_play_arrow_24,
             ),
             label,
             label,

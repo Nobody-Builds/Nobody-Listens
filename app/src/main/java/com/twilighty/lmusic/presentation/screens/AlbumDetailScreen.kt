@@ -45,9 +45,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.twilighty.lmusic.ui.theme.LocalLMusicDarkTheme
-import com.twilighty.lmusic.ui.theme.LocalUseYuyuColors
+import com.twilighty.lmusic.ui.theme.LocalUseBrandColors
 import com.twilighty.lmusic.ui.theme.LMusicStatusBarStyle
-import com.twilighty.lmusic.ui.theme.yuyuPlayerScheme
+import com.twilighty.lmusic.ui.theme.nbPlayerScheme
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
@@ -67,15 +67,15 @@ import com.twilighty.lmusic.presentation.navigation.Screen
 import com.twilighty.lmusic.presentation.viewmodel.AlbumDetailViewModel
 import com.twilighty.lmusic.presentation.viewmodel.PlayerViewModel
 import com.twilighty.lmusic.presentation.viewmodel.PlaylistViewModel
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuCollectionHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuDetailAppBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuOverline
-import com.twilighty.lmusic.presentation.yuyu.YuyuPlayShuffleRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
-import com.twilighty.lmusic.presentation.yuyu.YuyuYearBlock
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbCollectionHeader
+import com.twilighty.lmusic.presentation.nb.NbDetailAppBar
+import com.twilighty.lmusic.presentation.nb.NbOverline
+import com.twilighty.lmusic.presentation.nb.NbPlayShuffleRow
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbType
+import com.twilighty.lmusic.presentation.nb.NbYearBlock
 import com.twilighty.lmusic.utils.formatSongCount
 import androidx.compose.ui.res.stringResource
 
@@ -100,18 +100,18 @@ fun AlbumDetailScreen(
     val bottomBarHeightDp = resolveNavBarOccupiedHeight(systemNavBarInset, navBarCompactMode)
     var showPlaylistBottomSheet by remember { mutableStateOf(false) }
     val isDarkTheme = LocalLMusicDarkTheme.current
-    val useYuyuColors = LocalUseYuyuColors.current
+    val useBrandColors = LocalUseBrandColors.current
     val baseColorScheme = MaterialTheme.colorScheme
     val albumArtUri = uiState.album?.albumArtUriString?.takeIf { it.isNotBlank() }
     val albumColorSchemeFlow = remember(albumArtUri) {
         albumArtUri?.let { playerViewModel.themeStateHolder.getAlbumColorSchemeFlow(it, eager = false) }
     }
     val albumColorSchemePair = albumColorSchemeFlow?.collectAsStateWithLifecycle()?.value
-    // Yuyu: keep the neutral canvas and take only the accent from the artwork.
-    val albumColorScheme = remember(albumColorSchemePair, isDarkTheme, baseColorScheme, useYuyuColors) {
+    // Daylight: keep the neutral canvas and take only the accent from the artwork.
+    val albumColorScheme = remember(albumColorSchemePair, isDarkTheme, baseColorScheme, useBrandColors) {
         val generated = albumColorSchemePair?.let { pair -> if (isDarkTheme) pair.dark else pair.light }
-        if (useYuyuColors) {
-            yuyuPlayerScheme(generated ?: baseColorScheme, baseColorScheme, isDarkTheme)
+        if (useBrandColors) {
+            nbPlayerScheme(generated ?: baseColorScheme, baseColorScheme, isDarkTheme)
         } else {
             generated ?: baseColorScheme
         }
@@ -142,7 +142,7 @@ fun AlbumDetailScreen(
 
         when {
             uiState.isLoading && uiState.album == null -> {
-                Box(modifier = Modifier.fillMaxSize().background(Yuyu.canvas), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.fillMaxSize().background(Nb.canvas), contentAlignment = Alignment.Center) {
                     ContainedLoadingIndicator()
                 }
             }
@@ -151,14 +151,14 @@ fun AlbumDetailScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Yuyu.canvas)
+                        .background(Nb.canvas)
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = uiState.error!!,
-                        color = Yuyu.danger,
-                        style = YuyuType.body
+                        color = Nb.danger,
+                        style = NbType.body
                     )
                 }
             }
@@ -188,9 +188,9 @@ fun AlbumDetailScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Yuyu.canvas)
+                        .background(Nb.canvas)
                 ) {
-                    YuyuDetailAppBar(
+                    NbDetailAppBar(
                         onBack = { navController.popBackStack() },
                         title = if (headerScrolledAway) album.title else null,
                         backContentDescription = stringResource(R.string.auth_cd_back)
@@ -239,7 +239,7 @@ fun AlbumDetailScreen(
                             songsByDisc.forEach { (discNumber, discSongs) ->
                                 if (songsByDisc.size > 1) {
                                     item(key = "disc_header_$discNumber") {
-                                        YuyuOverline(
+                                        NbOverline(
                                             text = stringResource(R.string.disc_number_header, discNumber),
                                             modifier = Modifier.padding(top = 16.dp, bottom = 4.dp, start = 4.dp)
                                         )
@@ -395,23 +395,23 @@ private fun AlbumHeader(
             .padding(bottom = 10.dp),
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        YuyuCollectionHeader(
+        NbCollectionHeader(
             overline = "Album",
             title = album.title,
-            titleColor = Yuyu.accentText,
+            titleColor = Nb.accentText,
             subtitle = album.artist.takeIf { it.isNotBlank() },
             onSubtitleClick = onArtistClick,
         ) {
-            Box(Modifier.size(148.dp).clip(YuyuShapes.lg)) {
-                YuyuArt(model = null, title = album.title, size = 148.dp, shape = YuyuShapes.lg)
+            Box(Modifier.size(148.dp).clip(NbShapes.lg)) {
+                NbArt(model = null, title = album.title, size = 148.dp, shape = NbShapes.lg)
                 if (!album.albumArtUriString.isNullOrBlank()) {
                     SmartImage(
                         model = album.albumArtUriString,
                         contentDescription = stringResource(R.string.album_cover_for, album.title),
-                        shape = YuyuShapes.lg,
+                        shape = NbShapes.lg,
                         targetSize = artRequestSize,
                         allowHardware = true,
-                        placeHolderBackgroundColor = Yuyu.muted,
+                        placeHolderBackgroundColor = Nb.muted,
                         onState = onHeaderArtworkState,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -419,7 +419,7 @@ private fun AlbumHeader(
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            if (year > 0) YuyuYearBlock(top = "Year", number = year.toString())
+            if (year > 0) NbYearBlock(top = "Year", number = year.toString())
             Column(Modifier.weight(1f)) {
                 val minutesText = when {
                     totalMinutes <= 0 -> null
@@ -428,22 +428,22 @@ private fun AlbumHeader(
                 }
                 Text(
                     text = listOfNotNull(formatSongCount(songsCount), minutesText).joinToString(" · "),
-                    style = YuyuType.label.copy(fontSize = 15.sp),
-                    color = Yuyu.text,
+                    style = NbType.label.copy(fontSize = 15.sp),
+                    color = Nb.text,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 if (genres.isNotEmpty()) {
                     Text(
                         text = genres.joinToString(", "),
-                        style = YuyuType.caption,
-                        color = Yuyu.textMuted,
+                        style = NbType.caption,
+                        color = Nb.textMuted,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
             }
         }
-        YuyuPlayShuffleRow(onPlay = onPlay, onShuffle = onShuffle, enabled = enabled)
+        NbPlayShuffleRow(onPlay = onPlay, onShuffle = onShuffle, enabled = enabled)
     }
 }

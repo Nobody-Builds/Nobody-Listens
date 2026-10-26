@@ -58,7 +58,7 @@ fun DismissUndoBar(
         modifier = modifier,
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        shadowElevation = 4.dp
+        shadowElevation = 0.dp
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Row(

@@ -34,15 +34,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Sort
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.DeleteOutline
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.MusicOff
-import androidx.compose.material.icons.filled.RemoveCircleOutline
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.MusicOff
+import androidx.compose.material.icons.rounded.RemoveCircleOutline
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.DragIndicator
@@ -131,32 +130,29 @@ import com.twilighty.lmusic.data.model.SortOption
 import com.twilighty.lmusic.data.model.PlaylistShapeType
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.border
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.RemoveCircleOutline
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import com.twilighty.lmusic.ui.theme.LMusicStatusBarStyle
-import com.twilighty.lmusic.presentation.yuyu.Yuyu
-import com.twilighty.lmusic.presentation.yuyu.YuyuActionRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuArt
-import com.twilighty.lmusic.presentation.yuyu.YuyuButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuButtonStyle
-import com.twilighty.lmusic.presentation.yuyu.YuyuChip
-import com.twilighty.lmusic.presentation.yuyu.YuyuCollectionHeader
-import com.twilighty.lmusic.presentation.yuyu.YuyuDetailAppBar
-import com.twilighty.lmusic.presentation.yuyu.YuyuDialog
-import com.twilighty.lmusic.presentation.yuyu.YuyuDivider
-import com.twilighty.lmusic.presentation.yuyu.YuyuEmptyState
-import com.twilighty.lmusic.presentation.yuyu.YuyuIconButton
-import com.twilighty.lmusic.presentation.yuyu.YuyuPlayShuffleRow
-import com.twilighty.lmusic.presentation.yuyu.YuyuShapes
-import com.twilighty.lmusic.presentation.yuyu.YuyuSheetHandle
-import com.twilighty.lmusic.presentation.yuyu.YuyuSheetShape
-import com.twilighty.lmusic.presentation.yuyu.YuyuTextField
-import com.twilighty.lmusic.presentation.yuyu.YuyuType
+import com.twilighty.lmusic.presentation.nb.Nb
+import com.twilighty.lmusic.presentation.nb.NbActionRow
+import com.twilighty.lmusic.presentation.nb.NbArt
+import com.twilighty.lmusic.presentation.nb.NbButton
+import com.twilighty.lmusic.presentation.nb.NbButtonStyle
+import com.twilighty.lmusic.presentation.nb.NbChip
+import com.twilighty.lmusic.presentation.nb.NbCollectionHeader
+import com.twilighty.lmusic.presentation.nb.NbDetailAppBar
+import com.twilighty.lmusic.presentation.nb.NbDialog
+import com.twilighty.lmusic.presentation.nb.NbDivider
+import com.twilighty.lmusic.presentation.nb.NbEmptyState
+import com.twilighty.lmusic.presentation.nb.NbIconButton
+import com.twilighty.lmusic.presentation.nb.NbPlayShuffleRow
+import com.twilighty.lmusic.presentation.nb.NbShapes
+import com.twilighty.lmusic.presentation.nb.NbSheetHandle
+import com.twilighty.lmusic.presentation.nb.NbSheetShape
+import com.twilighty.lmusic.presentation.nb.NbTextField
+import com.twilighty.lmusic.presentation.nb.NbType
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(
@@ -287,25 +283,25 @@ fun PlaylistDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Yuyu.canvas)
+            .background(Nb.canvas)
     ) {
-        YuyuDetailAppBar(
+        NbDetailAppBar(
             onBack = onBackClick,
             title = if (headerScrolledAway) currentPlaylist?.name ?: fallbackPlaylistName else null,
             backContentDescription = stringResource(R.string.auth_cd_back),
             actions = {
-                YuyuIconButton(
+                NbIconButton(
                     imageVector = Icons.AutoMirrored.Rounded.Sort,
                     contentDescription = sortSongsLabel,
                     onClick = { playerViewModel.showSortingSheet() }
                 )
                 if (!isFolderPlaylist) {
-                    YuyuIconButton(
+                    NbIconButton(
                         imageVector = Icons.Rounded.Edit,
                         contentDescription = editPlaylistLabel,
                         onClick = { showEditPlaylistDialog = true }
                     )
-                    YuyuIconButton(
+                    NbIconButton(
                         imageVector = Icons.Rounded.MoreVert,
                         contentDescription = moreOptionsLabel,
                         onClick = { showPlaylistOptionsSheet = true }
@@ -314,13 +310,13 @@ fun PlaylistDetailScreen(
             }
         )
         if (uiState.isLoading && currentPlaylist == null) {
-            Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator(color = Yuyu.ink) }
+            Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator(color = Nb.ink) }
         } else if (uiState.playlistNotFound) {
             Box(Modifier.fillMaxSize().padding(16.dp), Alignment.Center) {
-                Text(stringResource(id = R.string.playlist_not_found), style = YuyuType.body, color = Yuyu.textSecondary)
+                Text(stringResource(id = R.string.playlist_not_found), style = NbType.body, color = Nb.textSecondary)
             }
         } else if (currentPlaylist == null) {
-            Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator(color = Yuyu.ink) }
+            Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator(color = Nb.ink) }
         } else {
             Box(
                 modifier = Modifier
@@ -344,7 +340,7 @@ fun PlaylistDetailScreen(
                                 .padding(bottom = 12.dp),
                             verticalArrangement = Arrangement.spacedBy(18.dp)
                         ) {
-                            YuyuCollectionHeader(
+                            NbCollectionHeader(
                                 overline = if (isFolderPlaylist) "Folder" else "Playlist",
                                 title = currentPlaylist.name,
                                 caption = stringResource(
@@ -359,7 +355,7 @@ fun PlaylistDetailScreen(
                                     songs = songsInPlaylist
                                 )
                             }
-                            YuyuPlayShuffleRow(
+                            NbPlayShuffleRow(
                                 enabled = localReorderableSongs.isNotEmpty(),
                                 playLabel = playItLabel,
                                 shuffleLabel = shuffleLabel,
@@ -386,13 +382,13 @@ fun PlaylistDetailScreen(
                             )
                             if (!isFolderPlaylist && localReorderableSongs.isNotEmpty()) {
                                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    YuyuChip(
+                                    NbChip(
                                         text = reorderLabel,
                                         selected = isReorderModeEnabled,
                                         onClick = { isReorderModeEnabled = !isReorderModeEnabled },
                                         icon = rememberVectorPainter(Icons.Rounded.DragIndicator)
                                     )
-                                    YuyuChip(
+                                    NbChip(
                                         text = removeLabel,
                                         selected = isRemoveModeEnabled,
                                         onClick = { isRemoveModeEnabled = !isRemoveModeEnabled },
@@ -417,23 +413,23 @@ fun PlaylistDetailScreen(
                                     modifier = Modifier
                                         .size(48.dp)
                                         .clip(RoundedCornerShape(10.dp))
-                                        .background(Yuyu.muted)
-                                        .border(1.5.dp, Yuyu.borderStrong, RoundedCornerShape(10.dp)),
+                                        .background(Nb.muted)
+                                        .border(1.5.dp, Nb.borderStrong, RoundedCornerShape(10.dp)),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Icon(Icons.Rounded.Add, contentDescription = addSongsCd, tint = Yuyu.text)
+                                    Icon(Icons.Rounded.Add, contentDescription = addSongsCd, tint = Nb.text)
                                 }
-                                Text(addSongsCd, style = YuyuType.title, color = Yuyu.textSecondary)
+                                Text(addSongsCd, style = NbType.title, color = Nb.textSecondary)
                             }
                         }
                     }
 
                     if (localReorderableSongs.isEmpty()) {
                         item(key = "playlist_empty", contentType = "playlist_empty") {
-                            YuyuEmptyState(
+                            NbEmptyState(
                                 title = playlistEmptyTitle,
                                 body = if (isFolderPlaylist) playlistEmptyFolder else playlistEmptyAddHint,
-                                icon = rememberVectorPainter(Icons.Filled.MusicOff),
+                                icon = rememberVectorPainter(Icons.Rounded.MusicOff),
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                             )
                         }
@@ -490,7 +486,7 @@ fun PlaylistDetailScreen(
                                         Icon(
                                             imageVector = Icons.Rounded.DragIndicator,
                                             contentDescription = reorderSongCd,
-                                            tint = Yuyu.textMuted
+                                            tint = Nb.textMuted
                                         )
                                     }
                                 }
@@ -532,10 +528,10 @@ fun PlaylistDetailScreen(
         ModalBottomSheet(
             onDismissRequest = { showPlaylistOptionsSheet = false },
             sheetState = sheetState,
-            containerColor = Yuyu.canvas,
+            containerColor = Nb.canvas,
             tonalElevation = 0.dp,
-            shape = YuyuSheetShape,
-            dragHandle = { YuyuSheetHandle() }
+            shape = NbSheetShape,
+            dragHandle = { NbSheetHandle() }
         ) {
             Column(
                 modifier = Modifier
@@ -551,19 +547,19 @@ fun PlaylistDetailScreen(
                 ) {
                     Text(
                         text = playlistOptionsTitle,
-                        style = YuyuType.h3,
-                        color = Yuyu.text
+                        style = NbType.h3,
+                        color = Nb.text
                     )
                     currentPlaylist?.name?.let {
                         Text(
                             text = it,
-                            style = YuyuType.meta,
-                            color = Yuyu.textMuted
+                            style = NbType.meta,
+                            color = Nb.textMuted
                         )
                     }
                 }
-                YuyuDivider(Modifier.padding(vertical = 6.dp))
-                YuyuActionRow(
+                NbDivider(Modifier.padding(vertical = 6.dp))
+                NbActionRow(
                     icon = painterResource(R.drawable.rounded_edit_24),
                     text = editPlaylistLabel,
                     onClick = {
@@ -571,15 +567,15 @@ fun PlaylistDetailScreen(
                         showEditPlaylistDialog = true
                     }
                 )
-                YuyuActionRow(
-                    icon = painterResource(R.drawable.outline_graph_1_24),
+                NbActionRow(
+                    icon = painterResource(R.drawable.rounded_graph_1_24),
                     text = setDefaultTransitionLabel,
                     onClick = {
                         showPlaylistOptionsSheet = false
                         navController.navigateSafely(Screen.EditTransition.createRoute(playlistId))
                     }
                 )
-                YuyuActionRow(
+                NbActionRow(
                     icon = painterResource(R.drawable.rounded_attach_file_24),
                     text = exportPlaylistLabel,
                     onClick = {
@@ -587,8 +583,8 @@ fun PlaylistDetailScreen(
                         m3uExportLauncher.launch("${currentPlaylist?.name ?: fallbackPlaylistName}.m3u")
                     }
                 )
-                YuyuDivider(Modifier.padding(vertical = 4.dp))
-                YuyuActionRow(
+                NbDivider(Modifier.padding(vertical = 4.dp))
+                NbActionRow(
                     icon = painterResource(R.drawable.rounded_delete_24),
                     text = deletePlaylistLabel,
                     danger = true,
@@ -641,24 +637,24 @@ fun PlaylistDetailScreen(
         )
     }
     if (showDeleteConfirmation && currentPlaylist != null) {
-        YuyuDialog(
+        NbDialog(
             onDismissRequest = { showDeleteConfirmation = false },
             title = deletePlaylistConfirmTitle,
             body = deletePlaylistConfirmBody,
             actions = {
-                YuyuButton(
+                NbButton(
                     text = stringResource(R.string.cancel),
                     onClick = { showDeleteConfirmation = false },
-                    style = YuyuButtonStyle.Secondary
+                    style = NbButtonStyle.Secondary
                 )
-                YuyuButton(
+                NbButton(
                     text = stringResource(R.string.delete_action),
                     onClick = {
                         playlistViewModel.deletePlaylist(currentPlaylist.id)
                         onDeletePlayListClick()
                         showDeleteConfirmation = false
                     },
-                    style = YuyuButtonStyle.Danger
+                    style = NbButtonStyle.Danger
                 )
             }
         )
@@ -836,16 +832,16 @@ private fun PlaylistMosaicArt(
     Box(
         modifier = Modifier
             .size(size)
-            .clip(YuyuShapes.lg)
-            .background(Yuyu.canvas)
+            .clip(NbShapes.lg)
+            .background(Nb.canvas)
     ) {
         when {
             !coverImageUri.isNullOrBlank() -> {
-                YuyuArt(model = null, title = name, size = size, shape = YuyuShapes.lg)
+                NbArt(model = null, title = name, size = size, shape = NbShapes.lg)
                 SmartImage(
                     model = coverImageUri,
                     contentDescription = name,
-                    shape = YuyuShapes.lg,
+                    shape = NbShapes.lg,
                     targetSize = Size(sizePx, sizePx),
                     placeHolderBackgroundColor = Color.Transparent,
                     modifier = Modifier.fillMaxSize()
@@ -856,7 +852,7 @@ private fun PlaylistMosaicArt(
                     covers.chunked(2).forEach { pair ->
                         Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                             pair.forEach { song ->
-                                YuyuArt(
+                                NbArt(
                                     model = song.albumArtUriString,
                                     title = song.album.ifBlank { song.title },
                                     size = (size - 2.dp) / 2,
@@ -868,11 +864,11 @@ private fun PlaylistMosaicArt(
                 }
             }
             else -> {
-                YuyuArt(
+                NbArt(
                     model = covers.firstOrNull()?.albumArtUriString,
                     title = name,
                     size = size,
-                    shape = YuyuShapes.lg
+                    shape = NbShapes.lg
                 )
             }
         }
@@ -887,23 +883,23 @@ fun RenamePlaylistDialog(currentName: String, onDismiss: () -> Unit, onRename: (
     val renameTitle = stringResource(R.string.presentation_batch_b_rename_playlist_dialog_title)
     val newNameLabel = stringResource(R.string.presentation_batch_b_new_name)
     val renameAction = stringResource(R.string.action_rename)
-    YuyuDialog(
+    NbDialog(
         onDismissRequest = onDismiss,
         title = renameTitle,
         actions = {
-            YuyuButton(
+            NbButton(
                 text = stringResource(R.string.cancel),
                 onClick = onDismiss,
-                style = YuyuButtonStyle.Secondary
+                style = NbButtonStyle.Secondary
             )
-            YuyuButton(
+            NbButton(
                 text = renameAction,
                 onClick = { if (newName.text.isNotBlank()) onRename(newName.text) },
                 enabled = newName.text.isNotBlank() && newName.text != currentName
             )
         }
     ) {
-        YuyuTextField(
+        NbTextField(
             value = newName,
             onValueChange = { newName = it },
             label = newNameLabel,

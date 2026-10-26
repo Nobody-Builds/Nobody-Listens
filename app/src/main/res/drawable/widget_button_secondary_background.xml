@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Yuyu widget: flat, no gradients. -->
+<!-- Daylight widget: flat, no gradients. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/yuyu_widget_muted" />
+    <solid android:color="@color/nb_widget_muted" />
     <corners android:radius="999dp" />
 </shape>

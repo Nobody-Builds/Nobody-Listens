@@ -1,4 +1,4 @@
-package com.twilighty.lmusic.presentation.yuyu
+package com.twilighty.lmusic.presentation.nb
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,12 +39,12 @@ import androidx.compose.ui.unit.sp
  * away) and trailing [actions]. Draws on the canvas colour and pads for the status bar.
  */
 @Composable
-fun YuyuDetailAppBar(
+fun NbDetailAppBar(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     title: String? = null,
     backContentDescription: String = "Back",
-    background: Color = Yuyu.canvas,
+    background: Color = Nb.canvas,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     Row(
@@ -57,14 +57,14 @@ fun YuyuDetailAppBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        YuyuIconButton(
+        NbIconButton(
             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
             contentDescription = backContentDescription,
             onClick = onBack
         )
         Box(Modifier.weight(1f).padding(horizontal = 4.dp)) {
             if (title != null) {
-                Text(title, style = YuyuType.h3, color = Yuyu.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(title, style = NbType.h3, color = Nb.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
         actions()
@@ -76,11 +76,11 @@ fun YuyuDetailAppBar(
  * the album and playlist header.
  */
 @Composable
-fun YuyuCollectionHeader(
+fun NbCollectionHeader(
     overline: String,
     title: String,
     modifier: Modifier = Modifier,
-    titleColor: Color = Yuyu.text,
+    titleColor: Color = Nb.text,
     subtitle: String? = null,
     onSubtitleClick: (() -> Unit)? = null,
     caption: String? = null,
@@ -93,10 +93,10 @@ fun YuyuCollectionHeader(
     ) {
         art()
         Column(Modifier.weight(1f).padding(bottom = 2.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            YuyuOverline(overline)
+            NbOverline(overline)
             Text(
                 title,
-                style = YuyuType.display(if (title.length > 22) 26.sp else 32.sp),
+                style = NbType.display(if (title.length > 22) 26.sp else 32.sp),
                 color = titleColor,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
@@ -104,23 +104,23 @@ fun YuyuCollectionHeader(
             if (subtitle != null) {
                 Text(
                     subtitle,
-                    style = YuyuType.title.copy(fontWeight = FontWeight.Bold),
-                    color = Yuyu.text,
+                    style = NbType.title.copy(fontWeight = FontWeight.Bold),
+                    color = Nb.text,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = if (onSubtitleClick != null) {
-                        Modifier.clip(YuyuShapes.sm).clickable(role = Role.Button, onClick = onSubtitleClick)
+                        Modifier.clip(NbShapes.sm).clickable(role = Role.Button, onClick = onSubtitleClick)
                     } else Modifier
                 )
             }
-            if (caption != null) Text(caption, style = YuyuType.meta, color = Yuyu.textMuted, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            if (caption != null) Text(caption, style = NbType.meta, color = Nb.textMuted, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
     }
 }
 
 /** Centered header for artists: round avatar, display name, muted meta line. */
 @Composable
-fun YuyuAvatarHeader(
+fun NbAvatarHeader(
     title: String,
     modifier: Modifier = Modifier,
     caption: String? = null,
@@ -134,19 +134,19 @@ fun YuyuAvatarHeader(
         avatar()
         Text(
             title,
-            style = YuyuType.display(if (title.length > 20) 28.sp else 36.sp),
-            color = Yuyu.text,
+            style = NbType.display(if (title.length > 20) 28.sp else 36.sp),
+            color = Nb.text,
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        if (caption != null) Text(caption, style = YuyuType.meta, color = Yuyu.textMuted, textAlign = TextAlign.Center)
+        if (caption != null) Text(caption, style = NbType.meta, color = Nb.textMuted, textAlign = TextAlign.Center)
     }
 }
 
 /** Play (ink, primary) + Shuffle (outline, secondary) pills that share the row. */
 @Composable
-fun YuyuPlayShuffleRow(
+fun NbPlayShuffleRow(
     onPlay: () -> Unit,
     onShuffle: () -> Unit,
     modifier: Modifier = Modifier,
@@ -160,21 +160,21 @@ fun YuyuPlayShuffleRow(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        YuyuButton(
+        NbButton(
             text = playLabel,
             onClick = onPlay,
             modifier = Modifier.weight(1f),
-            style = YuyuButtonStyle.Primary,
-            size = YuyuButtonSize.Large,
+            style = NbButtonStyle.Primary,
+            size = NbButtonSize.Large,
             enabled = enabled,
             icon = rememberVectorPainter(Icons.Rounded.PlayArrow)
         )
-        YuyuButton(
+        NbButton(
             text = shuffleLabel,
             onClick = onShuffle,
             modifier = Modifier.weight(1f),
-            style = YuyuButtonStyle.Secondary,
-            size = YuyuButtonSize.Large,
+            style = NbButtonStyle.Secondary,
+            size = NbButtonSize.Large,
             enabled = enabled,
             icon = rememberVectorPainter(Icons.Rounded.Shuffle)
         )

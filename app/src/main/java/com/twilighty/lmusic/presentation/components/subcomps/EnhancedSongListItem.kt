@@ -140,7 +140,7 @@ fun EnhancedSongListItem(
         if (state.isSelected) 1f else 0f
     }
 
-    // Yuyu song row: a flat row on the canvas, 16dp radius, square art with 10dp corners.
+    // Daylight song row: a flat row on the canvas, 16dp radius, square art with 10dp corners.
     val animatedCornerRadius = 16.dp
     val animatedAlbumCornerRadius = 10.dp
     val selectionScale = lerpFloat(1f, 0.98f, selectionScaleProgress)
@@ -352,7 +352,7 @@ fun EnhancedSongListItem(
                     if (isHighlighted && !isSelectionMode) {
                         AutoScrollingTextOnDemand(
                             text = song.title,
-                            style = com.twilighty.lmusic.presentation.yuyu.YuyuType.title.copy(color = titleColor),
+                            style = com.twilighty.lmusic.presentation.nb.NbType.title.copy(color = titleColor),
                             gradientEdgeColor = containerColor,
                             expansionFractionProvider = { 1f },
                         )
@@ -360,7 +360,7 @@ fun EnhancedSongListItem(
                     } else {
                         Text(
                             text = song.title,
-                            style = com.twilighty.lmusic.presentation.yuyu.YuyuType.title,
+                            style = com.twilighty.lmusic.presentation.nb.NbType.title,
                             maxLines = 1,
                             color = titleColor,
                             overflow = TextOverflow.Ellipsis
@@ -369,7 +369,7 @@ fun EnhancedSongListItem(
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = song.displayArtist,
-                        style = com.twilighty.lmusic.presentation.yuyu.YuyuType.meta,
+                        style = com.twilighty.lmusic.presentation.nb.NbType.meta,
                         color = metaColor,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
