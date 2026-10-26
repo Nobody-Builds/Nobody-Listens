@@ -2,6 +2,8 @@
 
 ## Build and test (Windows)
 
+- No Kotlin file may exceed 700 lines (`SourceFileSizeTest`). Split by responsibility, in a refactor commit separate from behaviour changes.
+
 - `minSdk` is 33 (Android 13). It was 35 after the rebrand, but lint's `NewApi` check at 33 found no unguarded Android 14/15 calls (2026-10-20). Rerun that check before using any new platform API.
 
 - JDK: Android Studio's bundled one. Set `JAVA_HOME="C:\Program Files\Android\Android Studio\jbr"` and `ANDROID_HOME="%LOCALAPPDATA%\Android\Sdk"` (there is no `local.properties`).
@@ -32,6 +34,7 @@ The source is the sibling repo `NobodyBuilds-Design` (`tokens/tokens.json`, `doc
 - **Pitch black (OLED):** an opt-in switch under App theme (hidden when the theme is Light), stored as `app_pitch_black_v1` in `ThemePreferencesRepository`. It is the one deliberate exception to the brand spec's "no black" dark mode. `DaylightPitchBlackColorScheme` makes the canvas `#000000` and steps cards up through Night Shift, keeping the dark scheme's accents and text (`DaylightSchemeTest` checks contrast). With Material You, `withPitchBlackCanvas()` blacks out only the canvas layers. Album-art player schemes and widgets are unchanged.
 - **Widgets:** `ui/glancewidget/NbWidgetTheme.kt` plus `res/values(-night)/colors_nb_widget.xml`. The play button is Hard Hat with a Night Shift icon.
 - **Watch (`wear/`):** Wear Compose has no Daylight scheme, so `presentation/theme/WearTheme.kt` `DefaultWearPalette` holds the dark Daylight values (Night Shift canvas, Paper text, Hard Hat play button, navy transport pills); `WearPaletteContrastTest` checks the pairs. Album-art and phone palettes are used while a song plays. Titles use `WearTitleFont` (Gilroy ExtraBold, copied into `wear/src/main/res/font`). `WearScreen` (`rememberWearScreen()`) gives the player its round/square inset and a control scale designed at 192 dp and capped at 1.1×, because larger buttons push the bottom row past the curve. Test on the Galaxy Watch5 Pro (225 dp round) over wireless adb; wear unit tests are `./gradlew :wear:testDebugUnitTest`.
+- **Watch standalone:** the watch must stay useful with no phone. Search (`WatchSearchScreen`, `WearSearchViewModel`) matches songs on the watch first (`WearSearchMatcher`) and only then asks the phone (`WearBrowseRequest.SEARCH`, answered by `WearLibraryBrowser`). Saved playlists (`WearPlaylistRepository`, tables `local_playlists` / `local_playlist_songs`) store the phone playlist and fetch its songs one transfer at a time, so they play offline. `WearMusicDatabase` migrations must be listed in `ALL_MIGRATIONS` (registered in `WearModule`); before 2026-10-26 they were defined but never registered. The phone marks songs saveable (`canSaveToWatch`) in `WearLibraryBrowser`; the transfer still checks the file.
 
 ## YouTube Music (`data/ytmusic`, `presentation/ytmusic`)
 
@@ -41,7 +44,7 @@ Rules that each caused a real "won't play" bug:
 
 - **Use `YouTubeMusicClients.http(okHttpClient)`, never the app-wide `OkHttpClient` directly.** The shared client rewrites `User-Agent` to `NobodyListens/1.0`, and googlevideo URLs are bound to the requesting client's User-Agent. In debug it also logs whole bodies, which buffers entire songs in memory.
 - **Always send a `Range` header to googlevideo.** Requests without one stall forever. ExoPlayer sends none for position 0, so `YouTubeMusicStreamProxy` sets `alwaysRequestRange` and answers with a plain 200. The downloader fetches in 4 MB ranges.
-- **Saved queues hold proxy URLs (`http://127.0.0.1:<port>/ytmusic/<id>`), and the port changes every launch.** `DualPlayerEngine`'s resolver calls `rebindStaleProxyUri` to point them at the running proxy.
+- **Saved queues hold proxy URLs (`http://127.0.0.1:<port>/ytmusic/<id>`), and the port changes every launch.** `CloudUriResolver` (used by `DualPlayerEngine`) calls `rebindStaleProxyUri` to point them at the running proxy.
 - `resolveStream` shares one lookup per song and caches it until 30 minutes before the URL expires. The player, the proxy and the next-song pre-loader all ask for the same song at the same time.
 - Only clients with `probeBeforeUse` (the IOS fallback) get their URL probed past 1.5 MB. VISIONOS URLs don't get cut off, so probing them only adds a round trip. A client that fails gets a 10-minute backoff.
 

@@ -223,6 +223,10 @@ fun SongListScreen(
                         )
                     }
 
+                    if (browseType == WearBrowseRequest.PLAYLIST_SONGS && playbackContextId != null && state.items.isNotEmpty()) {
+                        item { SavePlaylistToWatchChip(playbackContextId, title, state.items) }
+                    }
+
                     if (state.items.isEmpty()) {
                         item {
                             Text(

@@ -77,4 +77,19 @@
     <string name="wear_saving">Сохранение…</string>
     <string name="wear_save_to_watch">Сохранить на часы</string>
     <string name="wear_confirm_save">Подтвердить сохранение</string>
+    <string name="wear_search">Поиск</string>
+    <string name="wear_search_hint">Поиск песен</string>
+    <string name="wear_search_on_watch">На часах</string>
+    <string name="wear_search_on_phone">На телефоне</string>
+    <string name="wear_search_no_results">Песни не найдены</string>
+    <string name="wear_search_phone_offline">Телефон не подключён. Показаны песни на часах.</string>
+    <string name="wear_watch_playlists">Плейлисты на часах</string>
+    <string name="wear_watch_playlists_empty">Откройте плейлист в разделе «Плейлисты» и сохраните его, чтобы слушать без телефона.</string>
+    <string name="wear_save_playlist_to_watch">Сохранить плейлист на часы</string>
+    <string name="wear_update_playlist_on_watch">Обновить на часах</string>
+    <string name="wear_saving_playlist">Сохранение на часы…</string>
+    <string name="wear_playlist_saved_count">%1$d из %2$d на часах</string>
+    <string name="wear_play_all">Слушать</string>
+    <string name="wear_remove_playlist">Удалить с часов</string>
+    <string name="wear_not_on_watch_yet">Ещё не на часах</string>
 </resources>

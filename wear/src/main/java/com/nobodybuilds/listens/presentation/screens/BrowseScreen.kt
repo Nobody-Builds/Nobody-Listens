@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Watch
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.nobodybuilds.listens.R
@@ -100,6 +101,15 @@ fun BrowseScreen(
 
             item {
                 BrowseCategoryChip(
+                    label = stringResource(R.string.wear_search),
+                    icon = Icons.Rounded.Search,
+                    iconTint = palette.textPrimary,
+                    onClick = { onCategoryClick("search", "Search") },
+                )
+            }
+
+            item {
+                BrowseCategoryChip(
                     label = "Favorites",
                     icon = Icons.Rounded.Favorite,
                     iconTint = palette.favoriteActive,
@@ -149,6 +159,15 @@ fun BrowseScreen(
                     icon = Icons.Rounded.Watch,
                     iconTint = palette.textSecondary,
                     onClick = { onCategoryClick("downloads", "On Watch") },
+                )
+            }
+
+            item {
+                BrowseCategoryChip(
+                    label = stringResource(R.string.wear_watch_playlists),
+                    icon = Icons.AutoMirrored.Rounded.QueueMusic,
+                    iconTint = palette.shuffleActive,
+                    onClick = { onCategoryClick("watch_playlists", "Watch playlists") },
                 )
             }
         }

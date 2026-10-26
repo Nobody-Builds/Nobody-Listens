@@ -26,5 +26,7 @@ data class WearBrowseRequest(
         const val ALBUM_SONGS = "album_songs"
         const val ARTIST_SONGS = "artist_songs"
         const val PLAYLIST_SONGS = "playlist_songs"
+        /** Songs matching the query in [contextId]; also a play-from-context type. */
+        const val SEARCH = "search"
     }
 }

@@ -45,6 +45,7 @@ internal class WearLibraryBrowser(
             "all_songs" -> {
                 musicRepository.getSongsPage(limit = MAX_SONGS, offset = 0)
             }
+            WearBrowseRequest.SEARCH -> searchSongs(contextId)
             else -> {
                 Timber.tag(TAG).w("Unknown context type: $contextType")
                 emptyList()
@@ -144,11 +145,18 @@ internal class WearLibraryBrowser(
                 getCurrentQueueItems()
             }
 
+            WearBrowseRequest.SEARCH -> searchSongs(contextId).map { song -> song.toWearLibraryItem() }
+
             else -> {
                 Timber.tag(TAG).w("Unknown browse type: $browseType")
                 emptyList()
             }
         }
+    }
+
+    private suspend fun searchSongs(query: String?): List<Song> {
+        if (query.isNullOrBlank()) return emptyList()
+        return musicRepository.searchSongs(query.trim()).first().take(MAX_SEARCH_RESULTS)
     }
 
     private fun Song.toWearLibraryItem(): WearLibraryItem {
@@ -157,6 +165,9 @@ internal class WearLibraryBrowser(
             title = title,
             subtitle = displayArtist,
             type = WearLibraryItem.TYPE_SONG,
+            // A cheap guess for the list; the transfer itself checks the file properly.
+            canSaveToWatch = path.isNotBlank() || contentUriString.startsWith("content://") ||
+                contentUriString.startsWith("file://"),
         )
     }
 
@@ -165,6 +176,7 @@ internal class WearLibraryBrowser(
         const val MAX_SONGS = 500
         const val MAX_ALBUMS = 200
         const val MAX_ARTISTS = 200
+        const val MAX_SEARCH_RESULTS = 50
     }
 }
 

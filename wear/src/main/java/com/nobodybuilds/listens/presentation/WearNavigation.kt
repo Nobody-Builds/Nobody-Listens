@@ -16,6 +16,9 @@ import com.nobodybuilds.listens.presentation.screens.QueueScreen
 import com.nobodybuilds.listens.presentation.screens.SongListScreen
 import com.nobodybuilds.listens.presentation.screens.TimerScreen
 import com.nobodybuilds.listens.presentation.screens.VolumeScreen
+import com.nobodybuilds.listens.presentation.screens.WatchPlaylistScreen
+import com.nobodybuilds.listens.presentation.screens.WatchPlaylistsScreen
+import com.nobodybuilds.listens.presentation.screens.WatchSearchScreen
 import java.net.URLDecoder
 import java.net.URLEncoder
 
@@ -37,6 +40,13 @@ object WearScreens {
     const val TIMER = "timer"
     const val BROWSE = "browse"
     const val DOWNLOADS = "downloads"
+    const val SEARCH = "search"
+    const val WATCH_PLAYLISTS = "watch_playlists"
+    const val WATCH_PLAYLIST = "watch_playlist/{playlistId}/{title}"
+
+    fun watchPlaylistRoute(playlistId: String, title: String): String {
+        return "watch_playlist/${URLEncoder.encode(playlistId, "UTF-8")}/${URLEncoder.encode(title, "UTF-8")}"
+    }
     const val LIBRARY_LIST = "library_list/{browseType}/{title}"
     const val SONG_LIST = "song_list/{browseType}/{contextId}/{title}"
 
@@ -56,6 +66,12 @@ fun WearNavigation() {
         when (browseType) {
             "downloads" -> {
                 navController.navigate(WearScreens.DOWNLOADS)
+            }
+            "search" -> {
+                navController.navigate(WearScreens.SEARCH)
+            }
+            "watch_playlists" -> {
+                navController.navigate(WearScreens.WATCH_PLAYLISTS)
             }
             "favorites", "all_songs" -> {
                 navController.navigate(
@@ -139,6 +155,32 @@ fun WearNavigation() {
 
         composable(WearScreens.DOWNLOADS) {
             DownloadsScreen()
+        }
+
+        composable(WearScreens.SEARCH) {
+            WatchSearchScreen()
+        }
+
+        composable(WearScreens.WATCH_PLAYLISTS) {
+            WatchPlaylistsScreen(
+                onPlaylistClick = { playlistId, name ->
+                    navController.navigate(WearScreens.watchPlaylistRoute(playlistId, name))
+                },
+            )
+        }
+
+        composable(
+            route = WearScreens.WATCH_PLAYLIST,
+            arguments = listOf(
+                navArgument("playlistId") { type = NavType.StringType },
+                navArgument("title") { type = NavType.StringType },
+            ),
+        ) { backStackEntry ->
+            WatchPlaylistScreen(
+                playlistId = URLDecoder.decode(backStackEntry.arguments?.getString("playlistId").orEmpty(), "UTF-8"),
+                name = URLDecoder.decode(backStackEntry.arguments?.getString("title").orEmpty(), "UTF-8"),
+                onRemoved = { navController.popBackStack() },
+            )
         }
 
         composable(WearScreens.BROWSE) {

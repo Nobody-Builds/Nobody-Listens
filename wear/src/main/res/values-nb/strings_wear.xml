@@ -77,4 +77,19 @@
     <string name="wear_saving">Lagrer…</string>
     <string name="wear_save_to_watch">Lagre på klokken</string>
     <string name="wear_confirm_save">Bekreft lagring</string>
+    <string name="wear_search">Søk</string>
+    <string name="wear_search_hint">Søk etter sanger</string>
+    <string name="wear_search_on_watch">På klokken</string>
+    <string name="wear_search_on_phone">På telefonen</string>
+    <string name="wear_search_no_results">Fant ingen sanger</string>
+    <string name="wear_search_phone_offline">Telefonen er ikke tilkoblet. Viser sanger på klokken.</string>
+    <string name="wear_watch_playlists">Spillelister på klokken</string>
+    <string name="wear_watch_playlists_empty">Åpne en spilleliste under Spillelister og lagre den for å spille uten telefonen.</string>
+    <string name="wear_save_playlist_to_watch">Lagre spillelisten på klokken</string>
+    <string name="wear_update_playlist_on_watch">Oppdater på klokken</string>
+    <string name="wear_saving_playlist">Lagrer på klokken…</string>
+    <string name="wear_playlist_saved_count">%1$d av %2$d på klokken</string>
+    <string name="wear_play_all">Spill av</string>
+    <string name="wear_remove_playlist">Fjern fra klokken</string>
+    <string name="wear_not_on_watch_yet">Ikke på klokken ennå</string>
 </resources>
