@@ -1,83 +1,48 @@
 package com.nobodybuilds.listens.presentation.screens
 
-import com.nobodybuilds.listens.presentation.navigation.navigateSafely
 import com.nobodybuilds.listens.presentation.navigation.navigateSafelyReplacing
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.nobodybuilds.listens.R
-import com.nobodybuilds.listens.data.model.Artist
 import com.nobodybuilds.listens.data.model.Song
 import com.nobodybuilds.listens.data.preferences.AlbumArtPaletteStyle
-import com.nobodybuilds.listens.presentation.components.AutoScrollingTextOnDemand
-import com.nobodybuilds.listens.presentation.components.ExpressiveTopBarContent
 import com.nobodybuilds.listens.presentation.components.ExpressiveScrollBar
 import com.nobodybuilds.listens.presentation.components.GenreSortBottomSheet
 import com.nobodybuilds.listens.presentation.components.MiniPlayerHeight
-import com.nobodybuilds.listens.presentation.components.SmartImageCompactListTargetSize
-import com.nobodybuilds.listens.presentation.components.SmartImage
 import com.nobodybuilds.listens.presentation.components.SongInfoBottomSheet
 import com.nobodybuilds.listens.presentation.components.extractFastScrollGlyph
-import com.nobodybuilds.listens.presentation.components.subcomps.EnhancedSongListItem
 import com.nobodybuilds.listens.presentation.screens.QuickFillDialog
 import com.nobodybuilds.listens.presentation.viewmodel.GenreDetailListItem
 import com.nobodybuilds.listens.presentation.viewmodel.GenreDetailViewModel
 import com.nobodybuilds.listens.presentation.viewmodel.SortOption
-import com.nobodybuilds.listens.presentation.viewmodel.SectionData
-import com.nobodybuilds.listens.presentation.viewmodel.AlbumData
 import com.nobodybuilds.listens.presentation.viewmodel.PlayerViewModel
-import com.nobodybuilds.listens.presentation.viewmodel.StablePlayerState
 import com.nobodybuilds.listens.ui.theme.LocalNobodyListensDarkTheme
-import com.nobodybuilds.listens.utils.formatDuration
-import com.nobodybuilds.listens.utils.formatSongCount
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import kotlin.math.roundToInt
@@ -606,307 +571,3 @@ private fun GenreDetailListItem.fastScrollLabel(sortOption: SortOption): String?
             is GenreDetailListItem.Divider -> null
         }
     }
-
-// --- Top Bar Component ---
-@Composable
-fun GenreCollapsibleTopBar(
-    title: String,
-    collapseFraction: Float,
-    headerHeight: Dp,
-    onBackPressed: () -> Unit,
-    startColor: Color,
-    containerColor: Color,
-    contentColor: Color,
-    collapsedContentColor: Color
-) {
-    val solidAlpha = (collapseFraction * 2f).coerceIn(0f, 1f)
-    val animatedContentColor = androidx.compose.ui.graphics.lerp(
-        start = contentColor,
-        stop = collapsedContentColor,
-        fraction = solidAlpha
-    )
-
-    // Optimization: Pre-calculate alpha values
-    val gradientAlpha = 0.8f * (1f - solidAlpha)
-    
-    // Optimization: Reuse gradient brush to avoid allocation on every pixel scroll
-    val verticalGradient = remember(startColor, gradientAlpha) {
-        Brush.verticalGradient(
-            colors = listOf(
-                startColor.copy(alpha = gradientAlpha),
-                startColor.copy(alpha = 0f)
-            )
-        )
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(headerHeight)
-            .zIndex(5f)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(containerColor.copy(alpha = solidAlpha)) 
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(verticalGradient)
-        )
-
-        Box(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
-             FilledIconButton(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(start = 12.dp, top = 4.dp)
-                    .zIndex(10f),
-                onClick = onBackPressed,
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = animatedContentColor.copy(alpha = 0.1f),
-                    contentColor = animatedContentColor
-                )
-            ) {
-                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.auth_cd_back), tint = animatedContentColor)
-            }
-
-            ExpressiveTopBarContent(
-                title = title,
-                collapseFraction = collapseFraction,
-                modifier = Modifier.fillMaxSize(),
-                collapsedTitleStartPadding = 68.dp,
-                expandedTitleStartPadding = 20.dp,
-                maxLines = 1,
-                contentColor = animatedContentColor
-            )
-        }
-    }
-}
-
-
-// --- Section Extensions ---
-
-// --- Item Composables for Flattened List ---
-
-@Composable
-fun GenreArtistHeader(
-    artistName: String,
-    artistImageUrl: String?
-) {
-    val headerShape = remember {
-        AbsoluteSmoothCornerShape(
-            cornerRadiusTR = 24.dp, smoothnessAsPercentTR = 60,
-            cornerRadiusTL = 24.dp, smoothnessAsPercentTL = 60,
-            cornerRadiusBR = 0.dp, smoothnessAsPercentBR = 0,
-            cornerRadiusBL = 0.dp, smoothnessAsPercentBL = 0
-        )
-    }
-
-    val context = LocalContext.current
-    val imageRequest = remember(artistImageUrl) {
-        if (!artistImageUrl.isNullOrEmpty()) {
-            ImageRequest.Builder(context)
-                .data(artistImageUrl)
-                .crossfade(true)
-                .build()
-        } else null
-    }
-
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.5f),
-        shape = headerShape,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Surface(
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (imageRequest != null) {
-                        AsyncImage(
-                            model = imageRequest,
-                            contentDescription = artistName,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Rounded.Person,
-                            contentDescription = stringResource(R.string.cd_generic_artist),
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier
-                                .padding(10.dp)
-                                .fillMaxSize()
-                        )
-                    }
-                }
-
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    text = artistName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun GenreAlbumHeader(
-    album: AlbumData,
-    useArtistStyle: Boolean,
-    onSongClick: (Song) -> Unit
-) {
-    val containerColor = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.5f)
-    val shape = remember(useArtistStyle) {
-        if (useArtistStyle) {
-            RectangleShape
-        } else {
-             AbsoluteSmoothCornerShape(
-                cornerRadiusTR = 24.dp, smoothnessAsPercentTR = 60,
-                cornerRadiusTL = 24.dp, smoothnessAsPercentTL = 60,
-                cornerRadiusBR = 0.dp, smoothnessAsPercentBR = 0,
-                cornerRadiusBL = 0.dp, smoothnessAsPercentBL = 0
-            )
-        }
-    }
-    
-    Box(
-         modifier = Modifier
-            .fillMaxWidth()
-            .background(containerColor, shape)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SmartImage(
-                model = album.artUri,
-                contentDescription = null,
-                targetSize = SmartImageCompactListTargetSize,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
-            Spacer(Modifier.width(16.dp))
-            Column(Modifier.weight(1f)) {
-                val shouldScroll = album.name.length > 20
-                if (shouldScroll) {
-                    AutoScrollingTextOnDemand(
-                        text = album.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        gradientEdgeColor = MaterialTheme.colorScheme.surface,
-                        expansionFractionProvider = { 1f },
-                    )
-                } else {
-                    Text(
-                        text = album.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-                Text(
-                    text = formatSongCount(album.songs.size),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            IconButton(
-                onClick = {
-                    if(album.songs.isNotEmpty()) onSongClick(album.songs.first())
-                },
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Icon(Icons.Rounded.PlayArrow, contentDescription = stringResource(R.string.cd_play_album))
-            }
-        }
-    }
-}
-
-@Composable
-fun GenreSongItemWrapper(
-    item: com.nobodybuilds.listens.presentation.viewmodel.GenreDetailListItem.SongItem,
-    stablePlayerState: StablePlayerState,
-    onSongClick: (Song) -> Unit,
-    onMoreOptionsClick: (Song) -> Unit
-) {
-    val song = item.song
-    val isFirstInAlbum = item.isFirstInAlbum
-    val isLastInAlbum = item.isLastInAlbum
-    val isLastAlbumInSection = item.isLastAlbumInSection
-    val useArtistStyle = item.useArtistStyle
-
-    // Optimization: Cache shapes to avoid reallocation during scroll
-    val songItemShape = remember(isFirstInAlbum, isLastInAlbum) {
-        when {
-            isFirstInAlbum && isLastInAlbum -> RoundedCornerShape(16.dp)
-            isFirstInAlbum -> RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
-            isLastInAlbum -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 16.dp, bottomEnd = 16.dp)
-            else -> RoundedCornerShape(4.dp)
-        }
-    }
-    
-    val containerShape = remember(isLastInAlbum, isLastAlbumInSection) {
-        if (isLastInAlbum && isLastAlbumInSection) {
-            AbsoluteSmoothCornerShape(
-                cornerRadiusTR = 0.dp, smoothnessAsPercentTR = 0,
-                cornerRadiusTL = 0.dp, smoothnessAsPercentTL = 0,
-                cornerRadiusBR = 24.dp, smoothnessAsPercentBR = 60,
-                cornerRadiusBL = 24.dp, smoothnessAsPercentBL = 60
-            ) 
-        } else {
-           RectangleShape
-        }
-    }
-   
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.5f), containerShape)
-            .padding(horizontal = 8.dp) 
-            .padding(bottom = if (isLastInAlbum && !isLastAlbumInSection && useArtistStyle) 8.dp else 0.dp)
-    ) {
-        Column {
-            if (!isFirstInAlbum) Spacer(Modifier.height(2.dp))
-            
-            // Optimization: De-reference stable state values to avoid observing the whole object
-            val isCurrent = stablePlayerState.currentSong?.id == song.id
-            val isPlaying = stablePlayerState.isPlaying
-
-            EnhancedSongListItem(
-                 song = song,
-                 isPlaying = isPlaying,
-                 isCurrentSong = isCurrent,
-                 showAlbumArt = false,
-                 customShape = songItemShape,
-                 onClick = { onSongClick(song) },
-                 onMoreOptionsClick = onMoreOptionsClick
-             )
-             
-             if (isLastInAlbum) Spacer(Modifier.height(8.dp))
-        }
-    }
-}

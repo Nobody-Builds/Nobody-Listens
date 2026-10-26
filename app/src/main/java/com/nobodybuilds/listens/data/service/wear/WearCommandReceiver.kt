@@ -77,13 +77,12 @@ class WearCommandReceiver : WearableListenerService() {
 
     /** Set of requestIds that have been cancelled by the watch */
     private val cancelledTransfers = ConcurrentHashMap.newKeySet<String>()
+    private val libraryBrowser by lazy {
+        WearLibraryBrowser(musicRepository, playlistPreferencesRepository) { getCurrentQueueItems() }
+    }
 
     companion object {
         private const val TAG = "WearCommandReceiver"
-        private const val MAX_SONGS = 500
-        private const val MAX_ALBUMS = 200
-        private const val MAX_ARTISTS = 200
-        private const val MAX_QUEUE_ITEMS = 20
         private const val TRANSFER_CHUNK_SIZE = 8192
         private const val PROGRESS_UPDATE_INTERVAL_BYTES = 65536L
     }
@@ -199,7 +198,7 @@ class WearCommandReceiver : WearableListenerService() {
 
         scope.launch {
             try {
-                val songs = getSongsForContext(contextType, command.contextId)
+                val songs = libraryBrowser.getSongsForContext(contextType, command.contextId)
                 if (songs.isEmpty()) {
                     Timber.tag(TAG).w("No songs found for context: $contextType / ${command.contextId}")
                     return@launch
@@ -224,41 +223,6 @@ class WearCommandReceiver : WearableListenerService() {
         }
     }
 
-    /**
-     * Get songs for a given context type and optional context ID.
-     */
-    private suspend fun getSongsForContext(contextType: String, contextId: String?): List<Song> {
-        return when (contextType) {
-            "album" -> {
-                val albumId = contextId?.toLongOrNull() ?: return emptyList()
-                musicRepository.getSongsForAlbum(albumId).first()
-            }
-            "artist" -> {
-                val artistId = contextId?.toLongOrNull() ?: return emptyList()
-                musicRepository.getSongsForArtist(artistId).first()
-            }
-            "playlist" -> {
-                val playlistId = contextId ?: return emptyList()
-                val playlist = playlistPreferencesRepository.userPlaylistsFlow.first()
-                    .find { it.id == playlistId } ?: return emptyList()
-                val songs = musicRepository.getSongsByIds(playlist.songIds).first()
-                // Maintain playlist order
-                val songsById = songs.associateBy { it.id }
-                playlist.songIds.mapNotNull { id -> songsById[id] }
-            }
-            "favorites" -> {
-                musicRepository.getFavoriteSongsPage(limit = MAX_SONGS, offset = 0)
-            }
-            "all_songs" -> {
-                musicRepository.getSongsPage(limit = MAX_SONGS, offset = 0)
-            }
-            else -> {
-                Timber.tag(TAG).w("Unknown context type: $contextType")
-                emptyList()
-            }
-        }
-    }
-
     // ---- Browse request handling ----
 
     private fun handleBrowseRequest(messageEvent: MessageEvent) {
@@ -274,7 +238,7 @@ class WearCommandReceiver : WearableListenerService() {
 
         scope.launch {
             val response = try {
-                val items = getBrowseItems(request.browseType, request.contextId)
+                val items = libraryBrowser.getBrowseItems(request.browseType, request.contextId)
                 WearBrowseResponse(requestId = request.requestId, items = items)
             } catch (e: Exception) {
                 Timber.tag(TAG).e(e, "Failed to process browse request")
@@ -302,114 +266,6 @@ class WearCommandReceiver : WearableListenerService() {
         }
     }
 
-    /**
-     * Get browse items based on the browse type, following the same pattern
-     * as AutoMediaBrowseTree.
-     */
-    private suspend fun getBrowseItems(browseType: String, contextId: String?): List<WearLibraryItem> {
-        return when (browseType) {
-            WearBrowseRequest.ROOT -> listOf(
-                WearLibraryItem("favorites", "Favorites", "", WearLibraryItem.TYPE_CATEGORY),
-                WearLibraryItem("playlists", "Playlists", "", WearLibraryItem.TYPE_CATEGORY),
-                WearLibraryItem("albums", "Albums", "", WearLibraryItem.TYPE_CATEGORY),
-                WearLibraryItem("artists", "Artists", "", WearLibraryItem.TYPE_CATEGORY),
-                WearLibraryItem("all_songs", "All Songs", "", WearLibraryItem.TYPE_CATEGORY),
-            )
-
-            WearBrowseRequest.ALBUMS -> {
-                musicRepository.getAlbumsPage(limit = MAX_ALBUMS, offset = 0, minTracks = 1)
-                    .map { album ->
-                        WearLibraryItem(
-                            id = album.id.toString(),
-                            title = album.title,
-                            subtitle = "${album.artist} · ${album.songCount} songs",
-                            type = WearLibraryItem.TYPE_ALBUM,
-                        )
-                    }
-            }
-
-            WearBrowseRequest.ARTISTS -> {
-                musicRepository.getArtistsPage(limit = MAX_ARTISTS, offset = 0)
-                    .map { artist ->
-                        WearLibraryItem(
-                            id = artist.id.toString(),
-                            title = artist.name,
-                            subtitle = "${artist.songCount} songs",
-                            type = WearLibraryItem.TYPE_ARTIST,
-                        )
-                    }
-            }
-
-            WearBrowseRequest.PLAYLISTS -> {
-                playlistPreferencesRepository.userPlaylistsFlow.first()
-                    .map { playlist ->
-                        WearLibraryItem(
-                            id = playlist.id,
-                            title = playlist.name,
-                            subtitle = "${playlist.songIds.size} songs",
-                            type = WearLibraryItem.TYPE_PLAYLIST,
-                        )
-                    }
-            }
-
-            WearBrowseRequest.FAVORITES -> {
-                musicRepository.getFavoriteSongsPage(limit = MAX_SONGS, offset = 0)
-                    .map { song -> song.toWearLibraryItem() }
-            }
-
-            WearBrowseRequest.ALL_SONGS -> {
-                musicRepository.getSongsPage(limit = MAX_SONGS, offset = 0)
-                    .map { song -> song.toWearLibraryItem() }
-            }
-
-            WearBrowseRequest.ALBUM_SONGS -> {
-                val albumId = contextId?.toLongOrNull()
-                    ?: throw IllegalArgumentException("Missing albumId for ALBUM_SONGS")
-                musicRepository.getSongsForAlbum(albumId).first()
-                    .map { song -> song.toWearLibraryItem() }
-            }
-
-            WearBrowseRequest.ARTIST_SONGS -> {
-                val artistId = contextId?.toLongOrNull()
-                    ?: throw IllegalArgumentException("Missing artistId for ARTIST_SONGS")
-                musicRepository.getSongsForArtist(artistId).first()
-                    .map { song -> song.toWearLibraryItem() }
-            }
-
-            WearBrowseRequest.PLAYLIST_SONGS -> {
-                val playlistId = contextId
-                    ?: throw IllegalArgumentException("Missing playlistId for PLAYLIST_SONGS")
-                val playlist = playlistPreferencesRepository.userPlaylistsFlow.first()
-                    .find { it.id == playlistId }
-                    ?: throw IllegalArgumentException("Playlist not found: $playlistId")
-                val songs = musicRepository.getSongsByIds(playlist.songIds).first()
-                // Maintain playlist order
-                val songsById = songs.associateBy { it.id }
-                playlist.songIds
-                    .mapNotNull { id -> songsById[id] }
-                    .map { song -> song.toWearLibraryItem() }
-            }
-
-            WearBrowseRequest.QUEUE -> {
-                getCurrentQueueItems()
-            }
-
-            else -> {
-                Timber.tag(TAG).w("Unknown browse type: $browseType")
-                emptyList()
-            }
-        }
-    }
-
-    private fun Song.toWearLibraryItem(): WearLibraryItem {
-        return WearLibraryItem(
-            id = id,
-            title = title,
-            subtitle = displayArtist,
-            type = WearLibraryItem.TYPE_SONG,
-        )
-    }
-
     private suspend fun getCurrentQueueItems(): List<WearLibraryItem> {
         val deferred = CompletableDeferred<List<WearLibraryItem>>()
         getOrBuildMediaController { controller ->
@@ -421,48 +277,6 @@ class WearCommandReceiver : WearableListenerService() {
         return withTimeout(5_000L) {
             deferred.await()
         }
-    }
-
-    private fun buildCurrentQueueItems(controller: MediaController): List<WearLibraryItem> {
-        val queueSize = controller.mediaItemCount
-        if (queueSize <= 0) return emptyList()
-
-        val currentIndex = controller.currentMediaItemIndex
-            .takeIf { it in 0 until queueSize }
-            ?: 0
-
-        val queueIndices = buildList(queueSize) {
-            for (index in currentIndex until queueSize) {
-                add(index)
-            }
-            for (index in 0 until currentIndex) {
-                add(index)
-            }
-        }
-
-        return queueIndices
-            .asSequence()
-            .take(MAX_QUEUE_ITEMS)
-            .map { actualIndex ->
-            val mediaItem = controller.getMediaItemAt(actualIndex)
-            val metadata = mediaItem.mediaMetadata
-            val title = metadata.title?.toString()?.takeIf { it.isNotBlank() }
-                ?: "Track ${actualIndex + 1}"
-            val artist = metadata.artist?.toString()?.takeIf { it.isNotBlank() }.orEmpty()
-            val isCurrentItem = actualIndex == currentIndex
-            WearLibraryItem(
-                id = actualIndex.toString(),
-                title = title,
-                subtitle = when {
-                    isCurrentItem && artist.isNotBlank() -> "Playing · $artist"
-                    isCurrentItem -> "Playing"
-                    artist.isNotBlank() -> artist
-                    else -> ""
-                },
-                type = WearLibraryItem.TYPE_SONG,
-            )
-        }
-            .toList()
     }
 
     // ---- Volume handling ----

@@ -3,44 +3,23 @@ package com.nobodybuilds.listens.presentation.screens
 import com.nobodybuilds.listens.presentation.navigation.navigateSafely
 import com.nobodybuilds.listens.presentation.navigation.navigateSafelyReplacing
 import com.nobodybuilds.listens.presentation.navigation.navigateToTopLevelSafely
-
-import android.content.Intent
 import androidx.activity.compose.ReportDrawnWhen
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.MusicNote
-import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeExtendedFloatingActionButton
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -56,33 +35,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontVariation
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.em
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.nobodybuilds.listens.R
 import com.nobodybuilds.listens.data.model.Song
 import com.nobodybuilds.listens.data.preferences.CollagePattern
 import com.nobodybuilds.listens.presentation.components.AlbumArtCollage
@@ -106,29 +68,20 @@ import com.nobodybuilds.listens.presentation.nb.NbSongCoverRow
 import com.nobodybuilds.listens.presentation.nb.NbTopArtistsRow
 import com.nobodybuilds.listens.presentation.components.HomeOptionsBottomSheet
 import com.nobodybuilds.listens.presentation.components.MiniPlayerHeight
-import com.nobodybuilds.listens.presentation.components.NavBarContentHeight
-import com.nobodybuilds.listens.presentation.components.RecentlyPlayedSection
 import com.nobodybuilds.listens.presentation.components.RecentlyPlayedSectionMinSongsToShow
-import com.nobodybuilds.listens.presentation.components.SmartImage
-import com.nobodybuilds.listens.presentation.components.StatsOverviewCard
 import com.nobodybuilds.listens.presentation.model.collectRecentlyPlayedSongIds
 import com.nobodybuilds.listens.presentation.model.mapRecentlyPlayedSongs
-import com.nobodybuilds.listens.presentation.components.subcomps.PlayingEqIcon
 import com.nobodybuilds.listens.presentation.navigation.Screen
 import com.nobodybuilds.listens.presentation.components.StreamingProviderSheet
-import com.nobodybuilds.listens.presentation.telegram.auth.TelegramLoginActivity
 import com.nobodybuilds.listens.presentation.viewmodel.PlayerViewModel
 import com.nobodybuilds.listens.presentation.viewmodel.SettingsViewModel
 import com.nobodybuilds.listens.presentation.viewmodel.StatsViewModel
-import com.nobodybuilds.listens.ui.theme.ExpTitleTypography
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
-import androidx.compose.ui.res.stringResource
 
 private const val HomeLoadingPlaceholderMinDurationMillis = 1200L
 
@@ -639,296 +592,6 @@ fun HomeScreen(
                     settingsViewModel.setBeta05CleanInstallDisclaimerDismissed(true)
                 }
             }
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun YourMixLoadingPlaceholder() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(256.dp)
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        LoadingIndicator(
-            modifier = Modifier.size(128.dp),
-            color = MaterialTheme.colorScheme.primary
-        )
-    }
-}
-
-@Composable
-private fun YourMixEmptyPlaceholder(
-    onRefresh: () -> Unit
-) {
-    val colors = MaterialTheme.colorScheme
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 256.dp)
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Surface(
-                modifier = Modifier.size(76.dp),
-                shape = AbsoluteSmoothCornerShape(
-                    cornerRadiusTL = 28.dp,
-                    smoothnessAsPercentTR = 60,
-                    cornerRadiusBR = 28.dp,
-                    smoothnessAsPercentTL = 60,
-                    cornerRadiusBL = 28.dp,
-                    smoothnessAsPercentBR = 60,
-                    cornerRadiusTR = 28.dp,
-                    smoothnessAsPercentBL = 60,
-                ),
-                color = colors.secondaryContainer,
-                contentColor = colors.onSecondaryContainer
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Rounded.MusicNote,
-                        contentDescription = null,
-                        modifier = Modifier.size(34.dp)
-                    )
-                }
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.home_empty_placeholder_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = colors.onSurface,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = stringResource(R.string.home_empty_placeholder_subtitle),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = colors.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            FilledTonalButton(
-                onClick = onRefresh,
-                shape = AbsoluteSmoothCornerShape(
-                    cornerRadiusTL = 22.dp,
-                    smoothnessAsPercentTR = 60,
-                    cornerRadiusBR = 22.dp,
-                    smoothnessAsPercentTL = 60,
-                    cornerRadiusBL = 22.dp,
-                    smoothnessAsPercentBR = 60,
-                    cornerRadiusTR = 22.dp,
-                    smoothnessAsPercentBL = 60,
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Refresh,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = stringResource(R.string.home_empty_placeholder_refresh))
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-fun YourMixHeader(
-    song: String,
-    isShuffleEnabled: Boolean = false,
-    onPlayShuffled: () -> Unit
-) {
-    val buttonCorners = 68.dp
-    val colors = MaterialTheme.colorScheme
-
-    val titleStyle = rememberYourMixTitleStyle()
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(256.dp)
-            .padding(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(top = 48.dp, start = 12.dp)
-        ) {
-            // Your Mix Title
-            Text(
-                text = stringResource(R.string.home_your_mix_title),
-                style = titleStyle,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-            )
-
-            // Artist/Song subtitle
-            Text(
-                text = song,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                modifier = Modifier.padding(start = 8.dp)
-            )
-        }
-        // Play Button - color changes based on shuffle state
-        LargeExtendedFloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 12.dp),
-            onClick = onPlayShuffled,
-            containerColor = if (isShuffleEnabled) colors.primary else colors.tertiaryContainer,
-            contentColor = if (isShuffleEnabled) colors.onPrimary else colors.onTertiaryContainer,
-            shape = AbsoluteSmoothCornerShape(
-                cornerRadiusTL = buttonCorners,
-                smoothnessAsPercentTR = 60,
-                cornerRadiusBR = buttonCorners,
-                smoothnessAsPercentTL = 60,
-                cornerRadiusBL = buttonCorners,
-                smoothnessAsPercentBR = 60,
-                cornerRadiusTR = buttonCorners,
-                smoothnessAsPercentBL = 60,
-            )
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.rounded_shuffle_24),
-                contentDescription = stringResource(R.string.cd_shuffle_play),
-                modifier = Modifier.size(36.dp)
-            )
-        }
-    }
-}
-
-
-// SongListItem (modificado para aceptar parámetros individuales)
-@Composable
-fun SongListItemFavs(
-    modifier: Modifier = Modifier,
-    cardCorners: Dp = 12.dp,
-    title: String,
-    artist: String,
-    albumArtUrl: String?,
-    isPlaying: Boolean,
-    isCurrentSong: Boolean,
-    onClick: () -> Unit
-) {
-    val colors = MaterialTheme.colorScheme
-    val containerColor = if (isCurrentSong) colors.primaryContainer.copy(alpha = 0.46f) else colors.surfaceContainer
-    val contentColor = if (isCurrentSong) colors.primary else colors.onSurface
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(cardCorners),
-        colors = CardDefaults.cardColors(containerColor = containerColor),
-        elevation = CardDefaults.cardElevation(0.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(12.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                modifier = Modifier
-                    .weight(0.9f),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SmartImage(
-                    model = albumArtUrl,
-                    contentDescription = stringResource(R.string.cd_album_art_for_title, title),
-                    contentScale = ContentScale.Crop,
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.size(48.dp)
-                )
-                Spacer(Modifier.width(16.dp))
-                Column(modifier = Modifier) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = if (isCurrentSong) FontWeight.Bold else FontWeight.Normal,
-                        color = contentColor,
-                        maxLines = 1, overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = artist, style = MaterialTheme.typography.bodyMedium,
-                        color = contentColor.copy(alpha = 0.7f),
-                        maxLines = 1, overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-            Spacer(Modifier.width(16.dp))
-            if (isCurrentSong) {
-                PlayingEqIcon(
-                    modifier = Modifier
-                        .weight(0.1f)
-                        .padding(start = 8.dp)
-                        .size(width = 18.dp, height = 16.dp), // similar al tamaño del ícono
-                    color = colors.primary,
-                    isPlaying = isPlaying  // o conectalo a tu estado real de reproducción
-                )
-            }
-        }
-    }
-}
-
-// Wrapper Composable for SongListItemFavs to isolate state observation
-@androidx.annotation.OptIn(UnstableApi::class)
-@Composable
-fun SongListItemFavsWrapper(
-    song: Song,
-    playerViewModel: PlayerViewModel,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    // Collect the stablePlayerState once
-    val stablePlayerState by playerViewModel.stablePlayerState.collectAsStateWithLifecycle()
-
-    // Derive isThisSongPlaying using remember
-    val isThisSongPlaying = remember(song.id, stablePlayerState.currentSong?.id, stablePlayerState.isPlaying) {
-        song.id == stablePlayerState.currentSong?.id
-    }
-
-    // Call the presentational composable
-    SongListItemFavs(
-        modifier = modifier,
-        cardCorners = 0.dp,
-        title = song.title,
-        artist = song.displayArtist,
-        albumArtUrl = song.albumArtUriString,
-        isPlaying = stablePlayerState.isPlaying,
-        isCurrentSong = song.id == stablePlayerState.currentSong?.id,
-        onClick = onClick
-    )
-}
-
-
-@OptIn(ExperimentalTextApi::class)
-@Composable
-private fun rememberYourMixTitleStyle(): TextStyle {
-    return remember {
-        TextStyle(
-            fontFamily = com.nobodybuilds.listens.ui.theme.GilroyFamily,
-            fontWeight = FontWeight.ExtraBold,
-            fontSize = 60.sp,
-            lineHeight = 58.sp,
-            letterSpacing = (-0.035).em
         )
     }
 }

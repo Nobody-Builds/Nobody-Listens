@@ -23,7 +23,11 @@ class BrandingConsistencyTest {
 
     @Test
     fun `downloaded filter queries match the downloads folder`() {
-        val dao = File("src/main/java/com/nobodybuilds/listens/data/database/MusicDao.kt").readText()
+        // MusicDao's queries are split across several interfaces in the database package.
+        val dao = File("src/main/java/com/nobodybuilds/listens/data/database").listFiles { f -> f.extension == "kt" }!!
+            .map { it.readText() }
+            .filter { "filterMode = 3" in it }
+            .joinToString("\n")
         val folders = Regex("""filterMode = 3 AND [^']*LIKE '%([^']*)'""").findAll(dao).map { it.groupValues[1] }.toList()
         assertTrue(folders.isNotEmpty())
         assertEquals(setOf(LibrarySourceFilter.DOWNLOADS_FOLDER_SUFFIX), folders.toSet())

@@ -6,7 +6,6 @@ package com.nobodybuilds.listens.data.repository
 
 import android.content.Context
 import android.net.Uri
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 
@@ -25,15 +24,11 @@ import androidx.core.net.toUri
 import com.nobodybuilds.listens.data.database.FavoritesDao
 import com.nobodybuilds.listens.data.database.MusicDao
 import com.nobodybuilds.listens.data.database.SearchHistoryDao
-import com.nobodybuilds.listens.data.database.SearchHistoryEntity
 import com.nobodybuilds.listens.data.database.TelegramChannelEntity
 import com.nobodybuilds.listens.data.database.TelegramDao
 import com.nobodybuilds.listens.data.database.toAlbum
 import com.nobodybuilds.listens.data.database.toArtist
-import com.nobodybuilds.listens.data.database.toSearchHistoryItem
 import com.nobodybuilds.listens.data.database.toSong
-import com.nobodybuilds.listens.data.database.toTelegramEntity
-import com.nobodybuilds.listens.data.database.toTelegramEntityWithThread
 import com.nobodybuilds.listens.data.database.TelegramTopicEntity
 import com.nobodybuilds.listens.data.model.Album
 import com.nobodybuilds.listens.data.model.Artist
@@ -46,25 +41,16 @@ import com.nobodybuilds.listens.data.model.SearchFilterType
 import com.nobodybuilds.listens.data.model.SearchHistoryItem
 import com.nobodybuilds.listens.data.model.SearchResultItem
 import com.nobodybuilds.listens.data.model.SortOption
-import com.nobodybuilds.listens.data.model.FolderSource
 import com.nobodybuilds.listens.data.model.StorageFilter
 import com.nobodybuilds.listens.data.preferences.PlaylistPreferencesRepository
 import com.nobodybuilds.listens.data.preferences.UserPreferencesRepository
-import com.nobodybuilds.listens.ui.theme.GenreThemeUtils
 import com.nobodybuilds.listens.utils.DirectoryFilterUtils
 import com.nobodybuilds.listens.utils.LogUtils
-import com.nobodybuilds.listens.utils.StorageType
-import com.nobodybuilds.listens.utils.StorageUtils
-import com.nobodybuilds.listens.utils.toHexString
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
@@ -73,8 +59,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import androidx.paging.filter
@@ -104,27 +88,12 @@ class MusicRepositoryImpl @Inject constructor(
     private val onFavoriteChanged: ((songId: Long, isFavorite: Boolean) -> Unit)? = null,
 ) : MusicRepository {
 
-    companion object {
-        /** Maximum number of search results to load at once to avoid memory issues with large libraries. */
-        private const val SEARCH_RESULTS_LIMIT = 100
-        private const val UNKNOWN_GENRE_NAME = "Unknown"
-        private const val UNKNOWN_GENRE_ID = "unknown"
-    }
-
     private val directoryScanMutex = Mutex()
     private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private val defaultLibraryPagingConfig = PagingConfig(
-        pageSize = 50,
-        enablePlaceholders = true,
-        maxSize = 250
-    )
     // Tracks the active prefetch job so a new flow emission cancels the previous one.
     @Volatile private var prefetchJob: Job? = null
     @Volatile private var currentSongArtistPrefetchJob: Job? = null
     @Volatile private var currentSongArtistPrefetchSongId: Long? = null
-    @Volatile private var telegramDownloadSyncObserverStarted = false
-    private val telegramCacheManager: com.nobodybuilds.listens.data.telegram.TelegramCacheManager
-        get() = telegramCacheManagerProvider.get()
     override val telegramRepository: com.nobodybuilds.listens.data.telegram.TelegramRepository
         get() = telegramRepositoryProvider.get()
 
@@ -147,18 +116,17 @@ class MusicRepositoryImpl @Inject constructor(
         CachedDirFilter(dirs, apply)
     }.stateIn(repositoryScope, SharingStarted.Eagerly, CachedDirFilter())
 
-    private fun ensureTelegramDownloadSyncObserverStarted() {
-        if (telegramDownloadSyncObserverStarted) return
-        telegramDownloadSyncObserverStarted = true
-
-        repositoryScope.launch {
-            telegramRepository.songFileUpdated.collect {
-                androidx.work.WorkManager.getInstance(context).enqueue(
-                    com.nobodybuilds.listens.data.worker.SyncWorker.incrementalSyncWork()
-                )
-            }
-        }
-    }
+    private val pageQueries = LibraryPageQueries(musicDao, cachedDirFilter)
+    private val libraryFlows = FilteredLibraryFlows(musicDao, userPreferencesRepository, ::computeAllowedDirs)
+    private val search = LibrarySearch(
+        musicDao, userPreferencesRepository, playlistPreferencesRepository, searchHistoryDao, ::computeAllowedDirs
+    )
+    private val genresAndFolders = LibraryGenresAndFolders(
+        context, musicDao, userPreferencesRepository, folderTreeBuilder, ::computeAllowedDirs
+    )
+    private val telegram = TelegramLibraryOperations(
+        context, musicDao, telegramDao, telegramCacheManagerProvider, telegramRepositoryProvider, repositoryScope
+    )
 
     private fun List<Artist>.missingImageCandidates(): List<Pair<Long, String>> =
         asSequence()
@@ -168,99 +136,8 @@ class MusicRepositoryImpl @Inject constructor(
             .toList()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getAudioFiles(): Flow<List<Song>> {
-        return combine(
-            userPreferencesRepository.allowedDirectoriesFlow,
-            userPreferencesRepository.blockedDirectoriesFlow
-        ) { allowedDirs, blockedDirs ->
-            allowedDirs to blockedDirs
-        }.flatMapLatest { (allowedDirs, blockedDirs) ->
-            flow {
-                val (allowedParentDirs, applyDirectoryFilter) =
-                    computeAllowedDirs(allowedDirs, blockedDirs)
-                emit(
-                    musicDao.getAllSongs(
-                        allowedParentDirs = allowedParentDirs,
-                        applyDirectoryFilter = applyDirectoryFilter
-                    )
-                )
-            }.flatMapLatest { it }
-        }.map { entities ->
-            entities.map { it.toSong() }
-        }.distinctUntilChanged().conflate().flowOn(Dispatchers.IO)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getPaginatedSongs(sortOption: SortOption, storageFilter: com.nobodybuilds.listens.data.model.StorageFilter): Flow<PagingData<Song>> {
         return songRepository.getPaginatedSongs(sortOption, storageFilter)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getPaginatedAlbums(
-        sortOption: SortOption,
-        storageFilter: StorageFilter,
-        minTracks: Int
-    ): Flow<PagingData<Album>> {
-        return combine(
-            userPreferencesRepository.allowedDirectoriesFlow,
-            userPreferencesRepository.blockedDirectoriesFlow
-        ) { allowedDirs, blockedDirs ->
-            allowedDirs to blockedDirs
-        }.flatMapLatest { (allowedDirs, blockedDirs) ->
-            flow {
-                val (allowedParentDirs, applyDirectoryFilter) =
-                    computeAllowedDirs(allowedDirs, blockedDirs)
-                emit(
-                    Pager(
-                        config = defaultLibraryPagingConfig,
-                        pagingSourceFactory = {
-                            musicDao.getAlbumsPaginated(
-                                allowedParentDirs = allowedParentDirs,
-                                applyDirectoryFilter = applyDirectoryFilter,
-                                filterMode = storageFilter.toFilterMode(),
-                                sortOrder = sortOption.storageKey,
-                                minTracks = minTracks
-                            )
-                        }
-                    ).flow
-                )
-            }.flatMapLatest { it }
-        }.map { pagingData ->
-            pagingData.map { entity -> entity.toAlbum() }
-        }.flowOn(Dispatchers.IO)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getPaginatedArtists(
-        sortOption: SortOption,
-        storageFilter: StorageFilter
-    ): Flow<PagingData<Artist>> {
-        return combine(
-            userPreferencesRepository.allowedDirectoriesFlow,
-            userPreferencesRepository.blockedDirectoriesFlow
-        ) { allowedDirs, blockedDirs ->
-            allowedDirs to blockedDirs
-        }.flatMapLatest { (allowedDirs, blockedDirs) ->
-            flow {
-                val (allowedParentDirs, applyDirectoryFilter) =
-                    computeAllowedDirs(allowedDirs, blockedDirs)
-                emit(
-                    Pager(
-                        config = defaultLibraryPagingConfig,
-                        pagingSourceFactory = {
-                            musicDao.getArtistsPaginated(
-                                allowedParentDirs = allowedParentDirs,
-                                applyDirectoryFilter = applyDirectoryFilter,
-                                filterMode = storageFilter.toFilterMode(),
-                                sortOrder = sortOption.storageKey
-                            )
-                        }
-                    ).flow
-                )
-            }.flatMapLatest { it }
-        }.map { pagingData ->
-            pagingData.map { entity -> entity.toArtist() }
-        }.flowOn(Dispatchers.IO)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -272,147 +149,12 @@ class MusicRepositoryImpl @Inject constructor(
         return songRepository.getFavoriteSongsOnce(storageFilter)
     }
 
-    override suspend fun getFavoriteSongsPage(
-        limit: Int,
-        offset: Int,
-        sortOption: SortOption,
-        storageFilter: StorageFilter
-    ): List<Song> = withContext(Dispatchers.IO) {
-        val filter = cachedDirFilter.value
-        musicDao.getFavoriteSongsPage(
-            allowedParentDirs = filter.allowedParentDirs,
-            applyDirectoryFilter = filter.applyFilter,
-            sortOrder = sortOption.storageKey,
-            filterMode = storageFilter.toFilterMode(),
-            limit = limit,
-            offset = offset
-        ).map { it.toSong() }
-    }
-
     override fun getFavoriteSongCountFlow(storageFilter: StorageFilter): Flow<Int> {
         return songRepository.getFavoriteSongCountFlow(storageFilter)
     }
 
     override fun getSongCountFlow(): Flow<Int> {
         return musicDao.getSongCount().distinctUntilChanged()
-    }
-
-    override suspend fun getRandomSongs(limit: Int): List<Song> = withContext(Dispatchers.IO) {
-        val filter = cachedDirFilter.value
-        musicDao.getRandomSongs(limit, filter.allowedParentDirs, filter.applyFilter).map { it.toSong() }
-    }
-
-    override suspend fun getRandomSongs(limit: Int, storageFilter: StorageFilter): List<Song> =
-        withContext(Dispatchers.IO) {
-            val filter = cachedDirFilter.value
-            musicDao.getRandomSongsFiltered(
-                limit = limit,
-                allowedParentDirs = filter.allowedParentDirs,
-                applyDirectoryFilter = filter.applyFilter,
-                filterMode = storageFilter.toFilterMode()
-            ).map { it.toSong() }
-        }
-
-    override suspend fun getShuffledSongIds(storageFilter: StorageFilter): List<Long> =
-        withContext(Dispatchers.IO) {
-            val filter = cachedDirFilter.value
-            musicDao.getShuffledSongIdsFiltered(
-                allowedParentDirs = filter.allowedParentDirs,
-                applyDirectoryFilter = filter.applyFilter,
-                filterMode = storageFilter.toFilterMode()
-            )
-        }
-
-    override suspend fun getSongsPage(
-        limit: Int,
-        offset: Int,
-        sortOption: SortOption,
-        storageFilter: StorageFilter
-    ): List<Song> = withContext(Dispatchers.IO) {
-        val filter = cachedDirFilter.value
-        musicDao.getSongsPage(
-            allowedParentDirs = filter.allowedParentDirs,
-            applyDirectoryFilter = filter.applyFilter,
-            sortOrder = sortOption.storageKey,
-            filterMode = storageFilter.toFilterMode(),
-            limit = limit,
-            offset = offset
-        ).map { it.toSong() }
-    }
-
-    override suspend fun getAlbumsPage(
-        limit: Int,
-        offset: Int,
-        sortOption: SortOption,
-        storageFilter: StorageFilter,
-        minTracks: Int
-    ): List<Album> = withContext(Dispatchers.IO) {
-        val filter = cachedDirFilter.value
-        musicDao.getAlbumsPage(
-            allowedParentDirs = filter.allowedParentDirs,
-            applyDirectoryFilter = filter.applyFilter,
-            sortOrder = sortOption.storageKey,
-            filterMode = storageFilter.toFilterMode(),
-            minTracks = minTracks,
-            limit = limit,
-            offset = offset
-        ).map { it.toAlbum() }
-    }
-
-    override suspend fun getArtistsPage(
-        limit: Int,
-        offset: Int,
-        sortOption: SortOption,
-        storageFilter: StorageFilter
-    ): List<Artist> = withContext(Dispatchers.IO) {
-        val filter = cachedDirFilter.value
-        musicDao.getArtistsPage(
-            allowedParentDirs = filter.allowedParentDirs,
-            applyDirectoryFilter = filter.applyFilter,
-            sortOrder = sortOption.storageKey,
-            filterMode = storageFilter.toFilterMode(),
-            limit = limit,
-            offset = offset
-        ).map { it.toArtist() }
-    }
-
-    override suspend fun getFirstPlayableSong(): Song? = withContext(Dispatchers.IO) {
-        val allowedDirs = userPreferencesRepository.allowedDirectoriesFlow.first()
-        val blockedDirs = userPreferencesRepository.blockedDirectoriesFlow.first()
-        val (allowedParentDirs, applyDirectoryFilter) =
-            computeAllowedDirs(allowedDirs, blockedDirs)
-        musicDao.getFirstPlayableSong(
-            allowedParentDirs = allowedParentDirs,
-            applyDirectoryFilter = applyDirectoryFilter
-        )?.toSong()
-    }
-
-    override suspend fun saveTelegramSongs(songs: List<Song>) {
-        val entities = songs.mapNotNull { it.toTelegramEntity() }
-        if (entities.isNotEmpty()) {
-            ensureTelegramDownloadSyncObserverStarted()
-            telegramDao.insertSongs(entities)
-            telegramRepository.warmUpArtworkForSongs(entities)
-            // Trigger sync to update main DB
-            androidx.work.WorkManager.getInstance(context).enqueue(
-                com.nobodybuilds.listens.data.worker.SyncWorker.incrementalSyncWork()
-            )
-        }
-    }
-
-    override suspend fun replaceTelegramSongsForChannel(chatId: Long, songs: List<Song>) {
-        val entities = songs.mapNotNull { it.toTelegramEntity() }.filter { it.chatId == chatId }
-        ensureTelegramDownloadSyncObserverStarted()
-        telegramDao.deleteSongsByChatId(chatId)
-        if (entities.isNotEmpty()) {
-            telegramDao.insertSongs(entities)
-            telegramRepository.warmUpArtworkForSongs(entities)
-        }
-        // Sync into the unified `songs` table is triggered later by saveTelegramChannel().
-        // We deliberately do NOT enqueue here: the SyncWorker gates Telegram processing on
-        // an existing channel row (telegramDao.getAllChannels()), and on first add this
-        // function runs BEFORE the channel entity is persisted. Triggering here would race
-        // and skip the sync, leaving songs invisible until the next app launch.
     }
 
     /**
@@ -433,21 +175,6 @@ class MusicRepositoryImpl @Inject constructor(
 
     private fun StorageFilter.toFilterMode(): Int =
         com.nobodybuilds.listens.data.model.LibrarySourceFilter.toFilterMode(this)
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getAlbums(storageFilter: StorageFilter, minTracks: Int): Flow<List<Album>> {
-        return combine(
-            userPreferencesRepository.allowedDirectoriesFlow,
-            userPreferencesRepository.blockedDirectoriesFlow
-        ) { allowedDirs, blockedDirs ->
-            allowedDirs to blockedDirs
-        }.flatMapLatest { (allowedDirs, blockedDirs) ->
-            val (allowedParentDirs, applyFilter) = computeAllowedDirs(allowedDirs, blockedDirs)
-            musicDao.getAlbums(allowedParentDirs, applyFilter, storageFilter.toFilterMode(), minTracks)
-                .map { entities -> entities.map { it.toAlbum() } }
-                .distinctUntilChanged()
-        }.conflate().flowOn(Dispatchers.IO)
-    }
 
     override fun getAlbumById(id: Long): Flow<Album?> {
         return musicDao.getAlbumById(id).map { it?.toAlbum() }
@@ -557,147 +284,6 @@ class MusicRepositoryImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    // --- Métodos de Búsqueda ---
-
-    override fun searchSongs(query: String, titleOnly: Boolean): Flow<List<Song>> {
-        if (query.isBlank()) return flowOf(emptyList())
-        return combine(
-            userPreferencesRepository.allowedDirectoriesFlow,
-            userPreferencesRepository.blockedDirectoriesFlow
-        ) { allowedDirs, blockedDirs ->
-            allowedDirs to blockedDirs
-        }.flatMapLatest { (allowedDirs, blockedDirs) ->
-            flow {
-                val (allowedParentDirs, applyDirectoryFilter) =
-                    computeAllowedDirs(allowedDirs, blockedDirs)
-                emit(
-                    musicDao.searchSongsLimited(
-                        query = query,
-                        allowedParentDirs = allowedParentDirs,
-                        applyDirectoryFilter = applyDirectoryFilter,
-                        limit = SEARCH_RESULTS_LIMIT,
-                        titleOnly = titleOnly
-                    )
-                )
-            }.flatMapLatest { it }
-        }.map { entities ->
-            entities.map { it.toSong() }
-        }.flowOn(Dispatchers.IO)
-    }
-
-
-    override fun searchAlbums(query: String, minTracks: Int): Flow<List<Album>> {
-        if (query.isBlank()) return flowOf(emptyList())
-        return musicDao.searchAlbums(query, emptyList(), false, minTracks).map { entities ->
-            entities.map { it.toAlbum() }
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun searchArtists(query: String): Flow<List<Artist>> {
-        if (query.isBlank()) return flowOf(emptyList())
-        return musicDao.searchArtists(query, emptyList(), false).map { entities ->
-            entities.map { it.toArtist() }
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override suspend fun searchPlaylists(query: String): List<Playlist> {
-        if (query.isBlank()) return emptyList()
-        return playlistPreferencesRepository.userPlaylistsFlow.first()
-            .filter { playlist ->
-                playlist.name.contains(query, ignoreCase = true)
-            }
-    }
-
-    override fun searchAll(query: String, filterType: SearchFilterType): Flow<List<SearchResultItem>> {
-        if (query.isBlank()) return flowOf(emptyList())
-        val playlistsFlow = flow { emit(searchPlaylists(query)) }
-
-        return combine(
-            userPreferencesRepository.minTracksPerAlbumFlow
-        ) { (minTracks) ->
-            minTracks
-        }.flatMapLatest { minTracks ->
-            when (filterType) {
-                SearchFilterType.ALL -> {
-                    combine(
-                        searchSongs(query),
-                        searchAlbums(query, minTracks),
-                        searchArtists(query),
-                        playlistsFlow
-                    ) { songs, albums, artists, playlists ->
-                        mutableListOf<SearchResultItem>().apply {
-                            songs.forEach { add(SearchResultItem.SongItem(it)) }
-                            albums.forEach { add(SearchResultItem.AlbumItem(it)) }
-                            artists.forEach { add(SearchResultItem.ArtistItem(it)) }
-                            playlists.forEach { add(SearchResultItem.PlaylistItem(it)) }
-                        }
-                    }
-                }
-                SearchFilterType.SONGS -> searchSongs(query, titleOnly = true).map { songs -> songs.map { SearchResultItem.SongItem(it) } }
-                SearchFilterType.ALBUMS -> searchAlbums(query, minTracks).map { albums -> albums.map { SearchResultItem.AlbumItem(it) } }
-                SearchFilterType.ARTISTS -> searchArtists(query).map { artists -> artists.map { SearchResultItem.ArtistItem(it) } }
-                SearchFilterType.PLAYLISTS -> playlistsFlow.map { playlists -> playlists.map { SearchResultItem.PlaylistItem(it) } }
-            }
-        }.flowOn(Dispatchers.Default)
-    }
-
-    override suspend fun addSearchHistoryItem(query: String) {
-        withContext(Dispatchers.IO) {
-            searchHistoryDao.deleteByQuery(query)
-            searchHistoryDao.insert(SearchHistoryEntity(query = query, timestamp = System.currentTimeMillis()))
-        }
-    }
-
-    override suspend fun getRecentSearchHistory(limit: Int): List<SearchHistoryItem> {
-        return withContext(Dispatchers.IO) {
-            searchHistoryDao.getRecentSearches(limit).map { it.toSearchHistoryItem() }
-        }
-    }
-
-    override suspend fun deleteSearchHistoryItemByQuery(query: String) {
-        withContext(Dispatchers.IO) {
-            searchHistoryDao.deleteByQuery(query)
-        }
-    }
-
-    override suspend fun clearSearchHistory() {
-        withContext(Dispatchers.IO) {
-            searchHistoryDao.clearAll()
-        }
-    }
-
-    override fun getMusicByGenre(genreId: String): Flow<List<Song>> {
-        return combine(
-            userPreferencesRepository.mockGenresEnabledFlow,
-            userPreferencesRepository.allowedDirectoriesFlow,
-            userPreferencesRepository.blockedDirectoriesFlow
-        ) { mockEnabled, allowedDirs, blockedDirs ->
-            Triple(mockEnabled, allowedDirs, blockedDirs)
-        }.flatMapLatest { (mockEnabled, allowedDirs, blockedDirs) ->
-            flow {
-                val (allowedParentDirs, applyDirectoryFilter) =
-                    computeAllowedDirs(allowedDirs, blockedDirs)
-                val genreName = if (mockEnabled) "Mock" else genreId
-                emit(
-                    if (genreName.equals("unknown", ignoreCase = true)) {
-                        musicDao.getSongsWithNullGenre(
-                            allowedParentDirs = allowedParentDirs,
-                            applyDirectoryFilter = applyDirectoryFilter
-                        )
-                    } else {
-                        musicDao.getSongsByGenre(
-                            genreName = genreName,
-                            allowedParentDirs = allowedParentDirs,
-                            applyDirectoryFilter = applyDirectoryFilter
-                        )
-                    }
-                )
-            }.flatMapLatest { it }
-        }.map { entities ->
-            entities.map { it.toSong() }
-        }.flowOn(Dispatchers.IO)
-    }
-
     override fun getSongsByIds(songIds: List<String>): Flow<List<Song>> {
         if (songIds.isEmpty()) return flowOf(emptyList())
         val longIds = songIds.mapNotNull { it.toLongOrNull() }
@@ -717,87 +303,6 @@ class MusicRepositoryImpl @Inject constructor(
 
     override suspend fun invalidateCachesDependentOnAllowedDirectories() {
         Log.i("MusicRepo", "invalidateCachesDependentOnAllowedDirectories called. Reactive flows will update automatically.")
-    }
-
-    // Implementación de las nuevas funciones suspend para carga única
-    override suspend fun getAllSongsOnce(): List<Song> = withContext(Dispatchers.IO) {
-        val allowedDirs = userPreferencesRepository.allowedDirectoriesFlow.first()
-        val blockedDirs = userPreferencesRepository.blockedDirectoriesFlow.first()
-        val (allowedParentDirs, applyDirectoryFilter) =
-            computeAllowedDirs(allowedDirs, blockedDirs)
-        musicDao.getAllSongs(
-            allowedParentDirs = allowedParentDirs,
-            applyDirectoryFilter = applyDirectoryFilter
-        ).first().map { it.toSong() }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getDistinctAlbumArtSongs(): Flow<List<Song>> {
-        return combine(
-            userPreferencesRepository.allowedDirectoriesFlow,
-            userPreferencesRepository.blockedDirectoriesFlow
-        ) { allowedDirs, blockedDirs ->
-            allowedDirs to blockedDirs
-        }.flatMapLatest { (allowedDirs, blockedDirs) ->
-            flow {
-                val (allowedParentDirs, applyDirectoryFilter) =
-                    computeAllowedDirs(allowedDirs, blockedDirs)
-                emit(
-                    musicDao.getDistinctAlbumArtSongs(
-                        allowedParentDirs = allowedParentDirs,
-                        applyDirectoryFilter = applyDirectoryFilter
-                    )
-                )
-            }.flatMapLatest { it }
-        }.map { entities ->
-            entities.map { it.toSong() }
-        }.distinctUntilChanged().flowOn(Dispatchers.IO)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getHomeMixPreviewSongs(limit: Int): Flow<List<Song>> {
-        return combine(
-            userPreferencesRepository.allowedDirectoriesFlow,
-            userPreferencesRepository.blockedDirectoriesFlow
-        ) { allowedDirs, blockedDirs ->
-            allowedDirs to blockedDirs
-        }.flatMapLatest { (allowedDirs, blockedDirs) ->
-            flow {
-                val (allowedParentDirs, applyDirectoryFilter) =
-                    computeAllowedDirs(allowedDirs, blockedDirs)
-                emit(
-                    musicDao.getHomeMixPreviewSongs(
-                        limit = limit,
-                        allowedParentDirs = allowedParentDirs,
-                        applyDirectoryFilter = applyDirectoryFilter
-                    )
-                )
-            }.flatMapLatest { it }
-        }.map { entities ->
-            entities.map { it.toSong() }
-        }.distinctUntilChanged().flowOn(Dispatchers.IO)
-    }
-
-    override suspend fun getAllAlbumsOnce(storageFilter: StorageFilter, minTracks: Int): List<Album> = withContext(Dispatchers.IO) {
-        val filter = cachedDirFilter.value
-        musicDao.getAlbumsPage(
-            allowedParentDirs = filter.allowedParentDirs,
-            applyDirectoryFilter = filter.applyFilter,
-            sortOrder = SortOption.AlbumTitleAZ.storageKey,
-            filterMode = storageFilter.toFilterMode(),
-            minTracks = minTracks,
-            limit = Int.MAX_VALUE,
-            offset = 0
-        ).map { it.toAlbum() }
-    }
-
-    override suspend fun getAllArtistsOnce(): List<Artist> = withContext(Dispatchers.IO) {
-        val filter = cachedDirFilter.value
-        musicDao.getArtistsWithSongCountsFiltered(
-            allowedParentDirs = filter.allowedParentDirs,
-            applyDirectoryFilter = filter.applyFilter,
-            filterMode = StorageFilter.ALL.toFilterMode()
-        ).first().map { it.toArtist() }
     }
 
     override suspend fun setFavoriteStatus(songId: String, isFavorite: Boolean) = withContext(Dispatchers.IO) {
@@ -852,68 +357,6 @@ class MusicRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getGenres(): Flow<List<Genre>> {
-        return combine(
-            userPreferencesRepository.allowedDirectoriesFlow,
-            userPreferencesRepository.blockedDirectoriesFlow
-        ) { allowedDirs, blockedDirs ->
-            allowedDirs to blockedDirs
-        }.flatMapLatest { (allowedDirs, blockedDirs) ->
-            flow {
-                val (allowedParentDirs, applyDirectoryFilter) =
-                    computeAllowedDirs(allowedDirs, blockedDirs)
-                emit(
-                    combine(
-                        musicDao.getUniqueGenres(
-                            allowedParentDirs = allowedParentDirs,
-                            applyDirectoryFilter = applyDirectoryFilter
-                        ),
-                        musicDao.hasUnknownGenre(
-                            allowedParentDirs = allowedParentDirs,
-                            applyDirectoryFilter = applyDirectoryFilter
-                        )
-                    ) { genreNames, hasUnknown ->
-                        val knownGenres = genreNames
-                            .asSequence()
-                            .map { it.trim() }
-                            .filter { it.isNotBlank() }
-                            .map { buildGenre(it) }
-                            .distinctBy { it.id }
-                            .sortedBy { it.name.lowercase() }
-                            .toList()
-                        val unknownAlreadyPresent = knownGenres.any { it.id == UNKNOWN_GENRE_ID }
-                        if (hasUnknown && !unknownAlreadyPresent) {
-                            knownGenres + buildGenre(UNKNOWN_GENRE_NAME)
-                        } else {
-                            knownGenres
-                        }
-                    }
-                )
-            }.flatMapLatest { it }
-        }.conflate().flowOn(Dispatchers.IO)
-    }
-
-    private fun buildGenre(genreName: String): Genre {
-        val id = if (genreName.equals(UNKNOWN_GENRE_NAME, ignoreCase = true)) {
-            UNKNOWN_GENRE_ID
-        } else {
-            genreName
-                .lowercase()
-                .replace(" ", "_")
-                .replace("/", "_")
-        }
-        val lightThemeColor = GenreThemeUtils.getGenreThemeColor(id, isDark = false)
-        val darkThemeColor = GenreThemeUtils.getGenreThemeColor(id, isDark = true)
-        return Genre(
-            id = id,
-            name = genreName,
-            lightColorHex = lightThemeColor.container.toHexString(),
-            onLightColorHex = lightThemeColor.onContainer.toHexString(),
-            darkColorHex = darkThemeColor.container.toHexString(),
-            onDarkColorHex = darkThemeColor.onContainer.toHexString()
-        )
-    }
-
     override suspend fun getLyrics(
         song: Song,
         sourcePreference: LyricsSourcePreference,
@@ -957,208 +400,8 @@ class MusicRepositoryImpl @Inject constructor(
         lyricsRepository.resetAllLyrics()
     }
 
-    override fun getMusicFolders(storageFilter: StorageFilter): Flow<List<MusicFolder>> {
-        return combine(
-            userPreferencesRepository.allowedDirectoriesFlow,
-            userPreferencesRepository.blockedDirectoriesFlow,
-            userPreferencesRepository.isFolderFilterActiveFlow,
-            userPreferencesRepository.foldersSourceFlow
-        ) { allowedDirs, blockedDirs, isFolderFilterActive, folderSource ->
-            FolderFlowConfig(
-                allowedDirs = allowedDirs,
-                blockedDirs = blockedDirs,
-                isFolderFilterActive = isFolderFilterActive,
-                folderSource = folderSource
-            )
-        }.flatMapLatest { config ->
-            flow {
-                val (allowedParentDirs, applyDirectoryFilter) = computeAllowedDirs(
-                    allowedDirs = config.allowedDirs,
-                    blockedDirs = config.blockedDirs
-                )
-                emit(
-                    musicDao.getFolderSongs(
-                        allowedParentDirs = allowedParentDirs,
-                        applyDirectoryFilter = applyDirectoryFilter,
-                        filterMode = storageFilter.toFilterMode()
-                    ).map { folderSongs ->
-                        folderTreeBuilder.buildFolderTree(
-                            folderSongs = folderSongs,
-                            allowedDirs = config.allowedDirs,
-                            blockedDirs = config.blockedDirs,
-                            isFolderFilterActive = config.isFolderFilterActive,
-                            folderSource = config.folderSource,
-                            context = context
-                        )
-                    }
-                )
-            }.flatMapLatest { it }
-        }.conflate().flowOn(Dispatchers.IO)
-    }
-
-    private data class FolderFlowConfig(
-        val allowedDirs: Set<String>,
-        val blockedDirs: Set<String>,
-        val isFolderFilterActive: Boolean,
-        val folderSource: FolderSource
-    )
-
     override suspend fun deleteById(id: Long) {
         musicDao.deleteById(id)
-    }
-
-    override suspend fun clearTelegramData() {
-        // Delete all Telegram playlists from app playlists
-        val allChannels = telegramDao.getAllChannels().first()
-        allChannels.forEach { channel ->
-            telegramRepository.deleteAppPlaylistForTelegramChannel(channel.chatId)
-        }
-
-        musicDao.clearAllTelegramSongs()
-        telegramDao.clearAll()
-        // Clear all Telegram caches (TDLib files, embedded art, memory)
-        telegramRepository.clearMemoryCache()
-        telegramCacheManager.clearAllCache()
-    }
-
-    override suspend fun saveTelegramChannel(channel: TelegramChannelEntity) {
-        telegramDao.insertChannel(channel)
-
-        // Create or update the corresponding app playlist.
-        // Forum channels use per-topic playlists (managed by replaceTelegramSongsForTopic),
-        // so we skip the flat channel-level playlist when topics exist.
-        try {
-            val topics = withContext(Dispatchers.IO) {
-                telegramDao.getTopicsByChannelOnce(channel.chatId)
-            }
-            if (topics.isEmpty()) {
-                // Flat (non-forum) channel: create/update a single channel playlist
-                val channelSongs = withContext(Dispatchers.IO) {
-                    telegramDao.getSongsByChatId(channel.chatId)
-                }
-                telegramRepository.updateAppPlaylistForTelegramChannel(
-                    channel.chatId,
-                    channel.title,
-                    channelSongs
-                )
-            }
-            // Forum channels: topic playlists are managed by replaceTelegramSongsForTopic
-        } catch (e: Exception) {
-            Log.e("MusicRepo", "Failed to update app playlist for Telegram channel ${channel.chatId}", e)
-        }
-
-        // Trigger the unified-library sync now that the channel row exists. SyncWorker's
-        // Telegram phase is gated on telegramDao.getAllChannels() being non-empty, so this
-        // is the earliest moment the sync can succeed. KEEP (not REPLACE) ensures we never
-        // cancel a heavier full/rebuild that might be running under the same unique name.
-        requestTelegramUnifiedSync()
-    }
-
-    override fun getAllTelegramChannels(): Flow<List<TelegramChannelEntity>> {
-        return telegramDao.getAllChannels()
-    }
-
-    override suspend fun deleteTelegramChannel(chatId: Long) {
-        musicDao.clearTelegramSongsForChat(chatId)
-        telegramDao.deleteSongsByChatId(chatId)
-        telegramDao.deleteTopicsByChannel(chatId)     // NEW: remove topics
-        telegramDao.deleteChannel(chatId)
-        telegramRepository.deleteAppPlaylistForTelegramChannel(chatId)
-        telegramRepository.deleteAllTopicPlaylistsForChannel(chatId)  // NEW: remove topic playlists
-    }
-
-    override suspend fun saveTelegramTopics(chatId: Long, topics: List<TelegramTopicEntity>) {
-        telegramDao.insertTopics(topics)
-    }
-
-    override suspend fun replaceTopicsForChannel(
-        chatId: Long,
-        freshTopics: List<TelegramTopicEntity>
-    ) {
-        val existingTopics = telegramDao.getTopicsByChannelOnce(chatId)
-        val freshThreadIds = freshTopics.map { it.threadId }.toSet()
-
-        // Delete topics that are no longer returned by Telegram
-        val removedTopics = existingTopics.filter { it.threadId !in freshThreadIds }
-        for (removed in removedTopics) {
-            // Delete their songs from the telegram_songs table
-            telegramDao.deleteSongsByTopicId(chatId, removed.threadId)
-            // Delete their songs from the main music DB
-            musicDao.clearTelegramSongsForTopic(chatId, removed.threadId)
-            // Delete their playlist from the app playlist store
-            telegramRepository.deleteAppPlaylistForTopic(chatId, removed.threadId)
-            // Delete the topic row itself
-            telegramDao.deleteTopic(removed.id)
-        }
-
-        // Insert/update the fresh topic list
-        if (freshTopics.isNotEmpty()) {
-            telegramDao.insertTopics(freshTopics)
-        }
-    }
-
-    override suspend fun getTopicsForChannel(chatId: Long): List<TelegramTopicEntity> {
-        return telegramDao.getTopicsByChannelOnce(chatId)
-    }
-    override fun getAllTelegramTopics(): Flow<List<TelegramTopicEntity>> {
-        return telegramDao.getAllTopics()
-    }
-
-    override suspend fun replaceTelegramSongsForTopic(
-        chatId: Long,
-        threadId: Long,
-        topicName: String,
-        songs: List<Song>
-    ) {
-        // Stamp each song entity with the threadId before inserting
-        val entities = songs.mapNotNull { it.toTelegramEntityWithThread(threadId) }
-            .filter { it.chatId == chatId }
-
-        ensureTelegramDownloadSyncObserverStarted()
-        telegramDao.deleteSongsByTopicId(chatId, threadId)
-        if (entities.isNotEmpty()) {
-            telegramDao.insertSongs(entities)
-            telegramRepository.warmUpArtworkForSongs(entities)
-        }
-
-        // Create/update the per-topic app playlist
-        telegramRepository.updateAppPlaylistForTopic(chatId, threadId, topicName, entities)
-
-        // Best-effort sync trigger: if no worker is in flight yet, KEEP enqueues a fresh
-        // incremental run that will catch the rows being committed during the topic
-        // loop. This is the safety net for forum flows that fail mid-loop and never
-        // reach the final saveTelegramChannel() call (the dashboard's syncForumChannel
-        // path in particular — its only sync trigger is the end-of-flow channel save).
-        // Subsequent topic insertions are no-ops here because the existing worker is
-        // running; the calling VM's finally block ensures a follow-up sync runs
-        // afterwards to pick up rows added past the worker's Telegram phase.
-        requestTelegramUnifiedSync()
-    }
-
-    override suspend fun getSongIdsSorted(
-        sortOption: SortOption,
-        storageFilter: com.nobodybuilds.listens.data.model.StorageFilter
-    ): List<Long> = withContext(Dispatchers.IO) {
-        val filter = cachedDirFilter.value
-        musicDao.getSongIdsSorted(
-            allowedParentDirs = filter.allowedParentDirs,
-            applyDirectoryFilter = filter.applyFilter,
-            sortOrder = sortOption.storageKey,
-            filterMode = storageFilter.toFilterMode()
-        )
-    }
-
-    override suspend fun getFavoriteSongIdsSorted(
-        sortOption: SortOption,
-        storageFilter: com.nobodybuilds.listens.data.model.StorageFilter
-    ): List<Long> = withContext(Dispatchers.IO) {
-        val filter = cachedDirFilter.value
-        musicDao.getFavoriteSongIdsSorted(
-            allowedParentDirs = filter.allowedParentDirs,
-            applyDirectoryFilter = filter.applyFilter,
-            sortOrder = sortOption.storageKey,
-            filterMode = storageFilter.toFilterMode()
-        )
     }
 
     override suspend fun getSongIdByContentUri(contentUri: String): Long? =
@@ -1166,15 +409,79 @@ class MusicRepositoryImpl @Inject constructor(
             musicDao.getSongIdByContentUri(contentUri)
         }
 
-    override fun requestTelegramUnifiedSync() {
-        // KEEP — never disturb a full/rebuild sync that shares this unique work name.
-        // If no worker is queued or running, this enqueues a fresh incremental run.
-        // If one is already in flight, we let it complete; its Telegram phase reads
-        // telegram_songs at run time and will pick up rows committed before then.
-        androidx.work.WorkManager.getInstance(context).enqueueUniqueWork(
-            com.nobodybuilds.listens.data.worker.SyncWorker.WORK_NAME,
-            androidx.work.ExistingWorkPolicy.KEEP,
-            com.nobodybuilds.listens.data.worker.SyncWorker.incrementalSyncWork()
-        )
-    }
+    // --- Folder-filtered library flows (FilteredLibraryFlows) ---
+    override fun getAudioFiles(): Flow<List<Song>> = libraryFlows.getAudioFiles()
+    override fun getPaginatedAlbums(sortOption: SortOption, storageFilter: StorageFilter, minTracks: Int): Flow<PagingData<Album>> =
+        libraryFlows.getPaginatedAlbums(sortOption, storageFilter, minTracks)
+    override fun getPaginatedArtists(sortOption: SortOption, storageFilter: StorageFilter): Flow<PagingData<Artist>> =
+        libraryFlows.getPaginatedArtists(sortOption, storageFilter)
+    override suspend fun getFirstPlayableSong(): Song? = libraryFlows.getFirstPlayableSong()
+    override fun getAlbums(storageFilter: StorageFilter, minTracks: Int): Flow<List<Album>> =
+        libraryFlows.getAlbums(storageFilter, minTracks)
+    override suspend fun getAllSongsOnce(): List<Song> = libraryFlows.getAllSongsOnce()
+    override fun getDistinctAlbumArtSongs(): Flow<List<Song>> = libraryFlows.getDistinctAlbumArtSongs()
+    override fun getHomeMixPreviewSongs(limit: Int): Flow<List<Song>> = libraryFlows.getHomeMixPreviewSongs(limit)
+
+    // --- One-shot pages and ids (LibraryPageQueries) ---
+    override suspend fun getFavoriteSongsPage(limit: Int, offset: Int, sortOption: SortOption, storageFilter: StorageFilter): List<Song> =
+        pageQueries.getFavoriteSongsPage(limit, offset, sortOption, storageFilter)
+    override suspend fun getRandomSongs(limit: Int): List<Song> = pageQueries.getRandomSongs(limit)
+    override suspend fun getRandomSongs(limit: Int, storageFilter: StorageFilter): List<Song> =
+        pageQueries.getRandomSongs(limit, storageFilter)
+    override suspend fun getShuffledSongIds(storageFilter: StorageFilter): List<Long> =
+        pageQueries.getShuffledSongIds(storageFilter)
+    override suspend fun getSongsPage(limit: Int, offset: Int, sortOption: SortOption, storageFilter: StorageFilter): List<Song> =
+        pageQueries.getSongsPage(limit, offset, sortOption, storageFilter)
+    override suspend fun getAlbumsPage(
+        limit: Int,
+        offset: Int,
+        sortOption: SortOption,
+        storageFilter: StorageFilter,
+        minTracks: Int
+    ): List<Album> = pageQueries.getAlbumsPage(limit, offset, sortOption, storageFilter, minTracks)
+    override suspend fun getArtistsPage(limit: Int, offset: Int, sortOption: SortOption, storageFilter: StorageFilter): List<Artist> =
+        pageQueries.getArtistsPage(limit, offset, sortOption, storageFilter)
+    override suspend fun getAllAlbumsOnce(storageFilter: StorageFilter, minTracks: Int): List<Album> =
+        pageQueries.getAllAlbumsOnce(storageFilter, minTracks)
+    override suspend fun getAllArtistsOnce(): List<Artist> = pageQueries.getAllArtistsOnce()
+    override suspend fun getSongIdsSorted(sortOption: SortOption, storageFilter: StorageFilter): List<Long> =
+        pageQueries.getSongIdsSorted(sortOption, storageFilter)
+    override suspend fun getFavoriteSongIdsSorted(sortOption: SortOption, storageFilter: StorageFilter): List<Long> =
+        pageQueries.getFavoriteSongIdsSorted(sortOption, storageFilter)
+
+    // --- Search and search history (LibrarySearch) ---
+    override fun searchSongs(query: String, titleOnly: Boolean): Flow<List<Song>> = search.searchSongs(query, titleOnly)
+    override fun searchAlbums(query: String, minTracks: Int): Flow<List<Album>> = search.searchAlbums(query, minTracks)
+    override fun searchArtists(query: String): Flow<List<Artist>> = search.searchArtists(query)
+    override suspend fun searchPlaylists(query: String): List<Playlist> = search.searchPlaylists(query)
+    override fun searchAll(query: String, filterType: SearchFilterType): Flow<List<SearchResultItem>> =
+        search.searchAll(query, filterType)
+    override suspend fun addSearchHistoryItem(query: String) = search.addSearchHistoryItem(query)
+    override suspend fun getRecentSearchHistory(limit: Int): List<SearchHistoryItem> = search.getRecentSearchHistory(limit)
+    override suspend fun deleteSearchHistoryItemByQuery(query: String) = search.deleteSearchHistoryItemByQuery(query)
+    override suspend fun clearSearchHistory() = search.clearSearchHistory()
+
+    // --- Genres and folders (LibraryGenresAndFolders) ---
+    override fun getMusicByGenre(genreId: String): Flow<List<Song>> = genresAndFolders.getMusicByGenre(genreId)
+    override fun getGenres(): Flow<List<Genre>> = genresAndFolders.getGenres()
+    override fun getMusicFolders(storageFilter: StorageFilter): Flow<List<MusicFolder>> =
+        genresAndFolders.getMusicFolders(storageFilter)
+
+    // --- Telegram (TelegramLibraryOperations) ---
+    override suspend fun saveTelegramSongs(songs: List<Song>) = telegram.saveTelegramSongs(songs)
+    override suspend fun replaceTelegramSongsForChannel(chatId: Long, songs: List<Song>) =
+        telegram.replaceTelegramSongsForChannel(chatId, songs)
+    override suspend fun clearTelegramData() = telegram.clearTelegramData()
+    override suspend fun saveTelegramChannel(channel: TelegramChannelEntity) = telegram.saveTelegramChannel(channel)
+    override fun getAllTelegramChannels(): Flow<List<TelegramChannelEntity>> = telegram.getAllTelegramChannels()
+    override suspend fun deleteTelegramChannel(chatId: Long) = telegram.deleteTelegramChannel(chatId)
+    override suspend fun saveTelegramTopics(chatId: Long, topics: List<TelegramTopicEntity>) =
+        telegram.saveTelegramTopics(chatId, topics)
+    override suspend fun replaceTopicsForChannel(chatId: Long, freshTopics: List<TelegramTopicEntity>) =
+        telegram.replaceTopicsForChannel(chatId, freshTopics)
+    override suspend fun getTopicsForChannel(chatId: Long): List<TelegramTopicEntity> = telegram.getTopicsForChannel(chatId)
+    override fun getAllTelegramTopics(): Flow<List<TelegramTopicEntity>> = telegram.getAllTelegramTopics()
+    override suspend fun replaceTelegramSongsForTopic(chatId: Long, threadId: Long, topicName: String, songs: List<Song>) =
+        telegram.replaceTelegramSongsForTopic(chatId, threadId, topicName, songs)
+    override fun requestTelegramUnifiedSync() = telegram.requestTelegramUnifiedSync()
 }

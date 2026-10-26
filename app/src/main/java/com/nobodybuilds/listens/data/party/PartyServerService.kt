@@ -10,9 +10,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.MediaMetadataRetriever
 import android.net.ConnectivityManager
 import android.net.LinkProperties
 import android.net.Network
@@ -23,10 +20,8 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
-import android.util.LruCache
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
@@ -34,25 +29,14 @@ import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.nobodybuilds.listens.MainActivity
 import com.nobodybuilds.listens.R
-import com.nobodybuilds.listens.data.model.Song
 import com.nobodybuilds.listens.data.repository.MusicRepository
 import com.nobodybuilds.listens.data.service.MusicService
 import com.nobodybuilds.listens.utils.MediaItemBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.ApplicationCall
 import io.ktor.server.cio.CIO
 import io.ktor.server.cio.CIOApplicationEngine
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
-import io.ktor.server.plugins.origin
-import io.ktor.server.request.receiveParameters
-import io.ktor.server.response.header
-import io.ktor.server.response.respondBytes
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -62,11 +46,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.json.Json
 import timber.log.Timber
-import java.io.ByteArrayOutputStream
 import java.net.Inet4Address
 import java.net.InetSocketAddress
 import java.net.ServerSocket
@@ -85,7 +65,6 @@ class PartyServerService : Service() {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val main = Handler(Looper.getMainLooper())
-    private val json = Json { encodeDefaults = true; explicitNulls = false }
 
     /** Guards [server] + [stopping] together, so a server that finishes starting after stop is stopped too. */
     private val serverLock = Any()
@@ -102,13 +81,8 @@ class PartyServerService : Service() {
     private var transitionCount = 0L
     private var stagedAtTransition = 0L
 
-    private val libraryMutex = Mutex()
-    @Volatile private var library: PartyLibraryIndex? = null
-    @Volatile private var librarySongs: Map<String, Song> = emptyMap()
-    @Volatile private var libraryLoadedAt = 0L
-    private val artCache = object : LruCache<String, ByteArray>(4 * 1024 * 1024) {
-        override fun sizeOf(key: String, value: ByteArray) = value.size
-    }
+    private val libraryCache by lazy { PartyLibraryCache(musicRepository) }
+    private val artRenderer = PartyArtRenderer(this)
     private var pageHtml: String = ""
 
     private val endRunnable = Runnable { stopParty("Party time is up") }
@@ -192,9 +166,17 @@ class PartyServerService : Service() {
 
         scope.launch {
             val ip = wifi.second
+            val routes = PartyRoutes(
+                assets = assets,
+                manager = manager,
+                libraryCache = libraryCache,
+                artRenderer = artRenderer,
+                pageHtml = pageHtml,
+                checkExpired = { checkExpired() },
+            )
             val port = pickPort(ip)
             val created = try {
-                embeddedServer(CIO, port = port, host = ip) { routing { partyRoutes() } }
+                embeddedServer(CIO, port = port, host = ip) { routing { routes.install(this) } }
                     .start(wait = false)
             } catch (e: Exception) {
                 Timber.tag(TAG).e(e, "Party server failed to start")
@@ -224,7 +206,7 @@ class PartyServerService : Service() {
                 connectController()
                 manager.queueListener = { main.post { reconcile() } }
             }
-            loadLibrary(force = true)
+            libraryCache.loadLibrary(force = true)
         }
 
         scope.launch {
@@ -256,9 +238,8 @@ class PartyServerService : Service() {
         networkCallback = null
         if (s != null) Thread({ runCatching { s.stop(200, 800) } }, "party-server-stop").start()
         releaseController()
-        artCache.evictAll()
-        library = null
-        librarySongs = emptyMap()
+        artRenderer.clear()
+        libraryCache.clear()
         manager.onStopped(reason)
         stopSelfQuietly()
     }
@@ -468,13 +449,13 @@ class PartyServerService : Service() {
             }
         }
         val next = manager.nextToStage() ?: return
-        val song = librarySongs[next.song.id]
+        val song = libraryCache.librarySongs[next.song.id]
         if (song == null) {
             scope.launch {
                 val fetched = runCatching { musicRepository.getSong(next.song.id).first() }.getOrNull()
                 main.post {
                     if (fetched == null) manager.markDropped(next.id)
-                    else librarySongs = librarySongs + (fetched.id to fetched)
+                    else libraryCache.librarySongs = libraryCache.librarySongs + (fetched.id to fetched)
                     reconcile()
                 }
             }
@@ -519,10 +500,10 @@ class PartyServerService : Service() {
         manager.setNowPlaying(
             PartyNowPlaying(
                 songId = item.mediaId,
-                title = md.title?.toString().orEmpty().ifBlank { librarySongs[item.mediaId]?.title.orEmpty() },
+                title = md.title?.toString().orEmpty().ifBlank { libraryCache.librarySongs[item.mediaId]?.title.orEmpty() },
                 artist = md.artist?.toString().orEmpty(),
                 album = md.albumTitle?.toString().orEmpty(),
-                artUri = librarySongs[item.mediaId]?.albumArtUriString ?: md.artworkUri?.toString(),
+                artUri = libraryCache.librarySongs[item.mediaId]?.albumArtUriString ?: md.artworkUri?.toString(),
                 durationMs = c.duration.takeIf { it != C.TIME_UNSET && it > 0 } ?: 0L,
                 positionMs = c.currentPosition.coerceAtLeast(0L),
                 positionAt = System.currentTimeMillis(),
@@ -530,331 +511,6 @@ class PartyServerService : Service() {
                 addedBy = null,
             )
         )
-    }
-
-    // --------------------------------------------------------------- library
-
-    private suspend fun loadLibrary(force: Boolean = false): PartyLibraryIndex? = libraryMutex.withLock {
-        val now = System.currentTimeMillis()
-        val current = library
-        if (!force && current != null && now - libraryLoadedAt < LIBRARY_TTL_MS) return current
-        val songs = runCatching { musicRepository.getAllSongsOnce() }.getOrElse {
-            Timber.tag(TAG).w(it, "Party library load failed")
-            return current
-        }
-        val index = PartyLibraryIndex(songs.map { PartyLibraryIndex.Entry(it.toPartySong(), it.dateAdded) })
-        librarySongs = librarySongs + songs.associateBy { it.id }
-        library = index
-        libraryLoadedAt = now
-        index
-    }
-
-    private fun Song.toPartySong() = PartySong(
-        id = id,
-        title = title.ifBlank { "Unknown song" },
-        artist = displayArtist.ifBlank { "Unknown artist" },
-        album = album,
-        durationMs = duration,
-    )
-
-    // ------------------------------------------------------------------- art
-
-    private fun artJpeg(song: Song, size: Int): ByteArray? {
-        val key = "${song.id}@$size"
-        artCache.get(key)?.let { return it }
-        val bitmap = decodeArt(song, size) ?: return null
-        val out = ByteArrayOutputStream()
-        val scaled = scaleToFit(bitmap, size)
-        scaled.compress(Bitmap.CompressFormat.JPEG, 82, out)
-        if (scaled !== bitmap) scaled.recycle()
-        bitmap.recycle()
-        return out.toByteArray().also { artCache.put(key, it) }
-    }
-
-    private fun decodeArt(song: Song, size: Int): Bitmap? {
-        val artUri = song.albumArtUriString?.takeIf { it.isNotBlank() }?.toUri()
-        if (artUri != null && artUri.scheme != "http" && artUri.scheme != "https") {
-            runCatching {
-                val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-                contentResolver.openInputStream(artUri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
-                if (bounds.outWidth > 0) {
-                    val opts = BitmapFactory.Options().apply { inSampleSize = sampleSize(bounds.outWidth, bounds.outHeight, size) }
-                    contentResolver.openInputStream(artUri)?.use { BitmapFactory.decodeStream(it, null, opts) }
-                } else null
-            }.getOrNull()?.let { return it }
-        }
-        val uri = song.contentUriString.takeIf { it.startsWith("content://") || it.startsWith("file://") }?.toUri()
-            ?: return null
-        val retriever = MediaMetadataRetriever()
-        return try {
-            retriever.setDataSource(this, uri)
-            val bytes = retriever.embeddedPicture ?: return null
-            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-            BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
-            val opts = BitmapFactory.Options().apply { inSampleSize = sampleSize(bounds.outWidth, bounds.outHeight, size) }
-            BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
-        } catch (_: Exception) {
-            null
-        } finally {
-            runCatching { retriever.release() }
-        }
-    }
-
-    private fun sampleSize(w: Int, h: Int, target: Int): Int {
-        var s = 1
-        while (w / (s * 2) >= target && h / (s * 2) >= target) s *= 2
-        return s
-    }
-
-    private fun scaleToFit(b: Bitmap, size: Int): Bitmap {
-        val side = minOf(b.width, b.height)
-        val x = (b.width - side) / 2
-        val y = (b.height - side) / 2
-        val square = if (b.width != b.height) Bitmap.createBitmap(b, x, y, side, side) else b
-        if (side <= size) return square
-        val scaled = Bitmap.createScaledBitmap(square, size, size, true)
-        if (square !== b && square !== scaled) square.recycle()
-        return scaled
-    }
-
-    // ---------------------------------------------------------------- routes
-
-    private fun io.ktor.server.routing.Routing.partyRoutes() {
-        get("/") { call.respondPage() }
-        get("/tv") { call.respondPage() }
-        // Site icons from the Nobody Listens kit; favicon.svg follows the guest's light or dark mode.
-        get("/favicon.svg") { call.respondAsset("party/favicon.svg", ContentType.Image.SVG) }
-        get("/apple-touch-icon.png") { call.respondAsset("party/apple-touch-icon.png", ContentType.Image.PNG) }
-
-        post("/api/pin") {
-            if (checkExpired()) {
-                call.respondError(HttpStatusCode.Unauthorized, "ended", "The party has ended"); return@post
-            }
-            val params = runCatching { call.receiveParameters() }.getOrNull()
-            when (val r = manager.exchangePin(params?.get("pin"), call.request.origin.remoteHost)) {
-                is PartyManager.PinResult.Ok -> call.respondJson(json.encodeToString(TokenDto.serializer(), TokenDto(r.token)))
-                PartyManager.PinResult.Wrong -> call.respondError(HttpStatusCode.Forbidden, "wrong_pin", "That PIN doesn't match")
-                is PartyManager.PinResult.Locked -> call.respondError(
-                    HttpStatusCode.TooManyRequests, "locked", "Too many tries. Wait ${r.retryInMs / 1000 + 1} s"
-                )
-            }
-        }
-
-        post("/api/join") {
-            if (!call.checkToken()) return@post
-            val params = runCatching { call.receiveParameters() }.getOrNull()
-            val name = params?.get("name").orEmpty()
-            when (val r = manager.join(name, call.request.origin.remoteHost)) {
-                is PartyManager.JoinResult.Ok -> call.respondJson(
-                    json.encodeToString(JoinDto.serializer(), JoinDto(r.guest.id, r.guest.name, r.key))
-                )
-                PartyManager.JoinResult.Banned -> call.respondError(HttpStatusCode.Forbidden, "kicked", "The host removed you from this party")
-                PartyManager.JoinResult.Full -> call.respondError(HttpStatusCode.Forbidden, "full", "This party is full")
-            }
-        }
-
-        get("/api/state") {
-            if (!call.checkToken()) return@get
-            val guest = call.optionalGuest()
-            if (guest === KICKED) return@get
-            call.respondJson(json.encodeToString(StateDto.serializer(), buildState(guest)))
-        }
-
-        get("/api/search") {
-            if (!call.checkToken()) return@get
-            call.requireGuest() ?: return@get
-            val q = call.request.queryParameters["q"].orEmpty()
-            val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 0
-            val index = loadLibrary()
-            if (index == null) {
-                call.respondJson(json.encodeToString(SearchDto.serializer(), SearchDto(emptyList(), 0, false, 0)))
-                return@get
-            }
-            val result = index.search(q, page, 20)
-            val active = manager.read { it.activeSongIds() }.orEmpty()
-            call.respondJson(
-                json.encodeToString(
-                    SearchDto.serializer(),
-                    SearchDto(
-                        items = result.items.map { SongDto(it.id, it.title, it.artist, it.album, it.durationMs, it.id in active) },
-                        page = result.page,
-                        hasMore = result.hasMore,
-                        total = result.total,
-                    )
-                )
-            )
-        }
-
-        post("/api/add") {
-            if (!call.checkToken()) return@post
-            val guest = call.requireGuest() ?: return@post
-            val songId = runCatching { call.receiveParameters() }.getOrNull()?.get("songId").orEmpty()
-            val song = loadLibrary()?.get(songId)
-            if (song == null) {
-                call.respondError(HttpStatusCode.NotFound, "not_found", "That song isn't in the library")
-                return@post
-            }
-            when (val r = manager.add(guest.id, song)) {
-                is PartyAddResult.Added -> call.respondJson(
-                    json.encodeToString(
-                        AddDto.serializer(),
-                        AddDto(if (r.request.status == PartyRequestStatus.AwaitingApproval) "awaiting" else "added", "Added ${song.title}")
-                    )
-                )
-                is PartyAddResult.Voted -> call.respondJson(
-                    json.encodeToString(AddDto.serializer(), AddDto("voted", "Already requested — you voted for it"))
-                )
-                is PartyAddResult.TooSoon -> call.respondError(
-                    HttpStatusCode.TooManyRequests, "too_soon", "Wait ${r.retryInMs / 1000 + 1} s before adding another"
-                )
-                PartyAddResult.TooManyPending -> call.respondError(
-                    HttpStatusCode.TooManyRequests, "too_many", "You have 5 songs waiting. Let some play first"
-                )
-                PartyAddResult.PartyFull -> call.respondError(HttpStatusCode.TooManyRequests, "full", "The queue is full")
-                PartyAddResult.UnknownGuest -> call.respondError(HttpStatusCode.Unauthorized, "no_guest", "Join the party first")
-            }
-        }
-
-        post("/api/vote") {
-            if (!call.checkToken()) return@post
-            val guest = call.requireGuest() ?: return@post
-            val requestId = runCatching { call.receiveParameters() }.getOrNull()?.get("requestId").orEmpty()
-            val r = manager.toggleVote(guest.id, requestId)
-            if (r == null) call.respondError(HttpStatusCode.NotFound, "not_found", "That request is gone")
-            else call.respondJson("""{"ok":true,"votes":${r.votes}}""")
-        }
-
-        get("/api/art/{songId}") {
-            if (!call.checkToken()) return@get
-            val songId = call.parameters["songId"].orEmpty()
-            val size = (call.request.queryParameters["s"]?.toIntOrNull() ?: 160).coerceIn(48, 640)
-            // Only library songs or what's playing — never arbitrary ids/paths.
-            val song = librarySongs[songId]?.takeIf {
-                library?.get(songId) != null || manager.nowPlaying()?.songId == songId
-            }
-            val bytes = song?.let { runCatching { artJpeg(it, size) }.getOrNull() }
-            if (bytes == null) {
-                call.response.header("Cache-Control", "private, max-age=300")
-                call.respondText("", ContentType.Text.Plain, HttpStatusCode.NotFound)
-                return@get
-            }
-            call.response.header("Cache-Control", "private, max-age=3600")
-            call.respondBytes(bytes, ContentType.Image.JPEG)
-        }
-
-        get("/api/qr.svg") {
-            if (!call.checkToken()) return@get
-            val url = manager.state.value.joinUrl ?: return@get call.respondError(HttpStatusCode.NotFound, "gone", "Party ended")
-            call.response.header("Cache-Control", "private, max-age=3600")
-            call.respondText(PartyQr.svg(url), ContentType.Image.SVG)
-        }
-    }
-
-    private fun buildState(guest: PartyGuest?): StateDto {
-        val now = System.currentTimeMillis()
-        val s = manager.state.value
-        val np = manager.nowPlaying()
-        val data = manager.read { q ->
-            Triple(
-                q.upNext(),
-                guest?.let { g -> q.awaitingApproval().filter { it.guestId == g.id } }.orEmpty(),
-                guest?.let { g -> q.pendingCountFor(g.id) to q.cooldownMs(g.id, now) },
-            )
-        }
-        fun PartyRequest.dto() = RequestDto(
-            id = id, songId = song.id, title = song.title, artist = song.artist, durationMs = song.durationMs,
-            addedBy = guestName, votes = votes, votedByMe = guest != null && guest.id in voters,
-            mine = guest != null && guest.id == guestId, staged = status == PartyRequestStatus.Staged,
-        )
-        return StateDto(
-            running = s.status == PartyStatus.Running,
-            endsAt = s.endsAt,
-            now = now,
-            guests = s.guests.size,
-            approveEach = s.approveEach,
-            nowPlaying = np?.let {
-                NowPlayingDto(
-                    songId = it.songId, title = it.title, artist = it.artist, album = it.album,
-                    durationMs = it.durationMs, positionMs = it.positionMs, positionAt = it.positionAt,
-                    isPlaying = it.isPlaying, addedBy = it.addedBy,
-                    hasArt = it.songId != null && librarySongs.containsKey(it.songId),
-                )
-            },
-            upNext = data?.first.orEmpty().take(50).map { it.dto() },
-            awaiting = data?.second.orEmpty().map { it.dto() },
-            me = guest?.let { g ->
-                MeDto(g.id, g.name, data?.third?.first ?: 0, data?.third?.second ?: 0L)
-            },
-        )
-    }
-
-    // ------------------------------------------------------- call helpers
-
-    private suspend fun ApplicationCall.respondPage() {
-        noStore()
-        response.header("Content-Security-Policy", "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'")
-        respondText(pageHtml, ContentType.Text.Html.withParameter("charset", "utf-8"))
-    }
-
-    private suspend fun ApplicationCall.respondAsset(path: String, type: ContentType) {
-        val bytes = runCatching { assets.open(path).use { it.readBytes() } }.getOrNull()
-            ?: return respondText("", ContentType.Text.Plain, HttpStatusCode.NotFound)
-        response.header("Cache-Control", "public, max-age=86400")
-        respondBytes(bytes, type)
-    }
-
-    private suspend fun ApplicationCall.respondJson(body: String, status: HttpStatusCode = HttpStatusCode.OK) {
-        noStore()
-        respondText(body, ContentType.Application.Json, status)
-    }
-
-    private suspend fun ApplicationCall.respondError(status: HttpStatusCode, code: String, message: String) =
-        respondJson(json.encodeToString(ErrorDto.serializer(), ErrorDto(code, message)), status)
-
-    private fun ApplicationCall.noStore() {
-        response.header("Cache-Control", "no-store")
-        response.header("Referrer-Policy", "no-referrer")
-        response.header("X-Content-Type-Options", "nosniff")
-    }
-
-    private suspend fun ApplicationCall.checkToken(): Boolean {
-        // Every API call (incl. the state poll) checks the wall-clock end first.
-        if (checkExpired()) {
-            respondError(HttpStatusCode.Unauthorized, "ended", "The party has ended")
-            return false
-        }
-        val t = request.headers["X-Party-Token"] ?: request.queryParameters["t"]
-        if (manager.checkToken(t)) return true
-        respondError(HttpStatusCode.Unauthorized, if (manager.isRunning) "bad_token" else "ended",
-            if (manager.isRunning) "This link isn't valid. Ask the host for the QR code" else "The party has ended")
-        return false
-    }
-
-    private fun ApplicationCall.guestKey(): String? = request.headers["X-Party-Guest"] ?: request.queryParameters["g"]
-
-    /** Guest if a valid key was sent; null for anonymous (TV) callers; [KICKED] after responding 403. */
-    private suspend fun ApplicationCall.optionalGuest(): PartyGuest? {
-        val key = guestKey() ?: return null
-        return when (val a = manager.authenticateGuest(key)) {
-            is PartyManager.GuestAuth.Ok -> a.guest
-            PartyManager.GuestAuth.Kicked -> {
-                respondError(HttpStatusCode.Forbidden, "kicked", "The host removed you from this party"); KICKED
-            }
-            PartyManager.GuestAuth.Unknown -> null
-        }
-    }
-
-    private suspend fun ApplicationCall.requireGuest(): PartyGuest? {
-        val key = guestKey()
-        return when (val a = manager.authenticateGuest(key)) {
-            is PartyManager.GuestAuth.Ok -> a.guest
-            PartyManager.GuestAuth.Kicked -> {
-                respondError(HttpStatusCode.Forbidden, "kicked", "The host removed you from this party"); null
-            }
-            PartyManager.GuestAuth.Unknown -> {
-                respondError(HttpStatusCode.Unauthorized, "no_guest", "Join the party first"); null
-            }
-        }
     }
 
     companion object {
@@ -869,7 +525,5 @@ class PartyServerService : Service() {
         private const val CHANNEL_ID = "lmusic_party"
         private const val NOTIFICATION_ID = 1007
         private const val PREFERRED_PORT = 8765
-        private const val LIBRARY_TTL_MS = 10 * 60_000L
-        private val KICKED = PartyGuest("", "", 0L)
     }
 }

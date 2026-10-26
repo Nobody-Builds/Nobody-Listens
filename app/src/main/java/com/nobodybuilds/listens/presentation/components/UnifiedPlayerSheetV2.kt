@@ -1,13 +1,8 @@
 package com.nobodybuilds.listens.presentation.components
 
-import android.widget.Toast
-import com.nobodybuilds.listens.presentation.components.ExpressiveOfflineDialog
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.MutatorMutex
 import androidx.compose.foundation.background
@@ -28,10 +23,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -39,25 +32,18 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.nobodybuilds.listens.data.model.Song
 import com.nobodybuilds.listens.data.preferences.sanitizeNavBarCornerRadius
 import com.nobodybuilds.listens.presentation.components.scoped.PlayerAlbumNavigationEffect
 import com.nobodybuilds.listens.presentation.components.scoped.PlayerArtistNavigationEffect
@@ -81,12 +67,9 @@ import com.nobodybuilds.listens.presentation.components.scoped.rememberSheetThem
 import com.nobodybuilds.listens.presentation.components.scoped.rememberSheetVisualState
 import com.nobodybuilds.listens.presentation.viewmodel.PlayerSheetState
 import com.nobodybuilds.listens.presentation.viewmodel.PlayerViewModel
-import com.nobodybuilds.listens.presentation.viewmodel.StablePlayerState
 import com.nobodybuilds.listens.ui.theme.LocalNobodyListensDarkTheme
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -112,63 +95,7 @@ fun UnifiedPlayerSheetV2(
     hideMiniPlayer: Boolean = false,
     isNavBarHidden: Boolean = false
 ) {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val latestContext by rememberUpdatedState(context)
-    var showNoInternetDialog by remember { mutableStateOf(false) }
-
-    // MediaStore write-permission launcher (for metadata editing without MANAGE_EXTERNAL_STORAGE)
-    val writePermissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
-        androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult()
-    ) { result ->
-        playerViewModel.onWritePermissionResult(result.resultCode == android.app.Activity.RESULT_OK)
-    }
-
-    // MediaStore delete-permission launcher (system delete confirmation dialog)
-    val deletePermissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
-        androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult()
-    ) { result ->
-        playerViewModel.onDeletePermissionResult(result.resultCode == android.app.Activity.RESULT_OK)
-    }
-
-    LaunchedEffect(playerViewModel, lifecycleOwner) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            launch {
-                playerViewModel.toastEvents.collect { message ->
-                    Toast.makeText(latestContext, message, Toast.LENGTH_SHORT).show()
-                }
-            }
-            launch {
-                playerViewModel.showNoInternetDialog.collect {
-                    showNoInternetDialog = true
-                }
-            }
-            launch {
-                playerViewModel.writePermissionRequest.collect { intentSender ->
-                    writePermissionLauncher.launch(
-                        androidx.activity.result.IntentSenderRequest.Builder(intentSender).build()
-                    )
-                }
-            }
-            launch {
-                playerViewModel.deletePermissionRequest.collect { intentSender ->
-                    deletePermissionLauncher.launch(
-                        androidx.activity.result.IntentSenderRequest.Builder(intentSender).build()
-                    )
-                }
-            }
-        }
-    }
-
-    if (showNoInternetDialog) {
-        ExpressiveOfflineDialog(
-            onDismiss = { showNoInternetDialog = false },
-            onRetry = {
-                 playerViewModel.refreshLocalConnectionInfo()
-                 showNoInternetDialog = false
-            }
-        )
-    }
+    UnifiedPlayerSheetV2SystemEvents(playerViewModel = playerViewModel)
 
     val infrequentPlayerStateReference = playerViewModel.stablePlayerState.collectAsStateWithLifecycle()
     val infrequentPlayerState = infrequentPlayerStateReference.value
@@ -317,47 +244,13 @@ fun UnifiedPlayerSheetV2(
         sheetMotionController.syncToExpansion(sheetCollapsedTargetY)
     }
 
-    var previousSheetState by remember { mutableStateOf(currentSheetContentState) }
-    LaunchedEffect(showPlayerContentArea, currentSheetContentState) {
-        val targetExpanded = showPlayerContentArea && currentSheetContentState == PlayerSheetState.EXPANDED
-        val shouldBounceCollapse =
-            showPlayerContentArea &&
-                previousSheetState == PlayerSheetState.EXPANDED &&
-                currentSheetContentState == PlayerSheetState.COLLAPSED
-
-        previousSheetState = currentSheetContentState
-        animatePlayerSheet(targetExpanded = targetExpanded)
-
-        if (showPlayerContentArea) {
-            scope.launch {
-                visualOvershootScaleY.snapTo(1f)
-                if (targetExpanded) {
-                    visualOvershootScaleY.animateTo(
-                        targetValue = 1f,
-                        animationSpec = keyframes {
-                            durationMillis = 50
-                            1.0f at 0
-                            1.05f at 125
-                            1.0f at 250
-                        }
-                    )
-                } else if (shouldBounceCollapse) {
-                    visualOvershootScaleY.snapTo(0.96f)
-                    visualOvershootScaleY.animateTo(
-                        targetValue = 1f,
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        )
-                    )
-                } else {
-                    visualOvershootScaleY.snapTo(1f)
-                }
-            }
-        } else {
-            scope.launch { visualOvershootScaleY.snapTo(1f) }
-        }
-    }
+    UnifiedPlayerSheetV2OvershootEffect(
+        showPlayerContentArea = showPlayerContentArea,
+        currentSheetContentState = currentSheetContentState,
+        scope = scope,
+        visualOvershootScaleY = visualOvershootScaleY,
+        onAnimateSheet = { targetExpanded -> animatePlayerSheet(targetExpanded = targetExpanded) }
+    )
 
     val sheetVisualState = rememberSheetVisualState(
         showPlayerContentArea = showPlayerContentArea,

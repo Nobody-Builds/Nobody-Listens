@@ -8,8 +8,6 @@ import com.nobodybuilds.listens.data.preferences.PlaylistPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
@@ -19,19 +17,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.sync.withPermit
-import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.isActive
 import org.drinkless.tdlib.TdApi
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.math.absoluteValue
-
 import timber.log.Timber
 
 @Singleton
@@ -42,8 +34,6 @@ class TelegramRepository @Inject constructor(
 ) {
     private companion object {
         private const val AUTH_REQUEST_TIMEOUT_MS = 20_000L
-        private const val TELEGRAM_PLAYLIST_PREFIX = "telegram_channel:"
-        private const val TELEGRAM_TOPIC_PLAYLIST_PREFIX = "telegram_topic:"
     }
 
     val authorizationState: Flow<TdApi.AuthorizationState?> = clientManager.authorizationState
@@ -124,223 +114,23 @@ class TelegramRepository @Inject constructor(
 
     // ─── Forum Topic Support ──────────────────────────────────────────────────
 
+    private val forumTopics = TelegramForumTopics(clientManager, ::mapMessageToSong)
+    private val appPlaylists = TelegramAppPlaylists(playlistPreferencesRepository)
+
     /**
      * Returns true if [chatId] is a supergroup with Forum mode enabled.
      * Regular broadcast channels always return false.
      */
-    suspend fun isForum(chatId: Long): Boolean {
-        return try {
-            val chat = clientManager.sendRequest<TdApi.Chat>(TdApi.GetChat(chatId))
-            val type = chat.type
-            if (type !is TdApi.ChatTypeSupergroup) return false
-            val supergroup = clientManager.sendRequest<TdApi.Supergroup>(
-                TdApi.GetSupergroup(type.supergroupId)
-            )
-            supergroup.isForum
-        } catch (e: Exception) {
-            Timber.w(e, "isForum check failed for chatId=$chatId")
-            false
-        }
-    }
+    suspend fun isForum(chatId: Long): Boolean = forumTopics.isForum(chatId)
 
     /**
      * Fetches all forum topics for a supergroup.
      * Returns empty list for non-forum chats.
      */
+    suspend fun getForumTopics(chatId: Long): List<TelegramTopicEntity> = forumTopics.getForumTopics(chatId)
 
-    suspend fun getForumTopics(chatId: Long): List<TelegramTopicEntity> {
-        val topics = mutableListOf<TelegramTopicEntity>()
-        try {
-            var offsetDate = 0
-            var offsetMessageId = 0L          // int53 → Long ✓
-            var offsetForumTopicId = 0        // int32 → Int ✓
-
-            while (true) {
-                val request = TdApi.GetForumTopics().apply {
-                    this.chatId = chatId
-                    this.query = ""
-                    this.offsetDate = offsetDate              // Int ✓
-                    this.offsetMessageId = offsetMessageId   // Long ✓
-                    this.offsetForumTopicId = offsetForumTopicId  // Int ✓
-                    this.limit = 100
-                }
-                val result = clientManager.sendRequest<TdApi.ForumTopics>(request)
-
-                if (result.topics.isEmpty()) break
-
-                for (topic in result.topics) {
-                    val info = topic.info
-                    val emojiId = info.icon.customEmojiId
-
-                    // Resolve the thread ID from ForumTopicInfo via reflection.
-                    // We only accept Long/Int fields with a non-zero value whose name
-                    // looks like a thread/message identifier. We skip fields named
-                    // exactly "id" because in many TDLib Java builds that field is a
-                    // String composite key, not the numeric thread ID.
-                    val threadId: Long = run {
-                        // Log all fields once so we can confirm the correct name in Logcat
-                        val allFields = info.javaClass.declaredFields
-                        Timber.d("ForumTopicInfo fields: ${allFields.map { "${it.name}:${it.type.simpleName}" }}")
-
-                        var resolved = 0L
-                        // Prefer the most specific name first, skip bare "id" (likely String)
-                        val preferredNames = listOf(
-                            "messageThreadId", "message_thread_id",
-                            "threadId", "thread_id",
-                            "topicId", "topic_id",
-                            "forumTopicId", "forum_topic_id"
-                        )
-                        for (name in preferredNames) {
-                            try {
-                                val f = info.javaClass.getDeclaredField(name)
-                                f.isAccessible = true
-                                val v = f.get(info)
-                                val candidate = when (v) {
-                                    is Long -> v
-                                    is Int  -> v.toLong()
-                                    else    -> 0L
-                                }
-                                if (candidate != 0L) {
-                                    Timber.d("ForumTopicInfo: resolved threadId via field '$name' = $candidate")
-                                    resolved = candidate
-                                    break
-                                }
-                            } catch (_: NoSuchFieldException) { }
-                        }
-
-                        // Last resort: scan ALL Long/Int fields for the first non-zero value
-                        // that isn't a known non-thread field
-                        if (resolved == 0L) {
-                            val skipNames = setOf("chatId", "chat_id", "creatorUserId",
-                                "creator_user_id", "customEmojiId", "custom_emoji_id",
-                                "editDate", "edit_date", "date")
-                            for (f in allFields) {
-                                if (f.name in skipNames) continue
-                                if (f.type != Long::class.java && f.type != Int::class.java) continue
-                                try {
-                                    f.isAccessible = true
-                                    val candidate = when (val v = f.get(info)) {
-                                        is Long -> v
-                                        is Int  -> v.toLong()
-                                        else    -> 0L
-                                    }
-                                    if (candidate != 0L) {
-                                        Timber.w("ForumTopicInfo: fallback threadId via field '${f.name}' = $candidate")
-                                        resolved = candidate
-                                        break
-                                    }
-                                } catch (_: Exception) { }
-                            }
-                        }
-
-                        if (resolved == 0L) {
-                            Timber.e("ForumTopicInfo: could not resolve threadId for topic '${info.name}'")
-                        }
-                        resolved
-                    }
-
-                    // Only add topics where we successfully resolved a thread ID
-                    if (threadId != 0L) {
-                        topics.add(
-                            TelegramTopicEntity(
-                                id = "${chatId}_${threadId}",
-                                chatId = chatId,
-                                threadId = threadId,
-                                name = info.name,
-                                iconEmoji = if (emojiId != 0L) emojiId.toString() else null
-                            )
-                        )
-                    }
-                }
-
-                if (result.nextOffsetDate == 0) break
-
-                offsetDate         = result.nextOffsetDate           // Int ✓
-                offsetMessageId    = result.nextOffsetMessageId      // Long ✓
-                offsetForumTopicId = result.nextOffsetForumTopicId   // Int ✓
-            }
-
-            Timber.d("Fetched ${topics.size} forum topics for chat $chatId")
-        } catch (e: Exception) {
-            Timber.e(e, "Error fetching forum topics for chat $chatId")
-        }
-        return topics
-    }
-
-    suspend fun getAudioMessagesByTopic(chatId: Long, threadId: Long): List<Song> {
-        Timber.d("Fetching audio for topic threadId=$threadId in chat=$chatId")
-        try {
-            clientManager.sendRequest<TdApi.Ok>(TdApi.OpenChat(chatId))
-        } catch (e: Exception) {
-            Timber.w("Failed to open chat: $chatId")
-        }
-
-        val allSongs = mutableListOf<Song>()
-        var nextFromMessageId = 0L
-        val batchSize = 100
-
-        try {
-            while (true) {
-                val request = TdApi.SearchChatMessages().apply {
-                    this.chatId = chatId
-                    this.query = ""
-                    this.senderId = null
-                    this.fromMessageId = nextFromMessageId
-                    this.offset = 0
-                    this.limit = batchSize
-                    this.filter = TdApi.SearchMessagesFilterAudio()
-
-                    // Set the topic/thread filter via reflection to handle different TDLib builds.
-                    // In newer builds the field is 'topicId' (MessageTopic object).
-                    // In older builds it was 'messageThreadId' (Long).
-                    val scFields = this.javaClass.declaredFields
-                    Timber.d("SearchChatMessages fields: ${scFields.map { "${it.name}:${it.type.simpleName}" }}")
-
-                    var topicSet = false
-
-                    // Try 'topicId' field (newer TDLib — expects a MessageTopic object)
-                    try {
-                        val f = this.javaClass.getDeclaredField("topicId")
-                        f.isAccessible = true
-                        // MessageTopicForum wraps the thread ID as Int
-                        f.set(this, TdApi.MessageTopicForum(threadId.toInt()))
-                        Timber.d("SearchChatMessages: set topicId = MessageTopicForum($threadId)")
-                        topicSet = true
-                    } catch (_: NoSuchFieldException) { }
-
-                    // Fallback: try 'messageThreadId' field (older TDLib — Long)
-                    if (!topicSet) {
-                        try {
-                            val f = this.javaClass.getDeclaredField("messageThreadId")
-                            f.isAccessible = true
-                            f.set(this, threadId)
-                            Timber.d("SearchChatMessages: set messageThreadId = $threadId")
-                            topicSet = true
-                        } catch (_: NoSuchFieldException) { }
-                    }
-
-                    if (!topicSet) {
-                        Timber.e("SearchChatMessages: could not set topic filter — results will be unfiltered")
-                    }
-                }
-
-                val response = clientManager.sendRequest<TdApi.FoundChatMessages>(request)
-
-                if (response.messages.isEmpty()) break
-
-                response.messages.forEach { message ->
-                    mapMessageToSong(message)?.let { allSongs.add(it) }
-                }
-
-                nextFromMessageId = response.nextFromMessageId
-                if (nextFromMessageId == 0L) break
-            }
-            Timber.d("Topic $threadId: fetched ${allSongs.size} songs")
-        } catch (e: Exception) {
-            Timber.e(e, "Error fetching audio for topic $threadId in chat $chatId")
-        }
-        return allSongs
-    }
+    suspend fun getAudioMessagesByTopic(chatId: Long, threadId: Long): List<Song> =
+        forumTopics.getAudioMessagesByTopic(chatId, threadId)
 
 
     // ─── Full-channel fetch
@@ -388,95 +178,8 @@ class TelegramRepository @Inject constructor(
         }
     }
 
-    private suspend fun mapMessageToSong(message: TdApi.Message): Song? {
-        val content = message.content
-
-        return when (content) {
-            is TdApi.MessageAudio -> {
-                val audio = content.audio
-
-                var albumArtPath: String? = null
-                var thumbnail = audio.albumCoverThumbnail
-
-                if (thumbnail == null && audio.externalAlbumCovers?.isNotEmpty() == true) {
-                    thumbnail = audio.externalAlbumCovers.maxByOrNull { it.width * it.height }
-                }
-
-                if (thumbnail != null) {
-                    albumArtPath = "telegram_art://${message.chatId}/${message.id}"
-                    if (thumbnail.file.local.isDownloadingCompleted && thumbnail.file.local.path.isNotEmpty()) {
-                        resolvedPathCache[thumbnail.file.id] = thumbnail.file.local.path
-                    }
-                }
-
-                Song(
-                    id = "${message.chatId}_${message.id}",
-                    title = audio.title.takeIf { it.isNotEmpty() }
-                        ?: audio.fileName.substringBeforeLast('.').ifEmpty { "Unknown Title" },
-                    artist = audio.performer.takeIf { it.isNotEmpty() } ?: "Unknown Artist",
-                    artistId = -1,
-                    album = "Telegram Stream",
-                    albumId = -1,
-                    path = "",
-                    contentUriString = "telegram://${message.chatId}/${message.id}",
-                    albumArtUriString = albumArtPath,
-                    duration = audio.duration * 1000L,
-                    telegramFileId = audio.audio.id,
-                    telegramChatId = message.chatId,
-                    mimeType = audio.mimeType,
-                    bitrate = 0,
-                    sampleRate = 0,
-                    year = 0,
-                    trackNumber = 0,
-                    dateAdded = message.date.toLong(),
-                    isFavorite = false
-                )
-            }
-            is TdApi.MessageDocument -> {
-                val document = content.document
-
-                val isAudioMime = document.mimeType.startsWith("audio/") || document.mimeType == "application/ogg"
-                val isAudioExtension = document.fileName.lowercase().run {
-                    endsWith(".mp3") || endsWith(".flac") || endsWith(".wav") ||
-                            endsWith(".m4a") || endsWith(".ogg") || endsWith(".aac")
-                }
-
-                if (isAudioMime || isAudioExtension) {
-                    var albumArtPath: String? = null
-                    val thumbnail = document.thumbnail
-                    if (thumbnail != null) {
-                        albumArtPath = "telegram_art://${message.chatId}/${message.id}"
-                        if (thumbnail.file.local.isDownloadingCompleted && thumbnail.file.local.path.isNotEmpty()) {
-                            resolvedPathCache[thumbnail.file.id] = thumbnail.file.local.path
-                        }
-                    }
-
-                    Song(
-                        id = "${message.chatId}_${message.id}",
-                        title = document.fileName.substringBeforeLast('.').ifEmpty { "Unknown Track" },
-                        artist = "Telegram Audio",
-                        artistId = -1,
-                        album = "Telegram Stream",
-                        albumId = -1,
-                        path = "",
-                        contentUriString = "telegram://${message.chatId}/${message.id}",
-                        albumArtUriString = albumArtPath,
-                        duration = 0L,
-                        telegramFileId = document.document.id,
-                        telegramChatId = message.chatId,
-                        mimeType = document.mimeType,
-                        bitrate = 0,
-                        sampleRate = 0,
-                        year = 0,
-                        trackNumber = 0,
-                        dateAdded = message.date.toLong(),
-                        isFavorite = false
-                    )
-                } else null
-            }
-            else -> null
-        }
-    }
+    private fun mapMessageToSong(message: TdApi.Message): Song? =
+        mapTelegramMessageToSong(message, resolvedPathCache)
 
     suspend fun downloadFile(fileId: Int, priority: Int = 1): TdApi.File? {
         return try {
@@ -732,28 +435,12 @@ class TelegramRepository @Inject constructor(
 
     // ─── App Playlist Management ──────────────────────────────────────────────
 
-    private fun getAppPlaylistIdForChannel(chatId: Long) = "$TELEGRAM_PLAYLIST_PREFIX$chatId"
-    private fun getAppPlaylistIdForTopic(chatId: Long, threadId: Long) =
-        "$TELEGRAM_TOPIC_PLAYLIST_PREFIX${chatId}_$threadId"
-
-    private fun toUnifiedTelegramSongId(telegramSongId: String): Long {
-        val songId = -(telegramSongId.hashCode().toLong().absoluteValue)
-        return if (songId == 0L) -1L else songId
-    }
-
     /** Creates/updates the whole-channel playlist (used for non-forum channels). */
     suspend fun updateAppPlaylistForTelegramChannel(
         chatId: Long,
         channelTitle: String,
         telegramEntities: List<TelegramSongEntity>
-    ) {
-        try {
-            val unifiedSongIds = telegramEntities.map { toUnifiedTelegramSongId(it.id).toString() }
-            upsertPlaylist(getAppPlaylistIdForChannel(chatId), channelTitle, unifiedSongIds, "TELEGRAM")
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to update app playlist for Telegram channel $chatId")
-        }
-    }
+    ) = appPlaylists.updateAppPlaylistForTelegramChannel(chatId, channelTitle, telegramEntities)
 
     /** Creates/updates a per-topic playlist. */
     suspend fun updateAppPlaylistForTopic(
@@ -761,79 +448,15 @@ class TelegramRepository @Inject constructor(
         threadId: Long,
         topicName: String,
         telegramEntities: List<TelegramSongEntity>
-    ) {
-        try {
-            val unifiedSongIds = telegramEntities.map { toUnifiedTelegramSongId(it.id).toString() }
-            upsertPlaylist(
-                getAppPlaylistIdForTopic(chatId, threadId),
-                topicName,
-                unifiedSongIds,
-                "TELEGRAM_TOPIC"
-            )
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to update app playlist for topic $threadId in chat $chatId")
-        }
-    }
+    ) = appPlaylists.updateAppPlaylistForTopic(chatId, threadId, topicName, telegramEntities)
 
-    private suspend fun upsertPlaylist(
-        playlistId: String,
-        name: String,
-        songIds: List<String>,
-        source: String
-    ) {
-        val existing = withContext(Dispatchers.IO) {
-            playlistPreferencesRepository.userPlaylistsFlow
-                .map { it.find { p -> p.id == playlistId } }
-                .first()
-        }
+    suspend fun deleteAppPlaylistForTelegramChannel(chatId: Long) =
+        appPlaylists.deleteAppPlaylistForTelegramChannel(chatId)
 
-        if (existing != null) {
-            playlistPreferencesRepository.updatePlaylist(
-                existing.copy(
-                    name = name,
-                    songIds = songIds,
-                    lastModified = System.currentTimeMillis(),
-                    source = source
-                )
-            )
-        } else {
-            playlistPreferencesRepository.createPlaylist(
-                name = name,
-                songIds = songIds,
-                customId = playlistId,
-                source = source
-            )
-        }
-    }
-
-    suspend fun deleteAppPlaylistForTelegramChannel(chatId: Long) {
-        try {
-            playlistPreferencesRepository.deletePlaylist(getAppPlaylistIdForChannel(chatId))
-        } catch (e: Exception) {
-            Timber.w(e, "Failed to delete app playlist for Telegram channel $chatId")
-        }
-    }
-
-    suspend fun deleteAppPlaylistForTopic(chatId: Long, threadId: Long) {
-        try {
-            playlistPreferencesRepository.deletePlaylist(getAppPlaylistIdForTopic(chatId, threadId))
-        } catch (e: Exception) {
-            Timber.w(e, "Failed to delete app playlist for topic $threadId in chat $chatId")
-        }
-    }
+    suspend fun deleteAppPlaylistForTopic(chatId: Long, threadId: Long) =
+        appPlaylists.deleteAppPlaylistForTopic(chatId, threadId)
 
     /** Deletes all topic playlists for a given channel (used when removing a channel). */
-    suspend fun deleteAllTopicPlaylistsForChannel(chatId: Long) {
-        try {
-            val all = withContext(Dispatchers.IO) {
-                playlistPreferencesRepository.userPlaylistsFlow.first()
-            }
-            val prefix = "$TELEGRAM_TOPIC_PLAYLIST_PREFIX${chatId}_"
-            all.filter { it.id.startsWith(prefix) }.forEach {
-                playlistPreferencesRepository.deletePlaylist(it.id)
-            }
-        } catch (e: Exception) {
-            Timber.w(e, "Failed to delete topic playlists for channel $chatId")
-        }
-    }
+    suspend fun deleteAllTopicPlaylistsForChannel(chatId: Long) =
+        appPlaylists.deleteAllTopicPlaylistsForChannel(chatId)
 }

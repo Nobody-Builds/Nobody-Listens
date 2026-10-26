@@ -1,51 +1,31 @@
 package com.nobodybuilds.listens.presentation.screens
 
 import com.nobodybuilds.listens.presentation.navigation.navigateSafely
-
 import android.os.Trace
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.Shuffle
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,15 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontVariation
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
@@ -76,10 +47,8 @@ import com.nobodybuilds.listens.presentation.components.MiniPlayerHeight
 import com.nobodybuilds.listens.presentation.components.PlaylistBottomSheet
 import com.nobodybuilds.listens.presentation.components.RecentlyPlayedRangeSelector
 import com.nobodybuilds.listens.presentation.components.SongInfoBottomSheet
-import com.nobodybuilds.listens.presentation.components.SmartImage
 import com.nobodybuilds.listens.presentation.components.subcomps.EnhancedSongListItem
 import com.nobodybuilds.listens.presentation.navigation.Screen
-import com.nobodybuilds.listens.presentation.model.RecentlyPlayedSongUiModel
 import com.nobodybuilds.listens.presentation.model.collectRecentlyPlayedSongIds
 import com.nobodybuilds.listens.presentation.model.mapRecentlyPlayedSongs
 import com.nobodybuilds.listens.presentation.viewmodel.PlaylistViewModel
@@ -87,11 +56,6 @@ import com.nobodybuilds.listens.presentation.viewmodel.PlayerViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Locale
-import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
 import androidx.compose.ui.res.stringResource
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -365,417 +329,4 @@ fun RecentlyPlayedScreen(
     }
 
     Trace.endSection()
-}
-
-@Composable
-private fun ExpressiveRecentlyPlayedHeader(
-    title: String,
-    songs: List<RecentlyPlayedSongUiModel>,
-    selectedRange: StatsTimeRange,
-    scrollState: LazyListState
-) {
-    val highlightedArt = remember(songs) { songs.take(4).map { it.song.albumArtUriString } }
-    val parallaxOffset by remember {
-        derivedStateOf {
-            if (scrollState.firstVisibleItemIndex == 0) scrollState.firstVisibleItemScrollOffset * 0.36f else 0f
-        }
-    }
-    val headerAlpha by remember {
-        derivedStateOf {
-            (1f - (scrollState.firstVisibleItemScrollOffset / 520f)).coerceIn(0f, 1f)
-        }
-    }
-
-    val surface = MaterialTheme.colorScheme.surface
-    val primary = MaterialTheme.colorScheme.primary
-    val secondary = MaterialTheme.colorScheme.secondary
-    val titleStyle = rememberRecentlyPlayedTitleStyle()
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(190.dp)
-            .graphicsLayer {
-                translationY = parallaxOffset
-                alpha = headerAlpha
-            }
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            secondary.copy(alpha = 0.24f),
-                            primary.copy(alpha = 0.10f),
-                            surface.copy(alpha = 0.95f),
-                            surface
-                        ),
-                        endY = 780f
-                    )
-                )
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            verticalArrangement = Arrangement.Bottom
-        ) {
-//            Surface(
-//                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.88f),
-//                shape = RoundedCornerShape(50),
-//                tonalElevation = 0.dp
-//            ) {
-//                Text(
-//                    text = "LIVE HISTORY · ${selectedRange.displayName.uppercase()}",
-//                    style = MaterialTheme.typography.labelMedium,
-//                    fontWeight = FontWeight.SemiBold,
-//                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-//                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp)
-//                )
-//            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                text = title,
-                style = titleStyle,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalTextApi::class)
-@Composable
-private fun rememberRecentlyPlayedTitleStyle(): TextStyle {
-    return remember {
-        TextStyle(
-            fontFamily = FontFamily(
-                Font(
-                    resId = R.font.gflex_variable,
-                    variationSettings = FontVariation.Settings(
-                        FontVariation.weight(560),
-                        FontVariation.width(122f),
-                        FontVariation.grade(40),
-                        FontVariation.Setting("ROND", 100f),
-                        FontVariation.Setting("XTRA", 520f),
-                        FontVariation.Setting("YOPQ", 90f),
-                        FontVariation.Setting("YTLC", 505f)
-                    )
-                )
-            ),
-            fontWeight = FontWeight(560),
-            fontSize = 34.sp,
-            lineHeight = 38.sp,
-            letterSpacing = (-0.4).sp
-        )
-    }
-}
-
-@Composable
-private fun RecentlyPlayedActions(
-    onPlay: () -> Unit,
-    onShuffle: () -> Unit,
-    shuffleLabel: String,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(52.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Button(
-            onClick = onPlay,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize(),
-            shape = RoundedCornerShape(
-                topStart = 52.dp,
-                topEnd = 14.dp,
-                bottomStart = 52.dp,
-                bottomEnd = 14.dp
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.PlayArrow,
-                contentDescription = null,
-                modifier = Modifier.size(ButtonDefaults.IconSize)
-            )
-            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-            Text(stringResource(R.string.presentation_batch_b_play_latest))
-        }
-
-        FilledTonalButton(
-            onClick = onShuffle,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize(),
-            shape = RoundedCornerShape(
-                topStart = 14.dp,
-                topEnd = 52.dp,
-                bottomStart = 14.dp,
-                bottomEnd = 52.dp
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Shuffle,
-                contentDescription = null,
-                modifier = Modifier.size(ButtonDefaults.IconSize)
-            )
-            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-            Text(shuffleLabel)
-        }
-    }
-}
-
-@Composable
-private fun RecentlyPlayedTimestampDivider(
-    label: String,
-    isHourBucket: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val colors = MaterialTheme.colorScheme
-    val railColor = if (isHourBucket) colors.primary else colors.secondary
-    val chipContainer = if (isHourBucket) {
-        colors.primaryContainer.copy(alpha = 0.78f)
-    } else {
-        colors.secondaryContainer.copy(alpha = 0.78f)
-    }
-    val chipContent = if (isHourBucket) colors.onPrimaryContainer else colors.onSecondaryContainer
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 4.dp, bottom = 2.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .height(8.dp)
-                .clip(RoundedCornerShape(50))
-                .background(
-                    Brush.horizontalGradient(
-                        colors = listOf(
-                            railColor.copy(alpha = 0f),
-                            railColor.copy(alpha = 0.50f)
-                        )
-                    )
-                )
-        )
-        Surface(
-            color = chipContainer,
-            shape = AbsoluteSmoothCornerShape(
-                cornerRadiusTL = 22.dp,
-                smoothnessAsPercentTR = 60,
-                cornerRadiusTR = 22.dp,
-                smoothnessAsPercentBR = 60,
-                cornerRadiusBL = 22.dp,
-                smoothnessAsPercentBL = 60,
-                cornerRadiusBR = 22.dp,
-                smoothnessAsPercentTL = 60
-            )
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(6.dp)
-                        .clip(CircleShape)
-                        .background(railColor)
-                )
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = chipContent
-                )
-            }
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .height(8.dp)
-                .clip(RoundedCornerShape(50))
-                .background(
-                    Brush.horizontalGradient(
-                        colors = listOf(
-                            railColor.copy(alpha = 0.50f),
-                            railColor.copy(alpha = 0f)
-                        )
-                    )
-                )
-        )
-    }
-}
-
-@Composable
-private fun RecentlyPlayedEmptyState(
-    range: StatsTimeRange,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = AbsoluteSmoothCornerShape(
-            cornerRadiusTL = 26.dp,
-            smoothnessAsPercentTR = 60,
-            cornerRadiusTR = 26.dp,
-            smoothnessAsPercentBR = 60,
-            cornerRadiusBL = 26.dp,
-            smoothnessAsPercentBL = 60,
-            cornerRadiusBR = 26.dp,
-            smoothnessAsPercentTL = 60
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = stringResource(
-                    R.string.presentation_batch_b_recent_empty_title,
-                    range.displayName.lowercase()
-                ),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = stringResource(R.string.presentation_batch_b_recent_empty_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-private data class TimestampGroup(
-    val key: String,
-    val label: String,
-    val isHourBucket: Boolean,
-    val songs: List<RecentlyPlayedSongUiModel>
-)
-
-private fun groupRecentlyPlayedSongs(
-    context: android.content.Context,
-    songs: List<RecentlyPlayedSongUiModel>,
-    range: StatsTimeRange
-): List<TimestampGroup> {
-    if (songs.isEmpty()) return emptyList()
-    val zoneId = ZoneId.systemDefault()
-    val sorted = songs.sortedByDescending { it.lastPlayedTimestamp }
-
-    val groups = mutableListOf<TimestampGroup>()
-    var currentBucketKey: String? = null
-    var currentLabel: String? = null
-    var currentIsHourBucket = false
-    var bucket = mutableListOf<RecentlyPlayedSongUiModel>()
-
-    sorted.forEach { item ->
-        val timeBucket = resolveTimestampBucket(
-            context = context,
-            timestamp = item.lastPlayedTimestamp,
-            range = range,
-            zoneId = zoneId
-        )
-        if (currentBucketKey == null || currentBucketKey == timeBucket.key) {
-            currentBucketKey = timeBucket.key
-            currentLabel = timeBucket.label
-            currentIsHourBucket = timeBucket.isHourBucket
-            bucket += item
-        } else {
-            groups += TimestampGroup(
-                key = currentBucketKey ?: "",
-                label = currentLabel ?: "",
-                isHourBucket = currentIsHourBucket,
-                songs = bucket
-            )
-            currentBucketKey = timeBucket.key
-            currentLabel = timeBucket.label
-            currentIsHourBucket = timeBucket.isHourBucket
-            bucket = mutableListOf(item)
-        }
-    }
-
-    if (bucket.isNotEmpty() && currentLabel != null && currentBucketKey != null) {
-        groups += TimestampGroup(
-            key = currentBucketKey ?: "",
-            label = currentLabel ?: "",
-            isHourBucket = currentIsHourBucket,
-            songs = bucket
-        )
-    }
-
-    return groups
-}
-
-private data class TimestampBucket(
-    val key: String,
-    val label: String,
-    val isHourBucket: Boolean
-)
-
-private fun resolveTimestampBucket(
-    context: android.content.Context,
-    timestamp: Long,
-    range: StatsTimeRange,
-    zoneId: ZoneId
-): TimestampBucket {
-    val safeTimestamp = timestamp.coerceAtLeast(0L)
-    val safeNow = System.currentTimeMillis().coerceAtLeast(0L)
-    val zonedDateTime = Instant.ofEpochMilli(safeTimestamp).atZone(zoneId)
-    val date = zonedDateTime.toLocalDate()
-    val nowDate = Instant.ofEpochMilli(safeNow).atZone(zoneId).toLocalDate()
-
-    if (range == StatsTimeRange.DAY) {
-        val hourStart = zonedDateTime
-            .withMinute(0)
-            .withSecond(0)
-            .withNano(0)
-        return TimestampBucket(
-            key = hourStart.toInstant().toEpochMilli().toString(),
-            label = hourStart.format(DateTimeFormatter.ofPattern("h a", Locale.getDefault())),
-            isHourBucket = true
-        )
-    }
-
-    return when {
-        date == nowDate -> {
-            TimestampBucket(
-                key = date.toString(),
-                label = context.getString(R.string.presentation_batch_b_date_today),
-                isHourBucket = false
-            )
-        }
-        date == nowDate.minusDays(1) -> {
-            TimestampBucket(
-                key = date.toString(),
-                label = context.getString(R.string.presentation_batch_b_date_yesterday),
-                isHourBucket = false
-            )
-        }
-        range == StatsTimeRange.YEAR || range == StatsTimeRange.ALL -> {
-            TimestampBucket(
-                key = date.toString(),
-                label = date.format(DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault())),
-                isHourBucket = false
-            )
-        }
-        else -> {
-            TimestampBucket(
-                key = date.toString(),
-                label = date.format(DateTimeFormatter.ofPattern("EEE, MMM d", Locale.getDefault())),
-                isHourBucket = false
-            )
-        }
-    }
 }
