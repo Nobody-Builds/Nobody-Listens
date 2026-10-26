@@ -79,8 +79,8 @@ class UpdateChecker @Inject constructor(
     }
 
     companion object {
-        const val LATEST_RELEASE_URL = "https://api.github.com/repos/twilighty-abhi/lmusic-player/releases/latest"
-        const val RELEASES_PAGE_URL = "https://github.com/twilighty-abhi/lmusic-player/releases"
+        const val LATEST_RELEASE_URL = "https://api.github.com/repos/Nobody-Builds/Nobody-Listens/releases/latest"
+        const val RELEASES_PAGE_URL = "https://github.com/Nobody-Builds/Nobody-Listens/releases"
     }
 }
 
@@ -94,7 +94,7 @@ object UpdateNotifier {
         if (manager.getNotificationChannel(CHANNEL_ID) == null) {
             manager.createNotificationChannel(
                 NotificationChannel(CHANNEL_ID, "App updates", NotificationManager.IMPORTANCE_DEFAULT).apply {
-                    description = "Tells you when a new LMusic version is out"
+                    description = "Tells you when a new Nobody Listens version is out"
                 }
             )
         }
@@ -117,8 +117,8 @@ object UpdateNotifier {
         )
         val text = release.notesFirstLine.ifBlank { "Tap to see what's new." }
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_lmusic)
-            .setContentTitle("LMusic ${release.version} is available")
+            .setSmallIcon(com.twilighty.lmusic.shared.R.drawable.nl_mark_mono)
+            .setContentTitle("Nobody Listens ${release.version} is available")
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setContentIntent(pendingIntent)

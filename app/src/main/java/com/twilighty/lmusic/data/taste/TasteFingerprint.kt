@@ -126,7 +126,7 @@ object TasteCodec {
     /** Finds a code inside arbitrary text (a pasted message, a scanned QR) and decodes it. */
     fun decode(text: String): TasteFingerprint {
         val start = text.indexOf(PREFIX)
-        if (start < 0) throw InvalidCodeException("That isn't an LMusic taste code")
+        if (start < 0) throw InvalidCodeException("That isn't a Nobody Listens taste code")
         val body = text.substring(start + PREFIX.length)
         val decoded: ByteArray? = if (body.startsWith(TEXT_MARK)) {
             val b64 = body.drop(1).takeWhile { (it.isLetterOrDigit() && it.code < 128) || it == '-' || it == '_' }
@@ -190,7 +190,7 @@ object TasteCodec {
     internal fun fromBinary(bytes: ByteArray): TasteFingerprint {
         val r = Reader(bytes)
         val version = r.u8()
-        if (version != VERSION) throw InvalidCodeException("This code is from a newer LMusic — update the app")
+        if (version != VERSION) throw InvalidCodeException("This code is from a newer Nobody Listens — update the app")
         val name = r.str()
         val artists = r.weighted()
         val genres = r.weighted()

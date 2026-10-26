@@ -237,7 +237,7 @@ object OfflineMetadataGuesser {
 object MusicBrainzAutofill {
 
     private const val BASE = "https://musicbrainz.org/ws/2"
-    private const val USER_AGENT = "LMusic/1.0 ( https://github.com/twilighty-abhi/LMusic-player )"
+    private const val USER_AGENT = "NobodyListens/1.0 ( https://github.com/Nobody-Builds/Nobody-Listens )"
 
     // MusicBrainz asks clients to stay at or below one request per second.
     private val rateLock = Mutex()

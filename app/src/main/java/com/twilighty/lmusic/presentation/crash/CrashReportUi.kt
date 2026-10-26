@@ -78,7 +78,7 @@ internal fun openCrashIssue(context: Context, report: CrashReport?, safeMode: Bo
 internal fun copyCrashDetails(context: Context, report: CrashReport) {
     runCatching {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("LMusic crash report", report.fullText))
+        clipboard.setPrimaryClip(ClipData.newPlainText("Nobody Listens crash report", report.fullText))
         Toast.makeText(context, "Details copied", Toast.LENGTH_SHORT).show()
     }
 }
@@ -87,7 +87,7 @@ internal fun shareCrashDetails(context: Context, report: CrashReport) {
     runCatching {
         val send = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "LMusic crash report")
+            putExtra(Intent.EXTRA_SUBJECT, "Nobody Listens crash report")
             putExtra(Intent.EXTRA_TEXT, report.fullText)
         }
         context.startActivity(Intent.createChooser(send, "Share crash report").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
@@ -132,8 +132,8 @@ fun CrashReportFullScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     Text(
-                        if (fromSettings) "The most recent time LMusic closed unexpectedly."
-                        else "LMusic closed unexpectedly. Reporting it helps get it fixed. Nothing is sent unless you choose to.",
+                        if (fromSettings) "The most recent time Nobody Listens closed unexpectedly."
+                        else "Nobody Listens closed unexpectedly. Reporting it helps get it fixed. Nothing is sent unless you choose to.",
                         style = NbType.body,
                         color = Nb.textMuted,
                     )
@@ -244,7 +244,7 @@ private fun CrashSummaryCard(report: CrashReport) {
         }
         Spacer(Modifier.height(12.dp))
         Text(
-            listOf(report.appVersion.ifBlank { null }?.let { "LMusic $it" }, report.android.ifBlank { null }?.let { "Android $it" }, report.device.ifBlank { null }, report.time.ifBlank { null })
+            listOf(report.appVersion.ifBlank { null }?.let { "Nobody Listens $it" }, report.android.ifBlank { null }?.let { "Android $it" }, report.device.ifBlank { null }, report.time.ifBlank { null })
                 .filterNotNull().joinToString(" · "),
             style = NbType.caption,
             color = Nb.textMuted,

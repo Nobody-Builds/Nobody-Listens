@@ -27,7 +27,7 @@ class YouTubeMusicStreamTest {
     fun `youtube traffic drops the app client's user agent and logging interceptors`() {
         val appClient = OkHttpClient.Builder()
             .addInterceptor { chain ->
-                chain.proceed(chain.request().newBuilder().header("User-Agent", "LMusic/1.0").build())
+                chain.proceed(chain.request().newBuilder().header("User-Agent", "NobodyListens/1.0").build())
             }
             .addNetworkInterceptor { chain -> chain.proceed(chain.request()) }
             .build()

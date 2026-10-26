@@ -52,7 +52,7 @@ fun UpdateBanner(
     ) {
         Icon(Icons.Rounded.SystemUpdate, contentDescription = null, tint = Nb.accentText, modifier = Modifier.size(20.dp))
         Text(
-            "Update available · LMusic $version",
+            "Update available · Nobody Listens $version",
             style = NbType.label,
             color = Nb.text,
             maxLines = 1,

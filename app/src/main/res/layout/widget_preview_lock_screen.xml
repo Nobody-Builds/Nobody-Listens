@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="LMusic"
+            android:text="Nobody Listens"
             android:textColor="#FFC4C4CC"
             android:textSize="12sp" />
     </LinearLayout>

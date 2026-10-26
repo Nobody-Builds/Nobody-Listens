@@ -579,7 +579,7 @@ fun UnifiedPlayerSheetV2(
         currentSheetContentState,
         infrequentPlayerState.currentSong?.title
     ) {
-        "LMusic player sheet ${currentSheetContentState.name.lowercase()} " +
+        "Nobody Listens player sheet ${currentSheetContentState.name.lowercase()} " +
             (infrequentPlayerState.currentSong?.title ?: "")
     }
 

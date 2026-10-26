@@ -25,7 +25,7 @@ object LibrarySourceFilter {
     }
 
     /** Folder the YouTube Music downloader saves into; matches MusicDao's `filterMode = 3`. */
-    const val DOWNLOADS_FOLDER_SUFFIX = "/LMusic/YouTube Music"
+    const val DOWNLOADS_FOLDER_SUFFIX = "/Nobody Listens/YouTube Music"
 
     fun isDownloaded(song: Song): Boolean =
         isLocal(song) && song.path.substringBeforeLast('/').endsWith(DOWNLOADS_FOLDER_SUFFIX)

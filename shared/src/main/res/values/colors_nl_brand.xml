@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Launcher tile: Daylight Paper (NobodyBuilds-Design tokens). -->
+    <color name="nl_icon_background">#F5F7FB</color>
+</resources>

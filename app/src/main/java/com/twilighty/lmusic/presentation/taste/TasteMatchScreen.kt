@@ -610,10 +610,10 @@ private fun LazyListScope.loveSection(result: TasteResultUi, playerViewModel: Pl
 }
 
 private fun shareCode(context: Context, name: String, code: String) {
-    val text = "Let's compare music taste on LMusic. Open Taste match, tap Paste code and paste this:\n\n$code"
+    val text = "Let's compare music taste on Nobody Listens. Open Taste match, tap Paste code and paste this:\n\n$code"
     val send = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
-        putExtra(Intent.EXTRA_SUBJECT, "$name's LMusic taste code")
+        putExtra(Intent.EXTRA_SUBJECT, "$name's Nobody Listens taste code")
         putExtra(Intent.EXTRA_TEXT, text)
     }
     runCatching { context.startActivity(Intent.createChooser(send, "Share taste code").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }

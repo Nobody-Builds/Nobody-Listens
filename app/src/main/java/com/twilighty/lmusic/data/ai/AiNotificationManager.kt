@@ -41,7 +41,7 @@ class AiNotificationManager @Inject constructor(
 
     fun showProgress(title: String, message: String, progress: Int, max: Int = 100) {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(com.twilighty.lmusic.R.drawable.ic_stat_lmusic)
+            .setSmallIcon(com.twilighty.lmusic.shared.R.drawable.nl_mark_mono)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -55,7 +55,7 @@ class AiNotificationManager @Inject constructor(
         notificationManager.cancel(PROGRESS_NOTIFICATION_ID)
         
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(com.twilighty.lmusic.R.drawable.ic_stat_lmusic)
+            .setSmallIcon(com.twilighty.lmusic.shared.R.drawable.nl_mark_mono)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

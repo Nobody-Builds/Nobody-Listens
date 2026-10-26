@@ -82,8 +82,8 @@ class GenericOpenAiClient(
                 .addHeader("Content-Type", "application/json")
             
             if (providerName.equals("OpenRouter", ignoreCase = true)) {
-                requestBuilder.addHeader("HTTP-Referer", "https://github.com/twilighty-abhi/LMusic-player")
-                requestBuilder.addHeader("X-Title", "LMusic")
+                requestBuilder.addHeader("HTTP-Referer", "https://github.com/Nobody-Builds/Nobody-Listens")
+                requestBuilder.addHeader("X-Title", "Nobody Listens")
             }
 
             val request = requestBuilder.post(body).build()

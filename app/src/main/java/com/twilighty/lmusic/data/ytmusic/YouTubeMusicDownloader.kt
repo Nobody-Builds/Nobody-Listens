@@ -126,7 +126,7 @@ class YouTubeMusicDownloader @Inject constructor(
         _savedVideoIds.value = _savedVideoIds.value - missing
     }
 
-    /** Downloads the highest bitrate audio and saves it, tagged, under Music/LMusic/YouTube Music. */
+    /** Downloads the highest bitrate audio and saves it, tagged, under Music/Nobody Listens/YouTube Music. */
     suspend fun download(
         track: YouTubeMusicTrack,
         onProgress: (Int) -> Unit = {},
@@ -222,7 +222,7 @@ class YouTubeMusicDownloader @Inject constructor(
         val values = ContentValues().apply {
             put(MediaStore.Audio.Media.DISPLAY_NAME, spec.fileName)
             put(MediaStore.Audio.Media.MIME_TYPE, spec.mimeType)
-            put(MediaStore.Audio.Media.RELATIVE_PATH, "${Environment.DIRECTORY_MUSIC}/LMusic/YouTube Music")
+            put(MediaStore.Audio.Media.RELATIVE_PATH, "${Environment.DIRECTORY_MUSIC}/Nobody Listens/YouTube Music")
             put(MediaStore.Audio.Media.TITLE, track.title)
             put(MediaStore.Audio.Media.ARTIST, YouTubeMusicUris.artistName(track))
             put(MediaStore.Audio.Media.ALBUM, YouTubeMusicUris.albumName(track))

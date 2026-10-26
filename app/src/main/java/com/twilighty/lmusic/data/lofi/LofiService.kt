@@ -516,7 +516,7 @@ class LofiService : Service(), LofiServiceHandle {
             PendingIntent.getActivity(this, 0, it, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         }
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_lmusic)
+            .setSmallIcon(com.twilighty.lmusic.shared.R.drawable.nl_mark_mono)
             .setContentTitle(title)
             .setContentText(text)
             .setOngoing(playing)

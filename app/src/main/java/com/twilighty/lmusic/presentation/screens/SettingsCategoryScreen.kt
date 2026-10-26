@@ -1366,7 +1366,7 @@ fun SettingsCategoryScreen(
             showExplorerSheet = false
         },
         title = "Excluded subfolders",
-        hint = "Mark folders inside your music folders that LMusic should skip."
+        hint = "Mark folders inside your music folders that Nobody Listens should skip."
     )
 
     if (showPaletteRegenerateSheet) {
@@ -2838,7 +2838,7 @@ private fun YouTubeMusicQualitySettings(
         )
         ThemeSelectorItem(
             label = "Download quality",
-            description = "Downloads are saved as tagged Opus files in Music/LMusic/YouTube Music.",
+            description = "Downloads are saved as tagged Opus files in Music/Nobody Listens/YouTube Music.",
             options = options,
             selectedKey = downloadQuality.name,
             onSelectionChanged = { viewModel.setDownloadQuality(quality(it)) },

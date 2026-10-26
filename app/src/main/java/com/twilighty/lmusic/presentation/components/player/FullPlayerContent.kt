@@ -1616,7 +1616,7 @@ private fun SongMetadataDisplaySection(
             }
         }
 
-        // YouTube songs only: save a tagged copy to Music/LMusic/YouTube Music.
+        // YouTube songs only: save a tagged copy to Music/Nobody Listens/YouTube Music.
         song?.let { currentSong ->
             com.twilighty.lmusic.presentation.ytmusic.YouTubeMusicDownloadButton(
                 song = currentSong,
@@ -2366,7 +2366,7 @@ private fun AlbumPlaceholder(
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
             Icon(
                 modifier = Modifier.size(86.dp),
-                painter = painterResource(R.drawable.lmusic_base_monochrome),
+                painter = painterResource(com.twilighty.lmusic.shared.R.drawable.nl_mark_mono),
                 contentDescription = null,
                 tint = onColor
             )

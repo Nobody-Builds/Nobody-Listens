@@ -60,7 +60,7 @@ class YouTubeMusicSongActionsViewModel @Inject constructor(
 
 /**
  * Now-playing download button for streamed YouTube songs, in the player's chip style.
- * Shows nothing for other songs. Saves a tagged copy to Music/LMusic/YouTube Music;
+ * Shows nothing for other songs. Saves a tagged copy to Music/Nobody Listens/YouTube Music;
  * tapping it again on a downloaded song asks before deleting that copy.
  */
 @Composable
@@ -115,7 +115,7 @@ fun YouTubeMusicDownloadButton(
         AlertDialog(
             onDismissRequest = { confirmDelete = false },
             title = { Text("Remove download?") },
-            text = { Text("\"${song.title}\" will be deleted from Music/LMusic/YouTube Music. You can still stream it.") },
+            text = { Text("\"${song.title}\" will be deleted from Music/Nobody Listens/YouTube Music. You can still stream it.") },
             confirmButton = {
                 TextButton(onClick = {
                     confirmDelete = false

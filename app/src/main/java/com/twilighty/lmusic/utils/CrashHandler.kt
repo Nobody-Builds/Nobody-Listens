@@ -21,7 +21,7 @@ data class CrashLogData(
      */
     fun getFullLog(): String {
         return buildString {
-            appendLine("=== LMusic Crash Report ===")
+            appendLine("=== Nobody Listens Crash Report ===")
             appendLine("Date: $formattedDate")
             appendLine("Exception: $exceptionMessage")
             appendLine()

@@ -218,7 +218,7 @@ class MusicService : MediaLibraryService() {
         private const val MEDIA_SESSION_BUTTON_DEBOUNCE_MS = 250L
         private val pendingMediaButtonForegroundStarts = AtomicInteger(0)
 
-        private const val APP_PACKAGE_PREFIX = "com.twilighty.lmusic"
+        private const val APP_PACKAGE_PREFIX = "com.nobodybuilds.listens"
         private val BLOCKED_WEAR_CONTROLLER_PREFIXES = listOf(
             "com.google.android.wearable",
             "com.google.android.clockwork",
@@ -683,7 +683,7 @@ class MusicService : MediaLibraryService() {
                     .setMediaId(AutoMediaBrowseTree.ROOT_ID)
                     .setMediaMetadata(
                         androidx.media3.common.MediaMetadata.Builder()
-                            .setTitle("LMusic")
+                            .setTitle("Nobody Listens")
                             .setIsBrowsable(true)
                             .setIsPlayable(false)
                             .setMediaType(androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_MIXED)
@@ -842,7 +842,7 @@ class MusicService : MediaLibraryService() {
             .build()
 
         val localOnlyProvider = LocalOnlyMediaNotificationProvider(this).also {
-            it.setSmallIcon(R.drawable.ic_stat_lmusic)
+            it.setSmallIcon(com.twilighty.lmusic.shared.R.drawable.nl_mark_mono)
         }
         setMediaNotificationProvider(localOnlyProvider)
         playbackRestoreJob = serviceScope.launch {
@@ -976,7 +976,7 @@ class MusicService : MediaLibraryService() {
             this,
             LMusicApplication.NOTIFICATION_CHANNEL_ID
         )
-            .setSmallIcon(R.drawable.ic_stat_lmusic)
+            .setSmallIcon(com.twilighty.lmusic.shared.R.drawable.nl_mark_mono)
             .setContentTitle(getString(R.string.app_name))
             .setContentText(getString(R.string.service_processing_action))
             .setCategory(NotificationCompat.CATEGORY_SERVICE)

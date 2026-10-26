@@ -91,6 +91,6 @@ private fun renderShareCard(context: Context, layout: GardenLayout, dark: Boolea
     val footPaint = Paint(subPaint).apply { textSize = 32f }
     canvas.drawText(title, 72f, 1130f, titlePaint)
     canvas.drawText(subtitle, 72f, 1196f, subPaint)
-    canvas.drawText("LMusic · listening garden", 72f, 1290f, footPaint)
+    canvas.drawText("Nobody Listens · listening garden", 72f, 1290f, footPaint)
     return bitmap
 }

@@ -733,7 +733,7 @@ private fun EditSongContent(
                     ) {
                         Icon(Icons.Rounded.Lock, contentDescription = null, tint = Nb.textMuted, modifier = Modifier.size(14.dp))
                         Text(
-                            "Android asks once to let LMusic change this file.",
+                            "Android asks once to let Nobody Listens change this file.",
                             style = NbType.caption,
                             color = Nb.textMuted
                         )

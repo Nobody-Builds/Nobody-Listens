@@ -107,7 +107,7 @@ class GDriveLoginViewModel @Inject constructor(
     }
 
     /**
-     * Create a "LMusic" folder in the current directory.
+     * Create a "Nobody Listens" folder in the current directory.
      */
     fun createMusicFolder() {
         val parentId = breadcrumb.lastOrNull()?.id ?: "root"

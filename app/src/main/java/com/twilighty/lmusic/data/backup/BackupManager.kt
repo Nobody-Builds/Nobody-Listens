@@ -91,7 +91,7 @@ class BackupManager @Inject constructor(
             backupWriter.write(uri, manifest, modulePayloads).getOrThrow()
 
             reportProgress(onProgress, BackupOperationType.EXPORT, ++step, totalSteps,
-                "Backup complete", "Your LMusic backup was created successfully.")
+                "Backup complete", "Your Nobody Listens backup was created successfully.")
         }
     }
 

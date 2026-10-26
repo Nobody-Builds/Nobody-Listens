@@ -59,7 +59,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.twilighty.lmusic"
+        applicationId = "com.nobodybuilds.listens"
         minSdk = 33 // Android 13: lint NewApi is clean at this level
         targetSdk = 37
         versionCode = (project.findProperty("APP_VERSION_CODE") as? String)?.toInt() ?: 1
@@ -75,7 +75,7 @@ android {
 
     signingConfigs {
         create("release") {
-            // LMusic release key. CI writes the keystore from repository secrets so every
+            // Nobody Listens release key. CI writes the keystore from repository secrets so every
             // build is signed with the same key and installs as an update over the last one.
             storeFile = file(keystoreProperties.getProperty("storeFile") ?: "$rootDir/lmusic-release.jks")
             storePassword = keystoreProperties.getProperty("storePassword") ?: "dummyPassword"

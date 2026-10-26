@@ -9,7 +9,7 @@
         android:shortcutLongLabel="@string/shortcut_shuffle_long">
         <intent
             android:action="com.twilighty.lmusic.ACTION_SHUFFLE_ALL"
-            android:targetPackage="com.twilighty.lmusic"
+            android:targetPackage="com.nobodybuilds.listens"
             android:targetClass="com.twilighty.lmusic.MainActivity" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>

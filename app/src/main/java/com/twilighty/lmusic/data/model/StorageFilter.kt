@@ -4,6 +4,6 @@ enum class StorageFilter(val value: Int) {
     ALL(0),
     OFFLINE(1),
     ONLINE(2),
-    /** Phone files saved from YouTube Music (Music/LMusic/YouTube Music). */
+    /** Phone files saved from YouTube Music (Music/Nobody Listens/YouTube Music). */
     DOWNLOADED(3)
 }

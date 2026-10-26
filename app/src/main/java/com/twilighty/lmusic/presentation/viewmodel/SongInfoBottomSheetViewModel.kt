@@ -141,7 +141,7 @@ class SongInfoBottomSheetViewModel @Inject constructor(
                 return@launch
             }
             if (!_isLMusicWatchAvailable.value) {
-                onComplete("No reachable watch with LMusic")
+                onComplete("No reachable watch with Nobody Listens")
                 refreshWatchAvailability()
                 return@launch
             }

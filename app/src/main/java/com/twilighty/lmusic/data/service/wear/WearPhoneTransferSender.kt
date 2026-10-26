@@ -37,7 +37,7 @@ class WearPhoneTransferSender @Inject constructor(
             capability.nodes.isNotEmpty()
         }.getOrElse { error ->
             transferStateStore.retainReachableWatchNodes(emptySet())
-            Timber.tag(TAG).w(error, "Failed checking LMusic Wear availability")
+            Timber.tag(TAG).w(error, "Failed checking Nobody Listens Wear availability")
             false
         }
     }
@@ -75,7 +75,7 @@ class WearPhoneTransferSender @Inject constructor(
             val nodes = capability.nodes
             transferStateStore.retainReachableWatchNodes(nodes.map { it.id }.toSet())
             if (nodes.isEmpty()) {
-                error("No reachable watch with LMusic")
+                error("No reachable watch with Nobody Listens")
             }
 
             val request = WearTransferRequest(

@@ -260,7 +260,7 @@ fun MusicFoldersSetupPage(
                 color = Nb.text
             )
             Text(
-                "Pick the folders LMusic should look in. Voice notes, ringtones and other audio elsewhere stay out of your library.",
+                "Pick the folders Nobody Listens should look in. Voice notes, ringtones and other audio elsewhere stay out of your library.",
                 style = NbType.bodyLarge,
                 color = Nb.textSecondary
             )
@@ -312,7 +312,7 @@ fun MusicFoldersSettingsDialog(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Text(
-                        "LMusic only scans these folders. Your library updates after each change.",
+                        "Nobody Listens only scans these folders. Your library updates after each change.",
                         style = NbType.body,
                         color = Nb.textSecondary
                     )

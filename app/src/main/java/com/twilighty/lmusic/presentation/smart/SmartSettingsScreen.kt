@@ -112,7 +112,7 @@ fun SmartSettingsScreen(
                     modifier = Modifier.padding(top = 12.dp)
                 )
                 Text(
-                    "LMusic listens to a few seconds of each song to learn its mood, genre, energy and tempo. " +
+                    "Nobody Listens samples a few seconds of each song to learn its mood, genre, energy and tempo. " +
                         "That powers song radio, daily mixes and mood insights.",
                     style = NbType.body,
                     color = Nb.textSecondary,

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nobody Listens launcher foreground: the mark inset so it stays inside the round launcher mask. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/nl_mark"
+    android:inset="26%" />

@@ -75,7 +75,7 @@ class LibrarySourceFilterTest {
 
     @Test
     fun `downloaded keeps only phone files saved from YouTube Music`() {
-        val downloaded = local.copy(path = "/storage/emulated/0/Music/LMusic/YouTube Music/Artist - Song.opus")
+        val downloaded = local.copy(path = "/storage/emulated/0/Music/Nobody Listens/YouTube Music/Artist - Song.opus")
         val otherLocal = local.copy(path = "/storage/emulated/0/Music/Album/Song.mp3")
         assertTrue(LibrarySourceFilter.matchesSong(StorageFilter.DOWNLOADED, downloaded))
         assertFalse(LibrarySourceFilter.matchesSong(StorageFilter.DOWNLOADED, otherLocal))

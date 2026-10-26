@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
 private val Context.tipsDataStore: DataStore<Preferences> by preferencesDataStore(name = "lmusic_tips")
 private val BATTERY_TIP_DISMISSED = booleanPreferencesKey("battery_tip_dismissed")
 
-/** Visibility of the "Samsung may pause LMusic" tip for Focus and Party. */
+/** Visibility of the "Samsung may pause Nobody Listens" tip for Focus and Party. */
 @Stable
 class BatteryTipState internal constructor(
     private val context: Context,
@@ -93,7 +93,7 @@ fun BatteryOptimizationTip(state: BatteryTipState, modifier: Modifier = Modifier
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
-            "Samsung may pause LMusic in the background. Allow it to keep timers and parties running.",
+            "Samsung may pause Nobody Listens in the background. Allow it to keep timers and parties running.",
             style = NbType.meta,
             color = Nb.warningText
         )

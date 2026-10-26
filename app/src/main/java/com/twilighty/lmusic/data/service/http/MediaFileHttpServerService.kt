@@ -299,7 +299,7 @@ class MediaFileHttpServerService : Service() {
             val notification = androidx.core.app.NotificationCompat.Builder(this, channelId)
                 .setContentTitle(getString(R.string.cast_server_notification_title))
                 .setContentText(getString(R.string.cast_server_notification_text))
-                .setSmallIcon(com.twilighty.lmusic.R.drawable.ic_stat_lmusic)
+                .setSmallIcon(com.twilighty.lmusic.shared.R.drawable.nl_mark_mono)
                 .setPriority(androidx.core.app.NotificationCompat.PRIORITY_LOW)
                 .build()
 

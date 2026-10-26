@@ -255,7 +255,7 @@ class AppDataBackupManager @Inject constructor(
                 step = ++step,
                 totalSteps = totalSteps,
                 title = "Backup complete",
-                detail = "Your LMusic backup was created successfully."
+                detail = "Your Nobody Listens backup was created successfully."
             )
         }
     }

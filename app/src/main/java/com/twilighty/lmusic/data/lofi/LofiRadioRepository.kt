@@ -139,7 +139,7 @@ class LofiRadioRepository @Inject constructor(
     companion object {
         private const val TAG = "LofiRadio"
         private const val TTL_MS = 6 * 60 * 60 * 1000L
-        val USER_AGENT = "LMusic/${BuildConfig.VERSION_NAME}"
+        val USER_AGENT = "NobodyListens/${BuildConfig.VERSION_NAME}"
         private val HOSTS = listOf(
             "https://de1.api.radio-browser.info",
             "https://all.api.radio-browser.info",

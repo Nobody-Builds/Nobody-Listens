@@ -131,7 +131,7 @@ class WatchTransferForegroundService : Service() {
         val isOngoing = activeTransfers.isNotEmpty()
 
         val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_lmusic)
+            .setSmallIcon(com.twilighty.lmusic.shared.R.drawable.nl_mark_mono)
             .setContentTitle(title)
             .setContentText(contentText)
             .setContentIntent(createOpenAppPendingIntent())

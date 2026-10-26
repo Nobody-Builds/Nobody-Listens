@@ -38,7 +38,7 @@ object WidgetPlaybackLiveness {
 fun PlayerInfo.forDisplay(): PlayerInfo {
     val alive = WidgetPlaybackLiveness.serviceAlive
     return when {
-        songTitle.isBlank() -> copy(isPlaying = false, songTitle = "LMusic", artistName = "Tap to play")
+        songTitle.isBlank() -> copy(isPlaying = false, songTitle = "Nobody Listens", artistName = "Tap to play")
         !alive -> copy(
             isPlaying = false,
             songTitle = "Tap to play",

@@ -148,7 +148,7 @@ class FocusService : Service() {
                 else -> "Getting ready"
             }
             val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_stat_lmusic)
+                .setSmallIcon(com.twilighty.lmusic.shared.R.drawable.nl_mark_mono)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setOngoing(true)
@@ -175,7 +175,7 @@ class FocusService : Service() {
 
         internal fun buildDoneNotification(context: Context, summary: String): Notification =
             NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_stat_lmusic)
+                .setSmallIcon(com.twilighty.lmusic.shared.R.drawable.nl_mark_mono)
                 .setContentTitle("Nice work")
                 .setContentText(summary)
                 .setAutoCancel(true)

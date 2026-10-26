@@ -65,7 +65,7 @@ class BackupFileValidator @Inject constructor(
         }
 
         if (format == BackupFormatDetector.Format.UNKNOWN) {
-            errors.add(ValidationError("FORMAT_UNKNOWN", "File is not a recognized LMusic backup format."))
+            errors.add(ValidationError("FORMAT_UNKNOWN", "File is not a recognized Nobody Listens backup format."))
             return BackupValidationResult.Invalid(errors)
         }
 

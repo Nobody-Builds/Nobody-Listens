@@ -30,7 +30,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "LMusic"
+rootProject.name = "NobodyListens"
 include(":app")
 include(":shared")
 include(":wear")

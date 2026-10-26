@@ -554,7 +554,7 @@ interface MusicDao {
             :filterMode = 0
             OR (:filterMode = 1 AND source_type = 0)
             OR (:filterMode = 2 AND source_type != 0)
-            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         ORDER BY RANDOM()
         LIMIT :limit
@@ -574,7 +574,7 @@ interface MusicDao {
             :filterMode = 0
             OR (:filterMode = 1 AND source_type = 0)
             OR (:filterMode = 2 AND source_type != 0)
-            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         ORDER BY RANDOM()
     """)
@@ -649,7 +649,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND source_type != 0
             )
-            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         ORDER BY parent_directory_path ASC, title ASC
     """)
@@ -672,7 +672,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND source_type != 0
             )
-            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         ORDER BY
             CASE WHEN :sortOrder = 'song_default_order' THEN track_number END ASC,
@@ -710,7 +710,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         ORDER BY
             CASE WHEN :sortOrder = 'liked_title_az' THEN songs.title END COLLATE NOCASE ASC,
@@ -749,7 +749,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND source_type != 0
             )
-            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         ORDER BY
             CASE WHEN :sortOrder = 'song_default_order' THEN track_number END ASC,
@@ -789,7 +789,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND source_type != 0
             )
-            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND source_type = 0 AND parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         ORDER BY
             CASE WHEN :sortOrder = 'song_default_order' THEN track_number END ASC,
@@ -835,7 +835,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         ORDER BY
             CASE WHEN :sortOrder = 'liked_title_az' THEN songs.title END COLLATE NOCASE ASC,
@@ -873,7 +873,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         ORDER BY songs.title COLLATE NOCASE ASC
     """)
@@ -898,7 +898,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         ORDER BY
             CASE WHEN :sortOrder = 'liked_title_az' THEN songs.title END COLLATE NOCASE ASC,
@@ -939,7 +939,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
     """)
     fun getFavoriteSongCount(
@@ -1103,7 +1103,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         GROUP BY
             albums.id,
@@ -1146,7 +1146,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         GROUP BY
             albums.id,
@@ -1202,7 +1202,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         GROUP BY
             albums.id,
@@ -1399,7 +1399,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         GROUP BY artists.id
         ORDER BY
@@ -1433,7 +1433,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         GROUP BY artists.id
         ORDER BY
@@ -1828,7 +1828,7 @@ interface MusicDao {
                 :filterMode = 2
                 AND songs.source_type != 0
             )
-            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/LMusic/YouTube Music')
+            OR (:filterMode = 3 AND songs.source_type = 0 AND songs.parent_directory_path LIKE '%/Nobody Listens/YouTube Music')
         )
         GROUP BY artists.id
         ORDER BY artists.name ASC

@@ -62,11 +62,11 @@ fun UpdateSettings(viewModel: UpdateViewModel = hiltViewModel()) {
     if (available != null) {
         SettingsItem(
             title = "Skip this version",
-            subtitle = "Stop reminders for LMusic $available",
+            subtitle = "Stop reminders for Nobody Listens $available",
             leadingIcon = { Icon(Icons.Rounded.SkipNext, null, tint = MaterialTheme.colorScheme.secondary) },
             onClick = {
                 viewModel.skipVersion(available)
-                Toast.makeText(context, "Skipped LMusic $available", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Skipped Nobody Listens $available", Toast.LENGTH_SHORT).show()
             }
         )
     }

@@ -245,7 +245,7 @@ fun ScreensaverSettingsSection() {
         }
         SettingsItem(
             title = "System screen saver",
-            subtitle = "Pick LMusic in Settings › Display › Screen saver",
+            subtitle = "Pick Nobody Listens in Settings › Display › Screen saver",
             leadingIcon = { Icon(Icons.Rounded.Tv, null, tint = tint) },
             trailingIcon = { Icon(Icons.Rounded.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
             onClick = {

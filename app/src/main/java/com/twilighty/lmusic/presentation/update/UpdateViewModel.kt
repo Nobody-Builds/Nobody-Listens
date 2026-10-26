@@ -50,7 +50,7 @@ class UpdateViewModel @Inject constructor(
         _isChecking.value = true
         viewModelScope.launch {
             val message = when (val result = checker.check(notify = false)) {
-                is UpdateCheckResult.UpdateAvailable -> "LMusic ${result.release.version} is available"
+                is UpdateCheckResult.UpdateAvailable -> "Nobody Listens ${result.release.version} is available"
                 is UpdateCheckResult.UpToDate -> "You're on the latest version"
                 is UpdateCheckResult.Failed -> "Couldn't check for updates"
             }

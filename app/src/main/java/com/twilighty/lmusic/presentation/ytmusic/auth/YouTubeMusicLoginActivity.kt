@@ -338,7 +338,7 @@ private fun YouTubeMusicLoginScreen(
                 )
             ) {
                 Text(
-                    text = "Sign in with your Google account, then tap Done. LMusic only stores the YouTube Music session on this device.",
+                    text = "Sign in with your Google account, then tap Done. Nobody Listens only stores the YouTube Music session on this device.",
                     modifier = Modifier.padding(12.dp),
                     style = MaterialTheme.typography.bodySmall,
                     fontFamily = GoogleSansRounded,

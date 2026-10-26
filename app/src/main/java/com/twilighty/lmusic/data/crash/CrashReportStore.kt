@@ -67,7 +67,7 @@ object CrashReportStore {
     private const val MARK_TRACE = "--- stack trace ---"
     private const val MARK_LOG = "--- recent log ---"
 
-    const val ISSUES_URL = "https://github.com/twilighty-abhi/lmusic-player/issues/new"
+    const val ISSUES_URL = "https://github.com/Nobody-Builds/Nobody-Listens/issues/new"
     private const val MAX_URL_LENGTH = 7000
 
     fun file(context: Context): File = File(File(context.filesDir, DIR), FILE)
@@ -79,7 +79,7 @@ object CrashReportStore {
     fun writeCrash(context: Context, thread: Thread, throwable: Throwable) {
         val now = System.currentTimeMillis()
         val sb = StringBuilder(16 * 1024)
-        sb.append("LMusic crash report\n")
+        sb.append("Nobody Listens crash report\n")
         sb.append("time: ").append(SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.US).format(Date(now))).append('\n')
         sb.append("timestamp: ").append(now).append('\n')
         sb.append("app: ").append(BuildConfig.VERSION_NAME).append(" (").append(BuildConfig.VERSION_CODE).append(")")
