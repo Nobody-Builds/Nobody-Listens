@@ -20,7 +20,6 @@ import com.nobodybuilds.listens.data.preferences.PlaylistPreferencesRepository
 import com.nobodybuilds.listens.data.repository.MusicRepository
 import com.nobodybuilds.listens.data.service.MusicService
 import com.nobodybuilds.listens.data.service.MusicNotificationProvider
-import com.nobodybuilds.listens.data.service.player.DualPlayerEngine
 import com.nobodybuilds.listens.shared.WearBrowseRequest
 import com.nobodybuilds.listens.shared.WearBrowseResponse
 import com.nobodybuilds.listens.shared.WearDataPaths
@@ -30,7 +29,6 @@ import com.nobodybuilds.listens.shared.WearTransferMetadata
 import com.nobodybuilds.listens.shared.WearTransferProgress
 import com.nobodybuilds.listens.shared.WearTransferRequest
 import com.nobodybuilds.listens.shared.WearVolumeCommand
-import com.nobodybuilds.listens.utils.MediaItemBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -64,10 +62,11 @@ class WearCommandReceiver : WearableListenerService() {
 
     @Inject lateinit var musicRepository: MusicRepository
     @Inject lateinit var playlistPreferencesRepository: PlaylistPreferencesRepository
-    @Inject lateinit var dualPlayerEngine: DualPlayerEngine
     @Inject lateinit var directTransferCoordinator: PhoneDirectWatchTransferCoordinator
     @Inject lateinit var transferCancellationStore: PhoneWatchTransferCancellationStore
     @Inject lateinit var transferStateStore: PhoneWatchTransferStateStore
+    @Inject lateinit var watchHandoffQueue: WatchHandoffQueue
+    @Inject lateinit var watchStartedPlayback: WatchStartedPlayback
 
     private val json = Json { ignoreUnknownKeys = true }
     private var mediaController: MediaController? = null
@@ -114,6 +113,9 @@ class WearCommandReceiver : WearableListenerService() {
         when (command.action) {
             WearPlaybackCommand.PLAY_FROM_CONTEXT -> {
                 handlePlayFromContext(command)
+            }
+            WearPlaybackCommand.CONTINUE_ON_PHONE -> {
+                handleContinueOnPhone(command)
             }
             else -> {
                 getOrBuildMediaController { controller ->
@@ -184,10 +186,7 @@ class WearCommandReceiver : WearableListenerService() {
         }
     }
 
-    /**
-     * Handle PLAY_FROM_CONTEXT: load songs for the given context, build a queue,
-     * find the start index, and start playback.
-     */
+    /** Play a song within its album, artist, playlist or library queue. */
     private fun handlePlayFromContext(command: WearPlaybackCommand) {
         val songId = command.songId
         val contextType = command.contextType
@@ -195,31 +194,16 @@ class WearCommandReceiver : WearableListenerService() {
             Timber.tag(TAG).w("PLAY_FROM_CONTEXT missing songId or contextType")
             return
         }
+        watchStartedPlayback.play("PLAY_FROM_CONTEXT") {
+            val songs = libraryBrowser.getSongsForContext(contextType, command.contextId)
+            songs.takeIf { it.isNotEmpty() }?.let { it to it.indexOfFirst { song -> song.id == songId }.coerceAtLeast(0) }
+        }
+    }
 
-        scope.launch {
-            try {
-                val songs = libraryBrowser.getSongsForContext(contextType, command.contextId)
-                if (songs.isEmpty()) {
-                    Timber.tag(TAG).w("No songs found for context: $contextType / ${command.contextId}")
-                    return@launch
-                }
-
-                val mediaItems = songs.map { MediaItemBuilder.build(it) }.toMutableList()
-                val startIndex = songs.indexOfFirst { it.id == songId }.coerceAtLeast(0)
-                mediaItems[startIndex] = dualPlayerEngine.resolveMediaItem(mediaItems[startIndex])
-
-                getOrBuildMediaController { controller ->
-                    controller.setMediaItems(mediaItems, startIndex, 0L)
-                    controller.prepare()
-                    controller.play()
-                    Timber.tag(TAG).d(
-                        "Playing from context: $contextType, song=${songs[startIndex].title}, " +
-                            "queue size=${songs.size}"
-                    )
-                }
-            } catch (e: Exception) {
-                Timber.tag(TAG).e(e, "Failed to handle PLAY_FROM_CONTEXT")
-            }
+    /** The watch switched its output to the phone: play its queue here from where it was. */
+    private fun handleContinueOnPhone(command: WearPlaybackCommand) {
+        watchStartedPlayback.play("CONTINUE_ON_PHONE", positionMs = command.positionMs ?: 0L) {
+            watchHandoffQueue.resolve(command.handoffQueue.orEmpty(), command.queueIndex ?: 0)
         }
     }
 
@@ -556,11 +540,13 @@ class WearCommandReceiver : WearableListenerService() {
                 return@runOnMainThread
             }
 
+            // The application context, not this service's: the service is often destroyed before the
+            // connection is up, and releasing a connection bound to it then crashes the app.
             val sessionToken = SessionToken(
-                this,
-                ComponentName(this, MusicService::class.java)
+                applicationContext,
+                ComponentName(applicationContext, MusicService::class.java)
             )
-            val future = MediaController.Builder(this, sessionToken)
+            val future = MediaController.Builder(applicationContext, sessionToken)
                 .setApplicationLooper(Looper.getMainLooper())
                 .buildAsync()
             mediaControllerFuture = future
@@ -602,7 +588,13 @@ class WearCommandReceiver : WearableListenerService() {
 
     override fun onDestroy() {
         scope.cancel()
-        runOnMainThread { releaseController() }
+        runOnMainThread {
+            // Commands still waiting for the connection run first; then it is let go.
+            mediaControllerFuture?.takeIf { !it.isDone }?.let { pending ->
+                pending.addListener({ MediaController.releaseFuture(pending) }, ContextCompat.getMainExecutor(applicationContext))
+            }
+            releaseController()
+        }
         super.onDestroy()
     }
 }

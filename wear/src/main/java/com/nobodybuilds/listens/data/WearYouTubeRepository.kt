@@ -10,6 +10,7 @@ import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicSession
 import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicStream
 import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicStreamFinder
 import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicTrack
+import com.nobodybuilds.listens.shared.WearHandoffSong
 import okhttp3.OkHttpClient
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -81,7 +82,7 @@ class WearYouTubeRepository @Inject constructor(
         fun videoIdFrom(uri: Uri): String? =
             uri.lastPathSegment?.takeIf { uri.scheme == SCHEME && it.length == VIDEO_ID_LENGTH }
 
-        fun songId(videoId: String): String = "yt:$videoId"
+        fun songId(videoId: String): String = WearHandoffSong.YOUTUBE_PREFIX + videoId
 
         private const val VIDEO_ID_LENGTH = 11
     }

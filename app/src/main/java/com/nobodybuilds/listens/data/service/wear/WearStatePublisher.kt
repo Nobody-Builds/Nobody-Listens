@@ -53,11 +53,12 @@ class WearStatePublisher @Inject constructor(
      *
      * @param songId The current media item's ID
      * @param playerInfo The full player info from MusicService
+     * @param streamId The song's YouTube Music or JioSaavn stream id ([WearPlayerState.streamId]), if it is one
      */
-    fun publishState(songId: String?, playerInfo: PlayerInfo) {
+    fun publishState(songId: String?, playerInfo: PlayerInfo, streamId: String? = null) {
         scope.launch {
             try {
-                publishStateInternal(songId, playerInfo)
+                publishStateInternal(songId, playerInfo, streamId)
             } catch (e: Exception) {
                 Timber.tag(TAG).w(e, "Failed to publish state to Wear Data Layer")
             }
@@ -83,7 +84,7 @@ class WearStatePublisher @Inject constructor(
         }
     }
 
-    private suspend fun publishStateInternal(songId: String?, playerInfo: PlayerInfo) {
+    private suspend fun publishStateInternal(songId: String?, playerInfo: PlayerInfo, streamId: String?) {
         val volumeLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         val volumeMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
 
@@ -102,6 +103,8 @@ class WearStatePublisher @Inject constructor(
             volumeMax = volumeMax,
             themePalette = buildWearThemePalette(playerInfo),
             queueRevision = playerInfo.wearQueueRevision,
+            streamId = streamId.orEmpty(),
+            artworkUrl = playerInfo.albumArtUri?.takeIf { streamId != null && it.startsWith("http") },
         )
 
         val stateJson = json.encodeToString(wearState)

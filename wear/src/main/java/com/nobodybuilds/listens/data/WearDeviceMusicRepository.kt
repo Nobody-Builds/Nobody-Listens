@@ -60,7 +60,7 @@ class WearDeviceMusicRepository @Inject constructor(
                     id.toString(),
                 )
                 songs += WearDeviceSong(
-                    songId = "device:$id",
+                    songId = "$DEVICE_SONG_PREFIX$id",
                     title = title,
                     artist = artist,
                     album = album,
@@ -71,5 +71,9 @@ class WearDeviceMusicRepository @Inject constructor(
             songs
         } ?: emptyList()
     }
-}
 
+    companion object {
+        /** Songs from the watch's own storage; they exist only here. */
+        const val DEVICE_SONG_PREFIX = "device:"
+    }
+}

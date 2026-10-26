@@ -33,6 +33,13 @@ data class WearPlayerState(
     val themePalette: WearThemePalette? = null,
     /** Changes whenever the active phone queue or current queue position changes. */
     val queueRevision: String = "",
+    /**
+     * Set when the phone is streaming the song ([WearHandoffSong.YOUTUBE_PREFIX] or
+     * [WearHandoffSong.JIOSAAVN_PREFIX] + its id), so the watch can stream it itself when you switch to it.
+     */
+    val streamId: String = "",
+    /** The streamed song's cover URL, with [streamId]. */
+    val artworkUrl: String? = null,
 ) {
     val isEmpty: Boolean
         get() = songId.isEmpty()

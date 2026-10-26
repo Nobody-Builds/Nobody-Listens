@@ -13,6 +13,8 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.session.MediaSession
 import com.nobodybuilds.listens.data.local.LocalSongDao
 import com.nobodybuilds.listens.data.local.LocalSongEntity
+import com.nobodybuilds.listens.shared.WearHandoffSong
+import com.nobodybuilds.listens.shared.WearPlaybackCommand
 import com.nobodybuilds.listens.shared.WearThemePalette
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -338,6 +340,38 @@ class WearLocalPlayerRepository @Inject constructor(
 
     fun pause() {
         exoPlayer?.pause()
+    }
+
+    /**
+     * What the phone needs to carry on from here: the queue and where the current song is. Null when nothing
+     * is playing, or the current song exists only on the watch (`device:` songs from its own storage).
+     */
+    fun continueOnPhoneCommand(): WearPlaybackCommand? {
+        val player = exoPlayer?.takeIf { it.isPlaying } ?: return null
+        val queue = (0 until player.mediaItemCount).mapNotNull { index ->
+            handoffSong(player.getMediaItemAt(index).mediaId)?.let { index to it }
+        }
+        val start = queue.indexOfFirst { it.first == player.currentMediaItemIndex }
+        if (start == -1) return null
+        return WearPlaybackCommand(
+            action = WearPlaybackCommand.CONTINUE_ON_PHONE,
+            queueIndex = start,
+            positionMs = player.currentPosition,
+            handoffQueue = queue.map { it.second },
+        )
+    }
+
+    private fun handoffSong(songId: String): WearHandoffSong? {
+        if (songId.startsWith(WearDeviceMusicRepository.DEVICE_SONG_PREFIX)) return null
+        val item = currentQueueItemsById[songId]
+        val local = currentQueueSongsById[songId]
+        return WearHandoffSong(
+            songId = songId,
+            title = item?.title ?: local?.title.orEmpty(),
+            artist = item?.artist ?: local?.artist.orEmpty(),
+            album = item?.album ?: local?.album.orEmpty(),
+            artworkUrl = item?.artworkUrl,
+        )
     }
 
     fun next() {

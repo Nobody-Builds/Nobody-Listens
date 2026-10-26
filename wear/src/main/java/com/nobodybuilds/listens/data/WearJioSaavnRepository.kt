@@ -9,6 +9,7 @@ import com.nobodybuilds.listens.data.jiosaavn.JioSaavnSession
 import com.nobodybuilds.listens.data.jiosaavn.JioSaavnStream
 import com.nobodybuilds.listens.data.jiosaavn.JioSaavnStreamFinder
 import com.nobodybuilds.listens.data.jiosaavn.JioSaavnTrack
+import com.nobodybuilds.listens.shared.WearHandoffSong
 import okhttp3.OkHttpClient
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -63,6 +64,6 @@ class WearJioSaavnRepository @Inject constructor(private val network: WearStream
 
         fun songIdFrom(uri: Uri): String? = uri.lastPathSegment?.takeIf { uri.scheme == SCHEME && it.isNotBlank() }
 
-        fun songId(jioSaavnId: String): String = "jiosaavn:$jioSaavnId"
+        fun songId(jioSaavnId: String): String = WearHandoffSong.JIOSAAVN_PREFIX + jioSaavnId
     }
 }

@@ -1,9 +1,12 @@
 package com.nobodybuilds.listens.data.service
 
 import android.content.Context
+import com.nobodybuilds.listens.data.jiosaavn.JioSaavnUris
 import com.nobodybuilds.listens.data.model.PlayerInfo
 import com.nobodybuilds.listens.data.service.player.DualPlayerEngine
 import com.nobodybuilds.listens.data.service.wear.WearStatePublisher
+import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicUris
+import com.nobodybuilds.listens.shared.WearHandoffSong
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -66,6 +69,16 @@ internal class WidgetUpdateScheduler(
         return withContext(Dispatchers.Main) { player.currentMediaItem?.mediaId }
     }
 
+    /** The current song's stream id when it is a YouTube Music or JioSaavn stream, so the watch can stream it too. */
+    private suspend fun currentStreamIdForWear(): String? {
+        if (castRemoteSync.resolveCastRemoteSnapshot() != null) return null
+        val player = engine.masterPlayer
+        val uri = withContext(Dispatchers.Main) { player.currentMediaItem?.localConfiguration?.uri?.toString() }
+            ?: return null
+        YouTubeMusicUris.videoIdFromPlaybackUri(uri)?.let { return WearHandoffSong.YOUTUBE_PREFIX + it }
+        return JioSaavnUris.songIdFromPlaybackUri(uri)?.let { WearHandoffSong.JIOSAAVN_PREFIX + it }
+    }
+
     private fun shouldUpdateWidget(old: PlayerInfo, new: PlayerInfo): Boolean {
         if (old.songTitle != new.songTitle) return true
         if (old.artistName != new.artistName) return true
@@ -107,7 +120,7 @@ internal class WidgetUpdateScheduler(
         if (shouldPublishWear) {
             val currentMediaId = resolveCurrentMediaIdForWear()
             // Publish state to Wear OS watch
-            wearStatePublisher.publishState(currentMediaId, playerInfo)
+            wearStatePublisher.publishState(currentMediaId, playerInfo, currentStreamIdForWear())
         }
     }
 

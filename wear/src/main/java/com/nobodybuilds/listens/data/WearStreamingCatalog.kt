@@ -4,6 +4,8 @@ import com.nobodybuilds.listens.data.jiosaavn.JioSaavnTrack
 import com.nobodybuilds.listens.data.stream.StreamingTrack
 import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicFormats
 import com.nobodybuilds.listens.data.ytmusic.YouTubeMusicTrack
+import com.nobodybuilds.listens.shared.WearHandoffSong
+import com.nobodybuilds.listens.shared.WearPlayerState
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -43,6 +45,24 @@ class WearStreamingCatalog @Inject constructor(
             album = (track as? JioSaavnTrack)?.album.orEmpty(),
             uri = WearJioSaavnRepository.trackUri(track.key),
             artworkUrl = track.thumbnailUrl,
+        )
+    }
+
+    /** The phone's streamed song ([WearPlayerState.streamId]) as a watch queue song, or null for other ids. */
+    fun queueSongForPhoneStream(state: WearPlayerState): WearQueueSong? {
+        val id = state.streamId
+        val uri = when {
+            id.startsWith(WearHandoffSong.YOUTUBE_PREFIX) -> WearYouTubeRepository.trackUri(id.removePrefix(WearHandoffSong.YOUTUBE_PREFIX))
+            id.startsWith(WearHandoffSong.JIOSAAVN_PREFIX) -> WearJioSaavnRepository.trackUri(id.removePrefix(WearHandoffSong.JIOSAAVN_PREFIX))
+            else -> return null
+        }
+        return WearQueueSong(
+            songId = id,
+            title = state.songTitle,
+            artist = state.artistName,
+            album = state.albumName,
+            uri = uri,
+            artworkUrl = state.artworkUrl,
         )
     }
 }

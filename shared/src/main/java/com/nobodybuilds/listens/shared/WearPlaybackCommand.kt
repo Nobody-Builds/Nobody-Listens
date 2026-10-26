@@ -23,6 +23,10 @@ data class WearPlaybackCommand(
     val queueIndex: Int? = null,
     /** Minutes used by SET_SLEEP_TIMER_DURATION action. */
     val durationMinutes: Int? = null,
+    /** The watch's queue for CONTINUE_ON_PHONE; [queueIndex] is its current song. */
+    val handoffQueue: List<WearHandoffSong>? = null,
+    /** Where the current song was on the watch, for CONTINUE_ON_PHONE. */
+    val positionMs: Long? = null,
 ) {
     companion object {
         const val PLAY = "play"
@@ -49,5 +53,7 @@ data class WearPlaybackCommand(
         const val SET_SLEEP_TIMER_END_OF_TRACK = "set_sleep_timer_end_of_track"
         /** Cancel any active sleep timer. */
         const val CANCEL_SLEEP_TIMER = "cancel_sleep_timer"
+        /** Play the watch's queue on the phone from where the watch was (switching output to the phone). */
+        const val CONTINUE_ON_PHONE = "continue_on_phone"
     }
 }

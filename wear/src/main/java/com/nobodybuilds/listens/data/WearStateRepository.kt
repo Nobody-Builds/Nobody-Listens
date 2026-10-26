@@ -1,6 +1,7 @@
 package com.nobodybuilds.listens.data
 
 import android.graphics.Bitmap
+import android.os.SystemClock
 import com.nobodybuilds.listens.shared.WearPlaybackResult
 import com.nobodybuilds.listens.shared.WearPlayerState
 import com.nobodybuilds.listens.shared.WearVolumeState
@@ -46,7 +47,22 @@ class WearStateRepository @Inject constructor() {
     private val _playbackResults = MutableSharedFlow<WearPlaybackResult>(extraBufferCapacity = 8)
     val playbackResults: SharedFlow<WearPlaybackResult> = _playbackResults.asSharedFlow()
 
+    @Volatile
+    private var playerStateReceivedAtMs = 0L
+
+    /**
+     * Where the phone's song is now. The phone publishes its position only when something changes, so while it
+     * plays, the time since that update is added (the same way the player screen moves its progress).
+     */
+    fun livePhonePositionMs(): Long {
+        val state = _playerState.value
+        if (!state.isPlaying) return state.currentPositionMs
+        val position = state.currentPositionMs + (SystemClock.elapsedRealtime() - playerStateReceivedAtMs)
+        return if (state.totalDurationMs > 0L) position.coerceAtMost(state.totalDurationMs) else position
+    }
+
     fun updatePlayerState(state: WearPlayerState) {
+        playerStateReceivedAtMs = SystemClock.elapsedRealtime()
         _playerState.value = state
         if (state.volumeMax > 0) {
             updateVolumeState(
