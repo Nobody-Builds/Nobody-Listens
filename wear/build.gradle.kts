@@ -17,7 +17,7 @@ val keystoreProperties = Properties().apply {
 }
 
 android {
-    namespace = "com.twilighty.lmusic"
+    namespace = "com.nobodybuilds.listens"
     compileSdk = 37
 
     defaultConfig {
@@ -30,7 +30,7 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file(keystoreProperties.getProperty("storeFile") ?: "$rootDir/lmusic-release.jks")
+            storeFile = file(keystoreProperties.getProperty("storeFile") ?: "$rootDir/nobody-listens-release.jks")
             storePassword = keystoreProperties.getProperty("storePassword") ?: "dummyPassword"
             keyAlias = keystoreProperties.getProperty("keyAlias") ?: "dummyAlias"
             keyPassword = keystoreProperties.getProperty("keyPassword") ?: "dummyPassword"

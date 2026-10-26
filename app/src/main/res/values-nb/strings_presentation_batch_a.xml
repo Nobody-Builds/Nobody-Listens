@@ -13,7 +13,7 @@
     <string name="auth_gdrive_sign_in_with_google">Logg inn med Google</string>
     <string name="auth_gdrive_select_music_folder_title">Velg en musikkmappe</string>
     <string name="auth_gdrive_select_music_folder_subtitle">Velg eller opprett en mappe som skal brukes som musikkilde</string>
-    <string name="auth_gdrive_create_lmusic_music_title">Opprett \"Nobody Listens\"</string>
+    <string name="auth_gdrive_create_nobody_listens_music_title">Opprett \"Nobody Listens\"</string>
     <string name="auth_gdrive_create_folder_here_hint">Opprett en ny mappe for musikken din her</string>
     <string name="auth_gdrive_no_folders_here">Ingen mapper her</string>
     <string name="auth_gdrive_use_this_folder">Bruk</string>

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.twilighty.lmusic.shared"
+    namespace = "com.nobodybuilds.listens.shared"
     compileSdk = 37
 
     defaultConfig {

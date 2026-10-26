@@ -18,21 +18,21 @@ val keystoreProperties = Properties().apply {
     }
 }
 
-val enableAbiSplits = providers.gradleProperty("lmusic.enableAbiSplits")
+val enableAbiSplits = providers.gradleProperty("nobodylistens.enableAbiSplits")
     .getOrElse("true")
     .toBoolean()
 
-val allApks = providers.gradleProperty("lmusic.allApks")
+val allApks = providers.gradleProperty("nobodylistens.allApks")
     .getOrElse("false")
     .toBoolean()
 
-val enableComposeCompilerReports = providers.gradleProperty("lmusic.enableComposeCompilerReports")
+val enableComposeCompilerReports = providers.gradleProperty("nobodylistens.enableComposeCompilerReports")
     .getOrElse("false")
     .toBoolean()
 
 @Suppress("DEPRECATION")
 android {
-    namespace = "com.twilighty.lmusic"
+    namespace = "com.nobodybuilds.listens"
     compileSdk = 37
 
     sourceSets {
@@ -71,9 +71,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Emulator smoke test only (-Plmusic.smokeTest=true): lets a release build honour the
+        // Emulator smoke test only (-Pnobodylistens.smokeTest=true): lets a release build honour the
         // is_benchmark / smoke_route launch extras. Never set for published releases.
-        val smokeTest = (project.findProperty("lmusic.smokeTest") as? String)?.toBoolean() ?: false
+        val smokeTest = (project.findProperty("nobodylistens.smokeTest") as? String)?.toBoolean() ?: false
         buildConfigField("boolean", "SMOKE_TEST", smokeTest.toString())
     }
 
@@ -81,7 +81,7 @@ android {
         create("release") {
             // Nobody Listens release key. CI writes the keystore from repository secrets so every
             // build is signed with the same key and installs as an update over the last one.
-            storeFile = file(keystoreProperties.getProperty("storeFile") ?: "$rootDir/lmusic-release.jks")
+            storeFile = file(keystoreProperties.getProperty("storeFile") ?: "$rootDir/nobody-listens-release.jks")
             storePassword = keystoreProperties.getProperty("storePassword") ?: "dummyPassword"
             keyAlias = keystoreProperties.getProperty("keyAlias") ?: "dummyAlias"
             keyPassword = keystoreProperties.getProperty("keyPassword") ?: "dummyPassword"
@@ -136,7 +136,7 @@ android {
             reset()
             if (enableAbiSplits) {
                 include("arm64-v8a", "armeabi-v7a")
-                // Releases (-Plmusic.allApks=true) also ship x86_64 and a universal APK.
+                // Releases (-Pnobodylistens.allApks=true) also ship x86_64 and a universal APK.
                 if (allApks) include("x86_64")
                 isUniversalApk = allApks
             }

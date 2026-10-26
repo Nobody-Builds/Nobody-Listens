@@ -222,8 +222,8 @@
     <string name="setcat_trigger_crash_title">Provocar cierre forzado de prueba</string>
     <string name="setcat_trigger_crash_subtitle">Simular un fallo para probar el informe de errores.</string>
     <string name="setcat_application">Aplicación</string>
-    <string name="setcat_about_lmusic_title">Acerca de Nobody Listens</string>
-    <string name="setcat_about_lmusic_subtitle">Versión, créditos y más.</string>
+    <string name="setcat_about_nobody_listens_title">Acerca de Nobody Listens</string>
+    <string name="setcat_about_nobody_listens_subtitle">Versión, créditos y más.</string>
 
     <string name="backup_summary_none">Ninguna sección seleccionada.</string>
     <string name="backup_summary_all">Todas las secciones seleccionadas.</string>

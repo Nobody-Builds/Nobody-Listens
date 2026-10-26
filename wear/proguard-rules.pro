@@ -4,6 +4,6 @@
 -dontobfuscate
 
 # Keep serialization
--keepclassmembers class com.twilighty.lmusic.shared.** {
+-keepclassmembers class com.nobodybuilds.listens.shared.** {
     *;
 }

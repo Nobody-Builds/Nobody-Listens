@@ -222,8 +222,8 @@
     <string name="setcat_trigger_crash_title">Picu Crash Uji Coba</string>
     <string name="setcat_trigger_crash_subtitle">Simulasikan crash untuk menguji sistem pelaporan crash.</string>
     <string name="setcat_application">Aplikasi</string>
-    <string name="setcat_about_lmusic_title">Tentang Nobody Listens</string>
-    <string name="setcat_about_lmusic_subtitle">Versi aplikasi, kredit, dan lainnya.</string>
+    <string name="setcat_about_nobody_listens_title">Tentang Nobody Listens</string>
+    <string name="setcat_about_nobody_listens_subtitle">Versi aplikasi, kredit, dan lainnya.</string>
 
     <string name="backup_summary_none">Tidak ada bagian yang dipilih.</string>
     <string name="backup_summary_all">Semua bagian dipilih.</string>

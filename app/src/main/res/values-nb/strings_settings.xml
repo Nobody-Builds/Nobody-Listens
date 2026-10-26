@@ -222,8 +222,8 @@
     <string name="setcat_trigger_crash_title">Utløs test-krasj</string>
     <string name="setcat_trigger_crash_subtitle">Simuler et krasj for å teste rapporteringssystemet.</string>
     <string name="setcat_application">Applikasjon</string>
-    <string name="setcat_about_lmusic_title">Om Nobody Listens</string>
-    <string name="setcat_about_lmusic_subtitle">App-versjon, bidragsytere med mer.</string>
+    <string name="setcat_about_nobody_listens_title">Om Nobody Listens</string>
+    <string name="setcat_about_nobody_listens_subtitle">App-versjon, bidragsytere med mer.</string>
 
     <string name="backup_summary_none">Ingen seksjoner valgt.</string>
     <string name="backup_summary_all">Alle seksjoner valgt.</string>

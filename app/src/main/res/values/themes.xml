@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base app theme: Daylight window colours so launch and the system splash match the app. -->
-    <style name="Theme.LMusic" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.NobodyListens" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="colorPrimary">@color/nb_primary</item>
@@ -12,7 +12,7 @@
     </style>
 
     <!-- Screensaver: pure black from the first frame (OLED). -->
-    <style name="Theme.LMusic.Screensaver" parent="Theme.Material3.DynamicColors.Dark">
+    <style name="Theme.NobodyListens.Screensaver" parent="Theme.Material3.DynamicColors.Dark">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowBackground">@android:color/black</item>
@@ -20,7 +20,7 @@
         <item name="android:navigationBarColor">@android:color/black</item>
     </style>
 
-    <style name="Theme.LMusic.ExternalPlayer" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.NobodyListens.ExternalPlayer" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>

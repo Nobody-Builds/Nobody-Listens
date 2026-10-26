@@ -41,4 +41,4 @@ markdown.xml
 .agents/
 
 # CI signing material (never commit)
-.lmusic-signing/
+.nobody-listens-signing/

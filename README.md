@@ -113,27 +113,27 @@ configuration, or:
 
 ```bash
 ./gradlew :app:assembleRelease   # phone APK per ABI (arm64-v8a, armeabi-v7a)
-./gradlew :app:assembleRelease -Plmusic.allApks=true   # adds x86_64 and a universal APK
+./gradlew :app:assembleRelease -Pnobodylistens.allApks=true   # adds x86_64 and a universal APK
 ./gradlew :wear:assembleRelease  # the Wear OS watch app
 ```
 
-The `lmusic.*` Gradle properties, `LMUSIC_*` secrets and Kotlin packages (`com.twilighty.lmusic`) keep their
-upstream names. They're internal, and renaming them would break existing signing setups.
+Code lives in `com.nobodybuilds.listens`. A few stored names keep their LMusic form so LMusic backups and taste
+codes still import: the `lmusic_*` DataStore and preference files, and the `LMT1:` taste-code prefix.
 
 ### Signing
 
 APKs install as updates only when every build is signed with the same key.
 
 - **CI default:** on its first `main` build, GitHub Actions creates a signing key and
-  keeps it in the Actions cache (`lmusic-signing-key-v1`). The *Keep CI signing key
+  keeps it in the Actions cache (`nobody-listens-signing-key-v1`). The *Keep CI signing key
   alive* workflow touches it twice a week so it never expires.
 - **Your own key (recommended for the long term):** add three repository secrets —
-  `LMUSIC_KEYSTORE_B64` (the `.jks` file, base64), `LMUSIC_KEYSTORE_PASSWORD` and
-  `LMUSIC_KEY_ALIAS` — and CI uses them instead. On a Mac:
+  `NOBODY_LISTENS_KEYSTORE_B64` (the `.jks` file, base64), `NOBODY_LISTENS_KEYSTORE_PASSWORD` and
+  `NOBODY_LISTENS_KEY_ALIAS` — and CI uses them instead. On a Mac:
 
   ```bash
-  keytool -genkeypair -keystore lmusic.jks -alias lmusic -keyalg RSA -keysize 4096 -validity 36500
-  base64 -i lmusic.jks | pbcopy   # paste as LMUSIC_KEYSTORE_B64
+  keytool -genkeypair -keystore nobody-listens.jks -alias nobody-listens -keyalg RSA -keysize 4096 -validity 36500
+  base64 -i nobody-listens.jks | pbcopy   # paste as NOBODY_LISTENS_KEYSTORE_B64
   ```
 
   Switching keys changes the signature once: uninstall the CI-signed app first

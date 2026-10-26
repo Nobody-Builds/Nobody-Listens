@@ -222,8 +222,8 @@
     <string name="setcat_trigger_crash_title">Attiva crash di test</string>
     <string name="setcat_trigger_crash_subtitle">Simula un crash per testare il sistema di segnalazione crash.</string>
     <string name="setcat_application">Applicazione</string>
-    <string name="setcat_about_lmusic_title">Informazioni su Nobody Listens</string>
-    <string name="setcat_about_lmusic_subtitle">Versione app, crediti e altro.</string>
+    <string name="setcat_about_nobody_listens_title">Informazioni su Nobody Listens</string>
+    <string name="setcat_about_nobody_listens_subtitle">Versione app, crediti e altro.</string>
 
     <string name="backup_summary_none">Nessuna sezione selezionata.</string>
     <string name="backup_summary_all">Tutte le sezioni selezionate.</string>

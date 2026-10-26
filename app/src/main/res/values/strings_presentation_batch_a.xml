@@ -13,7 +13,7 @@
     <string name="auth_gdrive_sign_in_with_google">Sign in with Google</string>
     <string name="auth_gdrive_select_music_folder_title">Select a music folder</string>
     <string name="auth_gdrive_select_music_folder_subtitle">Choose or create a folder to use as your music source</string>
-    <string name="auth_gdrive_create_lmusic_music_title">Create \"Nobody Listens\"</string>
+    <string name="auth_gdrive_create_nobody_listens_music_title">Create \"Nobody Listens\"</string>
     <string name="auth_gdrive_create_folder_here_hint">Create a new folder here for your music</string>
     <string name="auth_gdrive_no_folders_here">No folders here</string>
     <string name="auth_gdrive_use_this_folder">Use</string>

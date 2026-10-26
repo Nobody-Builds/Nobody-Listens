@@ -13,7 +13,7 @@
     <string name="auth_gdrive_sign_in_with_google">Войти через Google</string>
     <string name="auth_gdrive_select_music_folder_title">Выберите папку с музыкой</string>
     <string name="auth_gdrive_select_music_folder_subtitle">Выберите или создайте папку для использования в качестве источника музыки</string>
-    <string name="auth_gdrive_create_lmusic_music_title">Создать «Nobody Listens»</string>
+    <string name="auth_gdrive_create_nobody_listens_music_title">Создать «Nobody Listens»</string>
     <string name="auth_gdrive_create_folder_here_hint">Создайте здесь новую папку для вашей музыки</string>
     <string name="auth_gdrive_no_folders_here">Здесь нет папок</string>
     <string name="auth_gdrive_use_this_folder">Использовать</string>

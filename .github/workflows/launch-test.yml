@@ -37,7 +37,7 @@ jobs:
           } > keystore.properties
 
       - name: Build release APK (universal, includes x86_64 for the emulator)
-        run: ./gradlew :app:assembleRelease --stacktrace -Plmusic.smokeTest=true -Pkotlin.daemon.jvmargs=-Xmx4g
+        run: ./gradlew :app:assembleRelease --stacktrace -Pnobodylistens.smokeTest=true -Pkotlin.daemon.jvmargs=-Xmx4g
 
       - name: Free disk space for the emulator
         run: |

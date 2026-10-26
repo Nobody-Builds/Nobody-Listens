@@ -13,7 +13,7 @@
     <string name="auth_gdrive_sign_in_with_google">Google 계정으로 로그인</string>
     <string name="auth_gdrive_select_music_folder_title">음악 폴더 선택</string>
     <string name="auth_gdrive_select_music_folder_subtitle">음악 소스로 사용할 폴더를 선택하거나 생성하세요</string>
-    <string name="auth_gdrive_create_lmusic_music_title">\"Nobody Listens\" 생성</string>
+    <string name="auth_gdrive_create_nobody_listens_music_title">\"Nobody Listens\" 생성</string>
     <string name="auth_gdrive_create_folder_here_hint">여기에 음악을 위한 새 폴더 생성</string>
     <string name="auth_gdrive_no_folders_here">여기에 폴더가 없습니다</string>
     <string name="auth_gdrive_use_this_folder">사용</string>

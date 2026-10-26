@@ -4,7 +4,7 @@ uiautomator, takes screenshots and fails if the process dies or a FATAL EXCEPTIO
 import re, subprocess, sys, time, os, xml.etree.ElementTree as ET
 
 PKG = "com.nobodybuilds.listens"
-ACT = f"{PKG}/com.twilighty.lmusic.MainActivity"
+ACT = f"{PKG}/com.nobodybuilds.listens.MainActivity"
 OUT = "launch-logs"
 os.makedirs(OUT, exist_ok=True)
 steps, problems = [], []
@@ -178,7 +178,7 @@ def main():
     launch(); time.sleep(4)
     step("02-home", lambda: True)
     # Shuffle-all syncs the library when it is empty, so the test songs get indexed.
-    adb("shell", "am", "start", "-W", "-a", "com.twilighty.lmusic.ACTION_SHUFFLE_ALL", "-n", ACT, "--ez", "is_benchmark", "true")
+    adb("shell", "am", "start", "-W", "-a", "com.nobodybuilds.listens.ACTION_SHUFFLE_ALL", "-n", ACT, "--ez", "is_benchmark", "true")
     time.sleep(12)
     tap_tab("Library") or tap_xy(0.4, 0.94)
     expect("test songs appear in Library", has_text("LMusic Test", tries=10, wait=4))
@@ -199,7 +199,7 @@ def main():
         back()
     # Playback: shuffle all (app shortcut action), then the mini player and the full player.
     def shuffle_all():
-        adb("shell", "am", "start", "-W", "-a", "com.twilighty.lmusic.ACTION_SHUFFLE_ALL", "-n", ACT, "--ez", "is_benchmark", "true")
+        adb("shell", "am", "start", "-W", "-a", "com.nobodybuilds.listens.ACTION_SHUFFLE_ALL", "-n", ACT, "--ez", "is_benchmark", "true")
         time.sleep(8); return True
     step("06-shuffle-all", shuffle_all)
     expect("a test song is playing (mini player)", has_text("LMusic Test", tries=4))
@@ -248,7 +248,7 @@ finally:
     crash = adb("logcat", "-d", "-b", "crash")
     full = adb("logcat", "-d")
     print("===== swipe log =====")
-    print("\n".join(l for l in full.splitlines() if "LMusicSwipe" in l))
+    print("\n".join(l for l in full.splitlines() if "NobodyListensSwipe" in l))
     open(f"{OUT}/crash.txt", "w").write(crash)
     open(f"{OUT}/logcat.txt", "w").write(full)
     ours = f"Process: {PKG}," in crash or f"Process: {PKG}," in full

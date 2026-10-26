@@ -223,8 +223,8 @@
     <string name="setcat_trigger_crash_title">Вызвать тестовый сбой</string>
     <string name="setcat_trigger_crash_subtitle">Симуляция сбоя для проверки системы отчетов.</string>
     <string name="setcat_application">Приложение</string>
-    <string name="setcat_about_lmusic_title">О Nobody Listens</string>
-    <string name="setcat_about_lmusic_subtitle">Версия приложения, авторы и др.</string>
+    <string name="setcat_about_nobody_listens_title">О Nobody Listens</string>
+    <string name="setcat_about_nobody_listens_subtitle">Версия приложения, авторы и др.</string>
 
     <string name="backup_summary_none">Разделы не выбраны.</string>
     <string name="backup_summary_all">Все разделы выбраны.</string>

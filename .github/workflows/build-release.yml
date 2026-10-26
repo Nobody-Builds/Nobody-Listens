@@ -24,8 +24,8 @@ concurrency:
 
 env:
   # The CI signing key is generated once and kept in the Actions cache under this name.
-  SIGNING_CACHE_KEY: lmusic-signing-key-v1
-  SIGNING_DIR: .lmusic-signing
+  SIGNING_CACHE_KEY: nobody-listens-signing-key-v1
+  SIGNING_DIR: .nobody-listens-signing
 
 jobs:
   build:
@@ -46,25 +46,25 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       # ---- Signing -------------------------------------------------------------
-      # Preferred: your own key in repository secrets (LMUSIC_KEYSTORE_B64,
-      # LMUSIC_KEYSTORE_PASSWORD, LMUSIC_KEY_ALIAS). Without them, a key generated
+      # Preferred: your own key in repository secrets (NOBODY_LISTENS_KEYSTORE_B64,
+      # NOBODY_LISTENS_KEYSTORE_PASSWORD, NOBODY_LISTENS_KEY_ALIAS). Without them, a key generated
       # by CI on the first main-branch build is reused from the Actions cache, so
       # every APK is signed the same way and installs as an update.
       - name: Use signing key from secrets
         id: secret-key
         env:
-          KEYSTORE_B64: ${{ secrets.LMUSIC_KEYSTORE_B64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.LMUSIC_KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.LMUSIC_KEY_ALIAS }}
+          KEYSTORE_B64: ${{ secrets.NOBODY_LISTENS_KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.NOBODY_LISTENS_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.NOBODY_LISTENS_KEY_ALIAS }}
         run: |
           if [ -z "$KEYSTORE_B64" ]; then
             echo "found=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           mkdir -p "$SIGNING_DIR"
-          echo "$KEYSTORE_B64" | base64 -d > "$SIGNING_DIR/lmusic.jks"
+          echo "$KEYSTORE_B64" | base64 -d > "$SIGNING_DIR/nobody-listens.jks"
           {
-            echo "storeFile=$GITHUB_WORKSPACE/$SIGNING_DIR/lmusic.jks"
+            echo "storeFile=$GITHUB_WORKSPACE/$SIGNING_DIR/nobody-listens.jks"
             echo "storePassword=$KEYSTORE_PASSWORD"
             echo "keyAlias=$KEY_ALIAS"
             echo "keyPassword=$KEYSTORE_PASSWORD"
@@ -88,7 +88,7 @@ jobs:
           fi
           mkdir -p "$SIGNING_DIR"
           PASS="$(openssl rand -hex 24)"
-          keytool -genkeypair -keystore "$SIGNING_DIR/lmusic.jks" -alias lmusic \
+          keytool -genkeypair -keystore "$SIGNING_DIR/nobody-listens.jks" -alias nobody-listens \
             -keyalg RSA -keysize 4096 -validity 36500 \
             -storepass "$PASS" -keypass "$PASS" -dname "CN=Nobody Listens, O=Nobody Builds"
           echo "$PASS" > "$SIGNING_DIR/password"
@@ -105,9 +105,9 @@ jobs:
         run: |
           PASS="$(cat "$SIGNING_DIR/password")"
           {
-            echo "storeFile=$GITHUB_WORKSPACE/$SIGNING_DIR/lmusic.jks"
+            echo "storeFile=$GITHUB_WORKSPACE/$SIGNING_DIR/nobody-listens.jks"
             echo "storePassword=$PASS"
-            echo "keyAlias=lmusic"
+            echo "keyAlias=nobody-listens"
             echo "keyPassword=$PASS"
           } > keystore.properties
 
@@ -143,8 +143,8 @@ jobs:
           # (every ABI in one, largest); other builds keep to arm64-v8a and armeabi-v7a.
           # The Wear OS watch app (Galaxy Watch 4 and newer) is signed with the same key so it pairs.
           ./gradlew :app:assembleRelease :wear:assembleRelease --stacktrace \
-            -Plmusic.enableAbiSplits=true \
-            -Plmusic.allApks=${{ steps.version.outputs.release }} \
+            -Pnobodylistens.enableAbiSplits=true \
+            -Pnobodylistens.allApks=${{ steps.version.outputs.release }} \
             -PAPP_VERSION_CODE=${{ steps.version.outputs.code }} \
             -PAPP_VERSION_NAME=${{ steps.version.outputs.name }}
 

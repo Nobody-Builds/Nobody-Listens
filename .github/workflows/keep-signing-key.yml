@@ -17,8 +17,8 @@ jobs:
         id: restore
         uses: actions/cache/restore@v4
         with:
-          path: .lmusic-signing
-          key: lmusic-signing-key-v1
+          path: .nobody-listens-signing
+          key: nobody-listens-signing-key-v1
           lookup-only: false
 
       - name: Report

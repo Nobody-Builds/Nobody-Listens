@@ -222,8 +222,8 @@
     <string name="setcat_trigger_crash_title">테스트 크래시 발생</string>
     <string name="setcat_trigger_crash_subtitle">크래시 보고 시스템을 테스트하기 위해 크래시를 시뮬레이션합니다.</string>
     <string name="setcat_application">애플리케이션</string>
-    <string name="setcat_about_lmusic_title">Nobody Listens 정보</string>
-    <string name="setcat_about_lmusic_subtitle">앱 버전, 제작진 등.</string>
+    <string name="setcat_about_nobody_listens_title">Nobody Listens 정보</string>
+    <string name="setcat_about_nobody_listens_subtitle">앱 버전, 제작진 등.</string>
 
     <string name="backup_summary_none">선택된 섹션이 없습니다.</string>
     <string name="backup_summary_all">모든 섹션이 선택되었습니다.</string>

@@ -13,7 +13,7 @@
     <string name="auth_gdrive_sign_in_with_google">Mit Google anmelden</string>
     <string name="auth_gdrive_select_music_folder_title">Musikordner auswählen</string>
     <string name="auth_gdrive_select_music_folder_subtitle">Ordner wählen oder erstellen, der als Musikquelle dient</string>
-    <string name="auth_gdrive_create_lmusic_music_title">\"Nobody Listens\" erstellen</string>
+    <string name="auth_gdrive_create_nobody_listens_music_title">\"Nobody Listens\" erstellen</string>
     <string name="auth_gdrive_create_folder_here_hint">Neuen Ordner für Musik hier erstellen</string>
     <string name="auth_gdrive_no_folders_here">Keine Ordner hier</string>
     <string name="auth_gdrive_use_this_folder">Verwenden</string>

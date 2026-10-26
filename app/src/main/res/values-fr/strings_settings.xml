@@ -219,8 +219,8 @@
     <string name="setcat_trigger_crash_title">Déclencher un crash de test</string>
     <string name="setcat_trigger_crash_subtitle">Simuler un crash pour tester le système de rapport.</string>
     <string name="setcat_application">Application</string>
-    <string name="setcat_about_lmusic_title">À propos de Nobody Listens</string>
-    <string name="setcat_about_lmusic_subtitle">Version de l\'application, crédits, etc.</string>
+    <string name="setcat_about_nobody_listens_title">À propos de Nobody Listens</string>
+    <string name="setcat_about_nobody_listens_subtitle">Version de l\'application, crédits, etc.</string>
 
     <string name="backup_summary_none">Aucune section sélectionnée.</string>
     <string name="backup_summary_all">Toutes les sections sélectionnées.</string>
