@@ -3,7 +3,7 @@
 set -x
 mkdir -p launch-logs
 APK=$(ls apk/*.apk | head -1)
-adb uninstall com.twilighty.lmusic >/dev/null 2>&1
+adb uninstall com.nobodybuilds.listens >/dev/null 2>&1
 adb install -r -g "$APK" || { echo "INSTALL FAILED"; exit 1; }
 # Test songs (generated tones with tags) so the player screens can be exercised.
 command -v ffmpeg >/dev/null || { echo "ffmpeg missing: cannot create test songs"; exit 1; }

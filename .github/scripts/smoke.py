@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""LMusic emulator smoke test: launches the app, walks through the main screens with
+"""Nobody Listens emulator smoke test: launches the app, walks through the main screens with
 uiautomator, takes screenshots and fails if the process dies or a FATAL EXCEPTION appears."""
 import re, subprocess, sys, time, os, xml.etree.ElementTree as ET
 
-PKG = "com.twilighty.lmusic"
+PKG = "com.nobodybuilds.listens"
 ACT = f"{PKG}/com.twilighty.lmusic.MainActivity"
 OUT = "launch-logs"
 os.makedirs(OUT, exist_ok=True)
