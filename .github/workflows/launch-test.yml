@@ -28,7 +28,7 @@ jobs:
       - name: Throwaway signing key
         run: |
           keytool -genkeypair -v -keystore "$RUNNER_TEMP/test.jks" -storepass testpass -keypass testpass \
-            -alias test -keyalg RSA -keysize 2048 -validity 365 -dname "CN=LMusic Test"
+            -alias test -keyalg RSA -keysize 2048 -validity 365 -dname "CN=Nobody Listens Test"
           {
             echo "storeFile=$RUNNER_TEMP/test.jks"
             echo "storePassword=testpass"

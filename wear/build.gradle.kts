@@ -1,9 +1,19 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+}
+
+// Same release key as the phone app: the Wear Data Layer only pairs apps signed alike.
+val keystoreProperties = Properties().apply {
+    val propFile = rootProject.file("keystore.properties")
+    if (propFile.exists()) {
+        propFile.inputStream().use { load(it) }
+    }
 }
 
 android {
@@ -18,12 +28,22 @@ android {
         versionName = project.findProperty("APP_VERSION_NAME") as String
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystoreProperties.getProperty("storeFile") ?: "$rootDir/lmusic-release.jks")
+            storePassword = keystoreProperties.getProperty("storePassword") ?: "dummyPassword"
+            keyAlias = keystoreProperties.getProperty("keyAlias") ?: "dummyAlias"
+            keyPassword = keystoreProperties.getProperty("keyPassword") ?: "dummyPassword"
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
         }
 
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

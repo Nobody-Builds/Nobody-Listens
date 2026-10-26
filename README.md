@@ -1,22 +1,46 @@
-# LMusic
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/lockup-dark.png">
+  <img alt="Nobody Listens" src="assets/lockup-light.png" width="420">
+</picture>
 
-A local music player for Android 13 and newer, written in Kotlin with Jetpack Compose.
-LMusic is built on top of [PixelPlayer](https://github.com/theovilardo/PixelPlayer)
-(the last MIT-licensed version) and adds a Yuyu-styled look, a richer tag editor with
-metadata autofill, and deeper listening analytics.
+A local music player for Android 13 and newer, written in Kotlin with Jetpack Compose, with a
+Wear OS app for the watch. Part of [Nobody Builds](https://github.com/Nobody-Builds).
 
-Made by **Abhiram NJ** ([Twilight Abhi](https://github.com/twilighty-abhi)).
+Made by **Shaan Shoukath** ([@Shaan-Shoukath](https://github.com/Shaan-Shoukath)).
+
+> **A fork of LMusic.** Nobody Listens is a fork of [LMusic](https://github.com/twilighty-abhi/lmusic-player)
+> by Abhiram NJ ([Twilight Abhi](https://github.com/twilighty-abhi)), which is itself built on
+> [PixelPlayer](https://github.com/theovilardo/PixelPlayer) (the last MIT-licensed version). Most of what's
+> below was built there. This fork adds the Nobody Builds brand and "Daylight" design, YouTube Music (also
+> contributed to LMusic) and its own fixes. It installs as its own app (`com.nobodybuilds.listens`), so it sits
+> beside LMusic: move your library over with Settings → Backup & Restore, since LMusic backups restore here.
 
 ## Install
 
-1. Open the [latest release](https://github.com/twilighty-abhi/LMusic-player/releases/latest)
-   on your phone and download `LMusic-<version>.apk`.
+1. Open the [latest release](https://github.com/Nobody-Builds/Nobody-Listens/releases/latest)
+   on your phone and download the APK for it:
+   - `NobodyListens-<version>-arm64-v8a.apk`: almost every phone from the last several years.
+   - `NobodyListens-<version>-armeabi-v7a.apk`: older 32-bit phones.
+   - `NobodyListens-<version>-x86_64.apk`: emulators and Chromebooks.
+   - `NobodyListens-<version>-universal.apk`: works everywhere, but is the largest.
 2. Open the file. The first time, Android asks you to allow installs from your browser
    or **My Files** — allow it once.
 3. Later releases install as updates on top. Your library, playlists and stats stay.
 
-Every push to `main` also builds an APK — open the run under **Actions** and download it
+Every push to `main` also builds APKs — open the run under **Actions** and download them
 from **Artifacts**.
+
+### Galaxy Watch (Wear OS)
+
+`NobodyListens-Watch-<version>.apk` runs on Galaxy Watch 4 and newer, and other Wear OS 3+ watches. It plays songs
+stored on the watch with no phone needed, works as a remote for the phone app, and takes songs sent from the phone.
+It's signed with the same key as the phone app, which is what lets the two find each other.
+
+1. On the watch: **Settings → About watch → Software information**, tap **Software version** five times, then
+   **Settings → Developer options → ADB debugging** and **Wireless debugging** on. Note the IP and port shown.
+2. On a computer on the same Wi-Fi, with [Android platform-tools](https://developer.android.com/tools/releases/platform-tools):
+   `adb pair <ip>:<pairing port>` (enter the code from **Pair new device**), then `adb connect <ip>:<port>` and
+   `adb install NobodyListens-Watch-<version>.apk`.
 
 ## What LMusic adds
 
@@ -88,8 +112,13 @@ Open the project in Android Studio (Ladybug or newer, JDK 21) and run the `app`
 configuration, or:
 
 ```bash
-./gradlew :app:assembleRelease   # APK per ABI; LMusic releases ship the arm64-v8a one
+./gradlew :app:assembleRelease   # phone APK per ABI (arm64-v8a, armeabi-v7a)
+./gradlew :app:assembleRelease -Plmusic.allApks=true   # adds x86_64 and a universal APK
+./gradlew :wear:assembleRelease  # the Wear OS watch app
 ```
+
+The `lmusic.*` Gradle properties, `LMUSIC_*` secrets and Kotlin packages (`com.twilighty.lmusic`) keep their
+upstream names. They're internal, and renaming them would break existing signing setups.
 
 ### Signing
 
@@ -114,11 +143,15 @@ APKs install as updates only when every build is signed with the same key.
 
 Bump `APP_VERSION_NAME` in `gradle.properties` (e.g. `1.1.0`), add
 `release-notes/v1.1.0.md`, and push to `main`. The workflow sees there's no release
-for that version yet, builds the APK and publishes **LMusic v1.1.0** with it (and creates
-the tag). Pushing a `v*` tag yourself works too. Other pushes just build an APK artifact.
+for that version yet, builds every APK (arm64-v8a, armeabi-v7a, x86_64, universal and the
+watch) and publishes **Nobody Listens v1.1.0** with them (and creates the tag). Pushing a `v*`
+tag yourself works too. Other pushes just build the arm64-v8a, armeabi-v7a and watch APKs as
+artifacts.
 
 ## Credits and licence
 
+- [LMusic](https://github.com/twilighty-abhi/lmusic-player) by Abhiram NJ
+  ([Twilight Abhi](https://github.com/twilighty-abhi)), the app this one is forked from (MIT).
 - [PixelPlayer](https://github.com/theovilardo/PixelPlayer) by theovilardo and
   contributors — this project is based on upstream commit `3903015` (12 May 2026),
   the last version released under the MIT License. See [LICENSE](LICENSE).
@@ -128,3 +161,4 @@ the tag). Pushing a `v*` tag yourself works too. Other pushes just build an APK 
 - On-device audio model: [YAMNet](https://github.com/tensorflow/models/tree/master/research/audioset/yamnet) (Apache-2.0), run with TensorFlow Lite.
 - Metadata: [MusicBrainz](https://musicbrainz.org) (CC0) and
   [Cover Art Archive](https://coverartarchive.org).
+- Logo: the Nobody Listens mark from the Nobody Builds brand kit.

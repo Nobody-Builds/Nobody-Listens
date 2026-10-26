@@ -22,6 +22,10 @@ val enableAbiSplits = providers.gradleProperty("lmusic.enableAbiSplits")
     .getOrElse("true")
     .toBoolean()
 
+val allApks = providers.gradleProperty("lmusic.allApks")
+    .getOrElse("false")
+    .toBoolean()
+
 val enableComposeCompilerReports = providers.gradleProperty("lmusic.enableComposeCompilerReports")
     .getOrElse("false")
     .toBoolean()
@@ -132,7 +136,9 @@ android {
             reset()
             if (enableAbiSplits) {
                 include("arm64-v8a", "armeabi-v7a")
-                isUniversalApk = false
+                // Releases (-Plmusic.allApks=true) also ship x86_64 and a universal APK.
+                if (allApks) include("x86_64")
+                isUniversalApk = allApks
             }
         }
     }

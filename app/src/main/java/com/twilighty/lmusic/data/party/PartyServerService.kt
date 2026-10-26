@@ -349,7 +349,7 @@ class PartyServerService : Service() {
         )
         val guestText = if (guests == 1) "1 guest" else "$guests guests"
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_lmusic)
+            .setSmallIcon(com.twilighty.lmusic.shared.R.drawable.nl_mark_mono)
             .setContentTitle("Party queue is on · $guestText")
             .setContentText(manager.state.value.baseUrl?.let { "Join at $it · PIN ${manager.state.value.pin}" } ?: "Starting…")
             .setOngoing(true)
@@ -622,6 +622,9 @@ class PartyServerService : Service() {
     private fun io.ktor.server.routing.Routing.partyRoutes() {
         get("/") { call.respondPage() }
         get("/tv") { call.respondPage() }
+        // Site icons from the Nobody Listens kit; favicon.svg follows the guest's light or dark mode.
+        get("/favicon.svg") { call.respondAsset("party/favicon.svg", ContentType.Image.SVG) }
+        get("/apple-touch-icon.png") { call.respondAsset("party/apple-touch-icon.png", ContentType.Image.PNG) }
 
         post("/api/pin") {
             if (checkExpired()) {
@@ -791,6 +794,13 @@ class PartyServerService : Service() {
         noStore()
         response.header("Content-Security-Policy", "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'")
         respondText(pageHtml, ContentType.Text.Html.withParameter("charset", "utf-8"))
+    }
+
+    private suspend fun ApplicationCall.respondAsset(path: String, type: ContentType) {
+        val bytes = runCatching { assets.open(path).use { it.readBytes() } }.getOrNull()
+            ?: return respondText("", ContentType.Text.Plain, HttpStatusCode.NotFound)
+        response.header("Cache-Control", "public, max-age=86400")
+        respondBytes(bytes, type)
     }
 
     private suspend fun ApplicationCall.respondJson(body: String, status: HttpStatusCode = HttpStatusCode.OK) {

@@ -1,9 +1,10 @@
-name: Build & Release LMusic
+name: Build & Release Nobody Listens
 
-# Every push to main builds a signed APK (download it from the run's "Artifacts").
+# Every push to main builds signed phone and watch APKs (download them from the run's "Artifacts").
 # Releases: when a push to main carries a version (APP_VERSION_NAME in gradle.properties)
-# that has no GitHub Release yet, the build is published as release v<version> with the
-# APK attached. So to ship 1.1.0: bump APP_VERSION_NAME, add release-notes/v1.1.0.md, push.
+# that has no GitHub Release yet, the build is published as release v<version> with every
+# APK attached (arm64-v8a, armeabi-v7a, x86_64, universal and the watch). So to ship 1.1.0:
+# bump APP_VERSION_NAME, add release-notes/v1.1.0.md, push.
 # Pushing a tag like v1.2.0 publishes that version too.
 
 on:
@@ -89,7 +90,7 @@ jobs:
           PASS="$(openssl rand -hex 24)"
           keytool -genkeypair -keystore "$SIGNING_DIR/lmusic.jks" -alias lmusic \
             -keyalg RSA -keysize 4096 -validity 36500 \
-            -storepass "$PASS" -keypass "$PASS" -dname "CN=LMusic, O=twilighty-abhi"
+            -storepass "$PASS" -keypass "$PASS" -dname "CN=Nobody Listens, O=Nobody Builds"
           echo "$PASS" > "$SIGNING_DIR/password"
 
       - name: Save CI signing key
@@ -132,36 +133,43 @@ jobs:
           echo "code=$CODE" >> "$GITHUB_OUTPUT"
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "release=$RELEASE" >> "$GITHUB_OUTPUT"
-          echo "Building LMusic $NAME ($CODE), release=$RELEASE"
+          echo "Building Nobody Listens $NAME ($CODE), release=$RELEASE"
 
       # ---- Build ---------------------------------------------------------------
-      - name: Build release APK
+      - name: Build release APKs
         run: |
           chmod +x gradlew
-          # arm64 build only: every Android 15+ phone (including the Galaxy S23) is
-          # 64-bit ARM, and it keeps the APK a fraction of the universal size.
-          ./gradlew :app:assembleRelease --stacktrace \
+          # Phone APKs are split per ABI. Releases also build x86_64 and a universal APK
+          # (every ABI in one, largest); other builds keep to arm64-v8a and armeabi-v7a.
+          # The Wear OS watch app (Galaxy Watch 4 and newer) is signed with the same key so it pairs.
+          ./gradlew :app:assembleRelease :wear:assembleRelease --stacktrace \
             -Plmusic.enableAbiSplits=true \
+            -Plmusic.allApks=${{ steps.version.outputs.release }} \
             -PAPP_VERSION_CODE=${{ steps.version.outputs.code }} \
             -PAPP_VERSION_NAME=${{ steps.version.outputs.name }}
 
-      - name: Verify and rename APK
-        id: apk
+      - name: Verify and rename APKs
         run: |
-          SRC="app/build/outputs/apk/release/app-arm64-v8a-release.apk"
-          ls -la app/build/outputs/apk/release/
-          OUT="LMusic-${{ steps.version.outputs.name }}.apk"
-          cp "$SRC" "$OUT"
+          ls -la app/build/outputs/apk/release/ wear/build/outputs/apk/release/
+          V="${{ steps.version.outputs.name }}"
+          mkdir dist
+          for f in app/build/outputs/apk/release/app-*-release.apk; do
+            ABI="$(basename "$f" -release.apk)"
+            cp "$f" "dist/NobodyListens-$V-${ABI#app-}.apk"
+          done
+          cp wear/build/outputs/apk/release/wear-release.apk "dist/NobodyListens-Watch-$V.apk"
           BT="$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -n 1)"
-          "$ANDROID_HOME/build-tools/$BT/aapt2" dump badging "$OUT" | head -n 3
-          "$ANDROID_HOME/build-tools/$BT/apksigner" verify --print-certs "$OUT" | head -n 4
-          echo "file=$OUT" >> "$GITHUB_OUTPUT"
+          for f in dist/*.apk; do
+            "$ANDROID_HOME/build-tools/$BT/aapt2" dump badging "$f" | head -n 3
+            "$ANDROID_HOME/build-tools/$BT/apksigner" verify --print-certs "$f" | head -n 4
+          done
+          ls -la dist/
 
-      - name: Upload APK artifact
+      - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: LMusic-${{ steps.version.outputs.name }}
-          path: ${{ steps.apk.outputs.file }}
+          name: NobodyListens-${{ steps.version.outputs.name }}
+          path: dist/*.apk
           compression-level: 0
           if-no-files-found: error
 
@@ -172,6 +180,6 @@ jobs:
         run: |
           TAG="v${{ steps.version.outputs.name }}"
           NOTES_FILE="release-notes/${TAG}.md"
-          ARGS=(--title "LMusic ${TAG}" --target "$GITHUB_SHA")
+          ARGS=(--title "Nobody Listens ${TAG}" --target "$GITHUB_SHA")
           if [ -f "$NOTES_FILE" ]; then ARGS+=(--notes-file "$NOTES_FILE"); else ARGS+=(--generate-notes); fi
-          gh release create "$TAG" "${{ steps.apk.outputs.file }}" "${ARGS[@]}"
+          gh release create "$TAG" dist/*.apk "${ARGS[@]}"
