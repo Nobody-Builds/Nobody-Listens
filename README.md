@@ -32,9 +32,11 @@ from **Artifacts**.
 
 ### Galaxy Watch (Wear OS)
 
-`NobodyListens-Watch-<version>.apk` runs on Galaxy Watch 4 and newer, and other Wear OS 3+ watches. It plays songs
-stored on the watch with no phone needed, works as a remote for the phone app, and takes songs sent from the phone.
-It's signed with the same key as the phone app, which is what lets the two find each other.
+`NobodyListens-Watch-<version>.apk` runs on Galaxy Watch 4 and newer, and other Wear OS 3+ watches, round or
+square. On its own, the watch plays songs already saved to it through its speaker or Bluetooth headphones. With the
+phone nearby it also works as a remote for the phone app, browses the phone's library and receives songs from it.
+Search, playlist import and YouTube Music on the watch are not there yet. The watch app is signed with the same
+key as the phone app, which is how the two find each other.
 
 1. On the watch: **Settings → About watch → Software information**, tap **Software version** five times, then
    **Settings → Developer options → ADB debugging** and **Wireless debugging** on. Note the IP and port shown.

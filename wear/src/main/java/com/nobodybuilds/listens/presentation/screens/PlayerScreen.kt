@@ -57,6 +57,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.TransformOrigin
@@ -118,7 +119,10 @@ import com.nobodybuilds.listens.presentation.components.outputRouteIcon
 import com.nobodybuilds.listens.presentation.components.WearTopTimeText
 import com.nobodybuilds.listens.presentation.shapes.RoundedStarShape
 import com.nobodybuilds.listens.presentation.theme.LocalWearPalette
+import com.nobodybuilds.listens.presentation.theme.WearScreen
 import com.nobodybuilds.listens.presentation.theme.radialBackgroundBrush
+import com.nobodybuilds.listens.presentation.theme.rememberWearScreen
+import com.nobodybuilds.listens.presentation.theme.WearTitleFont
 import com.nobodybuilds.listens.presentation.theme.surfaceContainerColor
 import com.nobodybuilds.listens.presentation.viewmodel.WearPlayerViewModel
 import com.nobodybuilds.listens.shared.WearPlayerState
@@ -207,6 +211,10 @@ private fun PlayerContent(
             .fillMaxSize()
             .background(background),
     ) {
+        if (albumArt != null && !state.isEmpty) {
+            PlayerArtworkBackdrop(albumArt = albumArt)
+        }
+
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
@@ -260,6 +268,45 @@ private fun PlayerContent(
                 backgroundColor = Color.Transparent,
             )
         }
+    }
+}
+
+/**
+ * The song's artwork behind the controls, like Spotify on Galaxy Watch: blurred (API 31+; older watches get it
+ * unblurred) and darkened so Paper text and controls stay readable on any cover. The scrim keeps even a white cover
+ * at about 6:1 against Paper text, and the edges fall off to black for the bezel.
+ */
+@Composable
+private fun PlayerArtworkBackdrop(albumArt: Bitmap) {
+    val palette = LocalWearPalette.current
+    val image = remember(albumArt) { albumArt.asImageBitmap() }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            bitmap = image,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .blur(18.dp),
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(palette.surfaceContainerLowest.copy(alpha = 0.70f)),
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.radialGradient(
+                        colorStops = arrayOf(
+                            0f to Color.Transparent,
+                            0.70f to Color.Transparent,
+                            1f to Color.Black.copy(alpha = 0.85f),
+                        ),
+                    ),
+                ),
+        )
     }
 }
 
@@ -589,11 +636,11 @@ private fun AlbumArtPage(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(horizontal = 36.dp, vertical = 28.dp),
+                .padding(horizontal = rememberWearScreen().contentInset + 8.dp, vertical = 28.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = state.songTitle.ifEmpty { "No song playing" },
+                text = state.songTitle.ifEmpty { "Nothing playing" },
                 style = MaterialTheme.typography.title2.copy(
                     shadow = textColors.bottomShadow,
                 ),
@@ -1269,16 +1316,17 @@ private fun HeaderBlock(
     isWatchOutputSelected: Boolean = false,
 ) {
     val palette = LocalWearPalette.current
+    val screen = rememberWearScreen()
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 28.dp),
+            .padding(horizontal = screen.contentInset),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = state.songTitle.ifEmpty { "Song name" },
+            text = state.songTitle.ifEmpty { "Nothing playing" },
             style = MaterialTheme.typography.body1,
-            fontWeight = FontWeight.SemiBold,
+            fontFamily = WearTitleFont,
             color = palette.textPrimary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -1295,8 +1343,8 @@ private fun HeaderBlock(
                 }
                 !isPhoneConnected -> "No phone"
                 state.artistName.isNotEmpty() -> state.artistName
-                state.isEmpty -> "Waiting playback"
-                else -> "Artist name"
+                state.isEmpty -> "Pick a song"
+                else -> "Unknown artist"
             },
             style = MaterialTheme.typography.body1,
             color = when {
@@ -1332,6 +1380,7 @@ private fun MainControlsRow(
     onNext: () -> Unit,
     onPrevious: () -> Unit,
 ) {
+    val screen = rememberWearScreen()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -1344,28 +1393,31 @@ private fun MainControlsRow(
             contentDescription = "Previous",
             enabled = enabled,
             onClick = onPrevious,
-            width = 44.dp,
-            height = 54.dp,
+            width = screen.scaled(44.dp),
+            height = screen.scaled(54.dp),
+            iconSize = screen.scaled(28.dp),
         )
 
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(screen.scaled(10.dp)))
 
         CenterPlayButton(
             isPlaying = isPlaying,
             enabled = enabled && !isEmpty,
             trackProgress = trackProgress,
             onClick = onTogglePlayPause,
+            screen = screen,
         )
 
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(screen.scaled(10.dp)))
 
         FlattenedControlButton(
             icon = Icons.Rounded.SkipNext,
             contentDescription = "Next",
             enabled = enabled,
             onClick = onNext,
-            width = 44.dp,
-            height = 54.dp,
+            width = screen.scaled(44.dp),
+            height = screen.scaled(54.dp),
+            iconSize = screen.scaled(28.dp),
         )
     }
 }
@@ -1378,6 +1430,7 @@ private fun FlattenedControlButton(
     onClick: () -> Unit,
     width: Dp,
     height: Dp,
+    iconSize: Dp,
 ) {
     val palette = LocalWearPalette.current
     val container = if (enabled) palette.transportContainer else palette.controlDisabledContainer
@@ -1395,7 +1448,7 @@ private fun FlattenedControlButton(
             imageVector = icon,
             contentDescription = contentDescription,
             tint = tint,
-            modifier = Modifier.size(28.dp),
+            modifier = Modifier.size(iconSize),
         )
     }
 }
@@ -1406,6 +1459,7 @@ private fun CenterPlayButton(
     enabled: Boolean,
     trackProgress: Float,
     onClick: () -> Unit,
+    screen: WearScreen,
 ) {
     val palette = LocalWearPalette.current
 
@@ -1436,17 +1490,17 @@ private fun CenterPlayButton(
     }
     val animatedRotation = rotation.value
     val animatedSize by animateDpAsState(
-        targetValue = if (isPlaying) 60.dp else 56.dp,
+        targetValue = screen.scaled(if (isPlaying) 60.dp else 56.dp),
         animationSpec = spring(),
         label = "playButtonSize",
     )
     val container by animateColorAsState(
-        targetValue = if (enabled) palette.controlContainer else palette.controlDisabledContainer,
+        targetValue = if (enabled) palette.playContainer else palette.controlDisabledContainer,
         animationSpec = spring(),
         label = "playContainer",
     )
     val tint by animateColorAsState(
-        targetValue = if (enabled) palette.controlContent else palette.controlDisabledContent,
+        targetValue = if (enabled) palette.playContent else palette.controlDisabledContent,
         animationSpec = spring(),
         label = "playTint",
     )
@@ -1540,7 +1594,7 @@ private fun CenterPlayButton(
                 imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                 contentDescription = if (isPlaying) "Pause" else "Play",
                 tint = tint,
-                modifier = Modifier.size(30.dp),
+                modifier = Modifier.size(screen.scaled(30.dp)),
             )
         }
     }

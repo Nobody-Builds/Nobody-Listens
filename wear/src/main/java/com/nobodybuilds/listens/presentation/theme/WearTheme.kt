@@ -37,6 +37,9 @@ data class WearPalette(
     val controlDisabledContent: Color,
     val transportContainer: Color,
     val transportContent: Color,
+    /** The play button: the one bold fill on the player (Hard Hat in the Daylight default). */
+    val playContainer: Color,
+    val playContent: Color,
     val chipContainer: Color,
     val chipContent: Color,
     val favoriteActive: Color,
@@ -44,29 +47,36 @@ data class WearPalette(
     val repeatActive: Color,
 )
 
-private val DefaultWearPalette = WearPalette(
-    gradientTop = Color(0xFF6C3AD8),
-    gradientMiddle = Color(0xFF2C1858),
-    gradientBottom = Color(0xFF130B23),
-    surfaceContainerLowest = Color(0xFF171224),
-    surfaceContainerLow = Color(0xFF211A30),
-    surfaceContainer = Color(0xFF2A2140),
-    surfaceContainerHigh = Color(0xFF33274D),
-    surfaceContainerHighest = Color(0xFF3D2E5B),
-    textPrimary = Color(0xFFF4EEFF),
-    textSecondary = Color(0xFFE1D5FF),
-    textError = Color(0xFFFFB7C5),
-    controlContainer = Color(0xFFF0E7FF).copy(alpha = 0.96f),
-    controlContent = Color(0xFF24114A),
-    controlDisabledContainer = Color(0xFF3D2E5B),
-    controlDisabledContent = bestContrastContent(Color(0xFF3D2E5B)),
-    transportContainer = Color(0xFFE6DBFF).copy(alpha = 0.95f),
-    transportContent = Color(0xFF2C0C62),
-    chipContainer = Color(0xFF2A2140),
-    chipContent = Color(0xFFE8E0FF),
-    favoriteActive = Color(0xFFF1608E),
-    shuffleActive = Color(0xFF44CDC4),
-    repeatActive = Color(0xFF70A6FF),
+// Nobody Builds "Daylight" dark tokens (NobodyBuilds-Design/tokens/tokens.json, `dark`), the same as the phone.
+private val NightShift = Color(0xFF172033)
+private val Paper = Color(0xFFF5F7FB)
+private val HardHat = Color(0xFFFDC521)
+
+internal val DefaultWearPalette = WearPalette(
+    gradientTop = Color(0xFF263A5C), // accent-soft
+    gradientMiddle = Color(0xFF1D2840), // surface
+    gradientBottom = NightShift, // bg
+    surfaceContainerLowest = NightShift,
+    surfaceContainerLow = Color(0xFF1D2840),
+    surfaceContainer = Color(0xFF22304B), // panel
+    surfaceContainerHigh = Color(0xFF2A3957),
+    surfaceContainerHighest = Color(0xFF34466A),
+    textPrimary = Paper, // ink
+    textSecondary = Color(0xFFC3C8D2), // muted
+    textError = Color(0xFFFCA5A5), // danger
+    controlContainer = Color(0xFF7FA8E8), // accent
+    controlContent = NightShift, // on-accent
+    controlDisabledContainer = Color(0xFF2A3957),
+    controlDisabledContent = Color(0xFF8592AD), // outline
+    transportContainer = Color(0xFF2A3957),
+    transportContent = Paper,
+    playContainer = HardHat, // emphasis: the one bold moment
+    playContent = NightShift, // on-emphasis
+    chipContainer = Color(0xFF22304B),
+    chipContent = Paper,
+    favoriteActive = Color(0xFFEA724A), // brick
+    shuffleActive = Color(0xFFA6D98F), // success
+    repeatActive = Color(0xFFA9C8F0), // accent-ink
 )
 
 val LocalWearPalette = staticCompositionLocalOf { DefaultWearPalette }
@@ -154,6 +164,8 @@ private fun WearThemePalette.toWearPalette(): WearPalette {
             transportContentArgb,
             colorOrDefault(controlContentArgb, bestContrastContent(transportContainer)),
         ),
+        playContainer = Color(controlContainerArgb),
+        playContent = Color(controlContentArgb),
         chipContainer = colorOrDefault(chipContainerArgb, surface),
         chipContent = Color(chipContentArgb),
         favoriteActive = Color(favoriteActiveArgb),
@@ -201,17 +213,19 @@ private fun buildPaletteFromSeedColor(seed: Color): WearPalette {
         surfaceContainer = surfaceContainer,
         surfaceContainerHigh = surfaceContainerHigh,
         surfaceContainerHighest = surfaceContainerHighest,
-        textPrimary = Color(0xFFF7F2FF),
-        textSecondary = Color(0xFFE8DEF8),
-        textError = Color(0xFFFFB8C7),
+        textPrimary = Paper,
+        textSecondary = Color(0xFFDCE1EA),
+        textError = Color(0xFFFCA5A5),
         controlContainer = controlContainer.copy(alpha = 0.96f),
         controlContent = controlContent,
         controlDisabledContainer = controlDisabledContainer,
         controlDisabledContent = controlDisabledContent,
         transportContainer = transportContainer,
         transportContent = transportContent,
+        playContainer = controlContainer.copy(alpha = 0.96f),
+        playContent = controlContent,
         chipContainer = chipContainer,
-        chipContent = Color(0xFFF2EBFF),
+        chipContent = Paper,
         favoriteActive = buildAccentFromSeed(seedArgb, hueShift = 34f),
         shuffleActive = buildAccentFromSeed(seedArgb, hueShift = -72f),
         repeatActive = buildAccentFromSeed(seedArgb, hueShift = -22f),
@@ -232,8 +246,8 @@ private fun buildAccentFromSeed(seedColor: Int, hueShift: Float): Color {
 }
 
 private fun bestContrastContent(background: Color): Color {
-    val light = Color(0xFFF6F2FF)
-    val dark = Color(0xFF17141E)
+    val light = Paper
+    val dark = NightShift
     // ColorUtils.calculateContrast requires an opaque background.
     val opaqueBackgroundArgb = if (background.alpha >= 0.999f) {
         background.toArgb()

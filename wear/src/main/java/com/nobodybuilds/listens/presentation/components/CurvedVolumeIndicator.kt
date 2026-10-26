@@ -14,7 +14,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nobodybuilds.listens.presentation.theme.LocalWearPalette
+import com.nobodybuilds.listens.presentation.theme.rememberWearScreen
 import com.nobodybuilds.listens.presentation.theme.surfaceContainerColor
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Composable
 fun CurvedVolumeIndicator(
@@ -33,10 +36,27 @@ fun CurvedVolumeIndicator(
         label = "curvedVolumeIndicator",
     )
 
+    val isRound = rememberWearScreen().isRound
+
     Canvas(modifier = modifier) {
         val strokeWidthPx = strokeWidth.toPx()
         val insetPx = strokeWidthPx / 2f + inset.toPx()
         val diameter = size.minDimension - (insetPx * 2f)
+        if (!isRound) {
+            // Square screen: the same span as the arc, drawn straight along the side the arc sits on.
+            val radius = diameter / 2f
+            val center = Offset(size.width / 2f, size.height / 2f)
+            fun pointAt(degrees: Float) = Math.toRadians(degrees.toDouble()).let {
+                Offset(center.x + radius * cos(it).toFloat(), center.y + radius * sin(it).toFloat())
+            }
+            val midX = pointAt(startAngle + sweepAngle / 2f).x
+            val x = if (midX < center.x) insetPx else size.width - insetPx
+            val start = Offset(x, pointAt(startAngle).y)
+            val end = Offset(x, pointAt(startAngle + sweepAngle).y)
+            drawLine(trackColor, start, end, strokeWidthPx, StrokeCap.Round)
+            drawLine(progressColor, start, start + (end - start) * animatedProgress, strokeWidthPx, StrokeCap.Round)
+            return@Canvas
+        }
         val arcSize = Size(diameter, diameter)
         val topLeft = Offset(
             x = (size.width - diameter) / 2f,

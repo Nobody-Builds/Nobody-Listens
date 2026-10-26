@@ -53,6 +53,10 @@ android {
         }
     }
 
+    testOptions {
+        unitTests.all { it.useJUnitPlatform() }
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true
@@ -73,6 +77,10 @@ kotlin {
 
 dependencies {
     implementation(project(":shared"))
+
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+    testRuntimeOnly(libs.junitplatformlauncher)
 
     // Wear OS Compose
     implementation(libs.wear.compose.material)
