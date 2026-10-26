@@ -7,8 +7,6 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
-import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.HttpDataSource
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
@@ -47,10 +45,12 @@ class WearLocalPlayerRepository @Inject constructor(
     private val localSongDao: LocalSongDao,
     private val youTube: WearYouTubeRepository,
     private val jioSaavn: WearJioSaavnRepository,
+    private val streamingNetwork: WearStreamingNetwork,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val json = Json { ignoreUnknownKeys = true }
     private val artworkLoader = WearLocalPlayerArtworkLoader(application)
+    private val streaming = WearStreamingPlayback(streamingNetwork, youTube, jioSaavn)
     private var exoPlayer: ExoPlayer? = null
     private var mediaSession: MediaSession? = null
 
@@ -109,6 +109,7 @@ class WearLocalPlayerRepository @Inject constructor(
     private fun getOrCreatePlayer(): ExoPlayer {
         return exoPlayer ?: ExoPlayer.Builder(application)
             .setMediaSourceFactory(DefaultMediaSourceFactory(wearPlayerDataSourceFactory(application, youTube, jioSaavn)))
+            .setLoadControl(wearStreamingLoadControl())
             .build().also { player ->
             exoPlayer = player
             player.setAudioAttributes(
@@ -125,6 +126,7 @@ class WearLocalPlayerRepository @Inject constructor(
                     updateState()
                     if (playbackState == Player.STATE_ENDED) {
                         stopPositionUpdates()
+                        streaming.updateNetwork(player)
                     }
                 }
 
@@ -133,18 +135,18 @@ class WearLocalPlayerRepository @Inject constructor(
                     if (isPlaying) startPositionUpdates() else stopPositionUpdates()
                 }
 
-                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                    updateState()
+                override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+                    streaming.updateNetwork(player)
                 }
 
-                @androidx.annotation.OptIn(UnstableApi::class)
+                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                    updateState()
+                    streaming.onItemChanged()
+                    streaming.updateNetwork(player)
+                }
+
                 override fun onPlayerError(error: PlaybackException) {
-                    // The service refused the URL (not a dropped connection): the next try gets a fresh one.
-                    val code = (error.cause as? HttpDataSource.InvalidResponseCodeException)?.responseCode
-                    if (code != 403 && code != 410) return
-                    val uri = player.currentMediaItem?.localConfiguration?.uri ?: return
-                    WearYouTubeRepository.videoIdFrom(uri)?.let(youTube::reportStreamRejected)
-                    WearJioSaavnRepository.songIdFrom(uri)?.let(jioSaavn::reportStreamRejected)
+                    if (!streaming.recover(player, error)) streaming.updateNetwork(player)
                 }
             })
             Timber.tag(TAG).d("ExoPlayer created")
@@ -265,6 +267,7 @@ class WearLocalPlayerRepository @Inject constructor(
         transientSongIds: Set<String> = emptySet(),
         transientCleanupPaths: Set<String> = emptySet(),
     ) {
+        if (autoPlay && streaming.isStream(queueSongs.getOrNull(startIndex)?.uri)) streamingNetwork.acquireAndWait()
         withContext(Dispatchers.Main) {
             val player = getOrCreatePlayer()
             if (this@WearLocalPlayerRepository.transientCleanupPaths.isNotEmpty()) {

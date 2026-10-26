@@ -18,10 +18,14 @@ import javax.inject.Singleton
 
 /**
  * YouTube Music straight from the watch over its own Wi-Fi or LTE, so it works with no phone.
- * Signed out (search and play need no account); streams at Normal quality to spare the battery.
+ * Signed out (search and play need no account); streams at Normal quality to spare the battery, or Data saver
+ * over the phone's Bluetooth proxy.
  */
 @Singleton
-class WearYouTubeRepository @Inject constructor(application: Application) {
+class WearYouTubeRepository @Inject constructor(
+    application: Application,
+    private val network: WearStreamingNetwork,
+) {
 
     private val prefs = application.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
     private val api = YouTubeMusicApi(
@@ -41,7 +45,8 @@ class WearYouTubeRepository @Inject constructor(application: Application) {
     /** A playable URL for the song, reused until 30 minutes before it expires. */
     suspend fun resolveStream(videoId: String): YouTubeMusicStream {
         streams[videoId]?.takeIf { it.usableUntilMs > System.currentTimeMillis() }?.let { return it.stream }
-        val stream = streamFinder.find(readySession(), videoId, YouTubeMusicAudioQuality.NORMAL)
+        val quality = if (network.isFast) YouTubeMusicAudioQuality.NORMAL else YouTubeMusicAudioQuality.DATA_SAVER
+        val stream = streamFinder.find(readySession(), videoId, quality)
         val usableForMs = (stream.expiresInSeconds * 1000L - EXPIRY_MARGIN_MS).coerceAtLeast(0L)
         streams[videoId] = CachedStream(stream, System.currentTimeMillis() + usableForMs)
         return stream

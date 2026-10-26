@@ -18,10 +18,10 @@ import javax.inject.Singleton
 /**
  * JioSaavn straight from the watch over its own Wi-Fi or LTE, so it works with no phone.
  * Signed out, asking for 320 kbps: JioSaavn decides what it hands out, and the finder falls back to 160 kbps
- * when 320 is refused.
+ * when 320 is refused. Over the phone's Bluetooth proxy it asks for 160 kbps, which that link can keep up with.
  */
 @Singleton
-class WearJioSaavnRepository @Inject constructor() {
+class WearJioSaavnRepository @Inject constructor(private val network: WearStreamingNetwork) {
 
     private val api = JioSaavnApi(OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS).build())
     private val streamFinder = JioSaavnStreamFinder(api)
@@ -34,7 +34,8 @@ class WearJioSaavnRepository @Inject constructor() {
     /** A playable signed URL for the song, reused for a while (signed URLs are short-lived). */
     suspend fun resolveStream(songId: String): JioSaavnStream {
         streams[songId]?.takeIf { it.usableUntilMs > System.currentTimeMillis() }?.let { return it.stream }
-        val stream = streamFinder.find(session, songId, JioSaavnAudioQuality.HIGH)
+        val quality = if (network.isFast) JioSaavnAudioQuality.HIGH else JioSaavnAudioQuality.NORMAL
+        val stream = streamFinder.find(session, songId, quality)
         streams[songId] = CachedStream(stream, System.currentTimeMillis() + STREAM_TTL_MS)
         return stream
     }

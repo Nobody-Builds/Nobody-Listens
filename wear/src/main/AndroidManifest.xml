@@ -3,6 +3,9 @@
 
     <!-- YouTube Music search and streaming straight from the watch (Wi-Fi, LTE or the phone's Bluetooth proxy). -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Streams ask for Wi-Fi: the Bluetooth proxy is too slow for them (WearStreamingNetwork). -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
