@@ -215,6 +215,10 @@ object YouTubeMusicParsers {
                     collectShelf(renderer, shelves, looseTracks, loosePlaylists)
                     return
                 }
+                element["musicCardShelfRenderer"]?.let { renderer ->
+                    collectTopResultCard(renderer.jsonObject, shelf, shelves, looseTracks, loosePlaylists)
+                    return
+                }
                 element["musicResponsiveListItemRenderer"]?.let { renderer ->
                     val item = renderer.jsonObject
                     parseTrack(item)?.let { track ->
@@ -274,6 +278,24 @@ object YouTubeMusicParsers {
             artistId = browseIds(item["flexColumns"]).firstOrNull { it.startsWith("UC") },
             albumId = browseIds(item["flexColumns"]).firstOrNull { it.startsWith("MPRE") },
         )
+    }
+
+    /** Search's top-result card. Its song rows leave out the artist when the card is that artist's. */
+    private fun collectTopResultCard(
+        card: JsonObject,
+        shelf: ShelfBuilder?,
+        shelves: MutableList<YouTubeMusicShelf>,
+        looseTracks: MutableList<YouTubeMusicTrack>,
+        loosePlaylists: MutableList<YouTubeMusicPlaylist>,
+    ) {
+        val tracks = shelf?.tracks ?: looseTracks
+        val start = tracks.size
+        card.values.forEach { child -> walk(child, shelf, shelves, looseTracks, loosePlaylists) }
+        val isArtistCard = card["subtitle"]?.let { joinRuns(it) }.orEmpty().startsWith("Artist")
+        val artist = card["title"]?.let(::firstRun)?.takeIf { isArtistCard } ?: return
+        for (i in start until tracks.size) {
+            if (tracks[i].artist.isBlank()) tracks[i] = tracks[i].copy(artist = artist)
+        }
     }
 
     private fun collectShelf(
@@ -427,12 +449,19 @@ object YouTubeMusicParsers {
 
     private val DURATION_TEXT = Regex("""\d{1,2}:\d{2}(?::\d{2})?""")
     // "88M views", "24 crore views", "1.2 lakh plays": a number, an optional scale word, a unit.
-    private val COUNT_TEXT = Regex("""[\d.,]+\s*(?:[^\s\d]+\s+)?(views|plays|songs|subscribers|monthly audience|watching)""", RegexOption.IGNORE_CASE)
+    private val COUNT_TEXT = Regex(
+        """[\d.,]+\s*(?:[^\s\d]+\s+)?(views?|plays?|likes?|songs?|subscribers?|monthly audience|watching)""",
+        RegexOption.IGNORE_CASE,
+    )
+
+    // Indian locales write counts as "14 crore plays"; the JVM's \s doesn't match those spaces.
+    private val NO_BREAK_SPACES = Regex("""[  ]""")
     private val TYPE_LABELS = setOf("Song", "Video", "Episode", "Single", "Album", "EP", "Podcast")
 
     // Upload dates on video and episode rows: "Aug 20, 2021", "2021".
     private val DATE_TEXT = Regex("""(?:[A-Z][a-z]{2} \d{1,2}, )?\d{4}""")
 
     private fun isMetaText(text: String): Boolean =
-        text in TYPE_LABELS || text.matches(DURATION_TEXT) || text.matches(COUNT_TEXT) || text.matches(DATE_TEXT)
+        text in TYPE_LABELS || text.matches(DURATION_TEXT) ||
+            text.replace(NO_BREAK_SPACES, " ").matches(COUNT_TEXT) || text.matches(DATE_TEXT)
 }
