@@ -89,7 +89,8 @@ internal fun LibraryScreenContent(
     currentTabIndex: Int,
     isCompactNavigation: Boolean,
     bottomBarHeightDp: Dp,
-    iconRotation: Float,
+    /** Read only where the button draws, so the 300 ms tab animation doesn't recompose this screen. */
+    iconRotation: () -> Float,
     isSortSheetVisible: Boolean,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
@@ -387,7 +388,7 @@ internal fun LibraryScreenContent(
                                         else -> playerViewModel.shuffleAllSongs()
                                     }
                                 },
-                                iconRotation = iconRotation,
+                                iconRotation = iconRotation(),
                                 showSortButton = sanitizedSortOptions.isNotEmpty(),
                                 showLocateButton = showLocateButton,
                                 onSortClick = { playerViewModel.showSortingSheet() },

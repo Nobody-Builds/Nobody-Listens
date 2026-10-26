@@ -512,7 +512,7 @@ fun LibraryScreen(
             currentTabIndex = currentTabIndex,
             isCompactNavigation = isCompactNavigation,
             bottomBarHeightDp = bottomBarHeightDp,
-            iconRotation = iconRotation,
+            iconRotation = { iconRotation },
             isSortSheetVisible = isSortSheetVisible,
             isRefreshing = isRefreshing,
             onRefresh = onRefresh,
