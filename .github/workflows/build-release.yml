@@ -1,9 +1,11 @@
-name: Build & Release LMusic
+name: Build & Release Nobody Listens
 
-# Every push to main builds a signed APK (download it from the run's "Artifacts").
+# Every build (pushes to main, pull requests, manual runs) makes every APK type, signed: arm64-v8a,
+# armeabi-v7a, x86_64, universal and the watch. Download them from the run's "Artifacts".
 # Releases: when a push to main carries a version (APP_VERSION_NAME in gradle.properties)
-# that has no GitHub Release yet, the build is published as release v<version> with the
-# APK attached. So to ship 1.1.0: bump APP_VERSION_NAME, add release-notes/v1.1.0.md, push.
+# that has no GitHub Release yet, the build is published as release v<version> with every
+# APK attached (arm64-v8a, armeabi-v7a, x86_64, universal and the watch). So to ship 1.1.0:
+# bump APP_VERSION_NAME, add release-notes/v1.1.0.md, push.
 # Pushing a tag like v1.2.0 publishes that version too.
 
 on:
@@ -23,8 +25,8 @@ concurrency:
 
 env:
   # The CI signing key is generated once and kept in the Actions cache under this name.
-  SIGNING_CACHE_KEY: lmusic-signing-key-v1
-  SIGNING_DIR: .lmusic-signing
+  SIGNING_CACHE_KEY: nobody-listens-signing-key-v1
+  SIGNING_DIR: .nobody-listens-signing
 
 jobs:
   build:
@@ -45,25 +47,25 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       # ---- Signing -------------------------------------------------------------
-      # Preferred: your own key in repository secrets (LMUSIC_KEYSTORE_B64,
-      # LMUSIC_KEYSTORE_PASSWORD, LMUSIC_KEY_ALIAS). Without them, a key generated
+      # Preferred: your own key in repository secrets (NOBODY_LISTENS_KEYSTORE_B64,
+      # NOBODY_LISTENS_KEYSTORE_PASSWORD, NOBODY_LISTENS_KEY_ALIAS). Without them, a key generated
       # by CI on the first main-branch build is reused from the Actions cache, so
       # every APK is signed the same way and installs as an update.
       - name: Use signing key from secrets
         id: secret-key
         env:
-          KEYSTORE_B64: ${{ secrets.LMUSIC_KEYSTORE_B64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.LMUSIC_KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.LMUSIC_KEY_ALIAS }}
+          KEYSTORE_B64: ${{ secrets.NOBODY_LISTENS_KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.NOBODY_LISTENS_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.NOBODY_LISTENS_KEY_ALIAS }}
         run: |
           if [ -z "$KEYSTORE_B64" ]; then
             echo "found=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           mkdir -p "$SIGNING_DIR"
-          echo "$KEYSTORE_B64" | base64 -d > "$SIGNING_DIR/lmusic.jks"
+          echo "$KEYSTORE_B64" | base64 -d > "$SIGNING_DIR/nobody-listens.jks"
           {
-            echo "storeFile=$GITHUB_WORKSPACE/$SIGNING_DIR/lmusic.jks"
+            echo "storeFile=$GITHUB_WORKSPACE/$SIGNING_DIR/nobody-listens.jks"
             echo "storePassword=$KEYSTORE_PASSWORD"
             echo "keyAlias=$KEY_ALIAS"
             echo "keyPassword=$KEYSTORE_PASSWORD"
@@ -87,9 +89,9 @@ jobs:
           fi
           mkdir -p "$SIGNING_DIR"
           PASS="$(openssl rand -hex 24)"
-          keytool -genkeypair -keystore "$SIGNING_DIR/lmusic.jks" -alias lmusic \
+          keytool -genkeypair -keystore "$SIGNING_DIR/nobody-listens.jks" -alias nobody-listens \
             -keyalg RSA -keysize 4096 -validity 36500 \
-            -storepass "$PASS" -keypass "$PASS" -dname "CN=LMusic, O=twilighty-abhi"
+            -storepass "$PASS" -keypass "$PASS" -dname "CN=Nobody Listens, O=Nobody Builds"
           echo "$PASS" > "$SIGNING_DIR/password"
 
       - name: Save CI signing key
@@ -104,9 +106,9 @@ jobs:
         run: |
           PASS="$(cat "$SIGNING_DIR/password")"
           {
-            echo "storeFile=$GITHUB_WORKSPACE/$SIGNING_DIR/lmusic.jks"
+            echo "storeFile=$GITHUB_WORKSPACE/$SIGNING_DIR/nobody-listens.jks"
             echo "storePassword=$PASS"
-            echo "keyAlias=lmusic"
+            echo "keyAlias=nobody-listens"
             echo "keyPassword=$PASS"
           } > keystore.properties
 
@@ -129,39 +131,52 @@ jobs:
           else
             NAME="$BASE-build.${GITHUB_RUN_NUMBER}"
           fi
+          # Releases must be signed with the real key (secrets); a CI-generated key would make later
+          # updates fail to install. Without the secrets the APKs still build as artifacts.
+          if [[ "$RELEASE" == "true" && "${{ steps.secret-key.outputs.found }}" != "true" ]]; then
+            echo "::warning::Not publishing v$NAME: set the NOBODY_LISTENS_* signing secrets, then re-run this workflow."
+            RELEASE=false
+          fi
           echo "code=$CODE" >> "$GITHUB_OUTPUT"
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "release=$RELEASE" >> "$GITHUB_OUTPUT"
-          echo "Building LMusic $NAME ($CODE), release=$RELEASE"
+          echo "Building Nobody Listens $NAME ($CODE), release=$RELEASE"
 
       # ---- Build ---------------------------------------------------------------
-      - name: Build release APK
+      - name: Build release APKs
         run: |
           chmod +x gradlew
-          # arm64 build only: every Android 15+ phone (including the Galaxy S23) is
-          # 64-bit ARM, and it keeps the APK a fraction of the universal size.
-          ./gradlew :app:assembleRelease --stacktrace \
-            -Plmusic.enableAbiSplits=true \
+          # Phone APKs are split per ABI (arm64-v8a, armeabi-v7a, x86_64) plus a universal APK with
+          # every ABI in one. The Wear OS watch app (Galaxy Watch 4 and newer) is signed with the same
+          # key so the two pair.
+          ./gradlew :app:assembleRelease :wear:assembleRelease --stacktrace \
+            -Pnobodylistens.enableAbiSplits=true \
+            -Pnobodylistens.allApks=true \
             -PAPP_VERSION_CODE=${{ steps.version.outputs.code }} \
             -PAPP_VERSION_NAME=${{ steps.version.outputs.name }}
 
-      - name: Verify and rename APK
-        id: apk
+      - name: Verify and rename APKs
         run: |
-          SRC="app/build/outputs/apk/release/app-arm64-v8a-release.apk"
-          ls -la app/build/outputs/apk/release/
-          OUT="LMusic-${{ steps.version.outputs.name }}.apk"
-          cp "$SRC" "$OUT"
+          ls -la app/build/outputs/apk/release/ wear/build/outputs/apk/release/
+          V="${{ steps.version.outputs.name }}"
+          mkdir dist
+          for f in app/build/outputs/apk/release/app-*-release.apk; do
+            ABI="$(basename "$f" -release.apk)"
+            cp "$f" "dist/NobodyListens-$V-${ABI#app-}.apk"
+          done
+          cp wear/build/outputs/apk/release/wear-release.apk "dist/NobodyListens-Watch-$V.apk"
           BT="$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -n 1)"
-          "$ANDROID_HOME/build-tools/$BT/aapt2" dump badging "$OUT" | head -n 3
-          "$ANDROID_HOME/build-tools/$BT/apksigner" verify --print-certs "$OUT" | head -n 4
-          echo "file=$OUT" >> "$GITHUB_OUTPUT"
+          for f in dist/*.apk; do
+            "$ANDROID_HOME/build-tools/$BT/aapt2" dump badging "$f" | head -n 3
+            "$ANDROID_HOME/build-tools/$BT/apksigner" verify --print-certs "$f" | head -n 4
+          done
+          ls -la dist/
 
-      - name: Upload APK artifact
+      - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: LMusic-${{ steps.version.outputs.name }}
-          path: ${{ steps.apk.outputs.file }}
+          name: NobodyListens-${{ steps.version.outputs.name }}
+          path: dist/*.apk
           compression-level: 0
           if-no-files-found: error
 
@@ -172,6 +187,6 @@ jobs:
         run: |
           TAG="v${{ steps.version.outputs.name }}"
           NOTES_FILE="release-notes/${TAG}.md"
-          ARGS=(--title "LMusic ${TAG}" --target "$GITHUB_SHA")
+          ARGS=(--title "Nobody Listens ${TAG}" --target "$GITHUB_SHA")
           if [ -f "$NOTES_FILE" ]; then ARGS+=(--notes-file "$NOTES_FILE"); else ARGS+=(--generate-notes); fi
-          gh release create "$TAG" "${{ steps.apk.outputs.file }}" "${ARGS[@]}"
+          gh release create "$TAG" dist/*.apk "${ARGS[@]}"

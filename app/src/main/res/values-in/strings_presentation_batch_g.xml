@@ -182,7 +182,7 @@
     <string name="presentation_batch_g_artist_group_by_album_artist">Kelompokkan berdasarkan Artis Album</string>
     <string name="presentation_batch_g_artist_group_by_album_artist_sub">Tampilkan album kolaborasi di bawah artis utama</string>
     <string name="presentation_batch_g_artist_info_title">Tentang Penguraian Multi-Artis</string>
-    <string name="presentation_batch_g_artist_info_body">LMusic membagi tag artis menggunakan pemisah karakter (/, ;, &amp;) dan pemisah kata (feat., ft., vs., x). Pemisah kata dicocokkan tanpa membedakan huruf besar-kecil.
+    <string name="presentation_batch_g_artist_info_body">Nobody Listens membagi tag artis menggunakan pemisah karakter (/, ;, &amp;) dan pemisah kata (feat., ft., vs., x). Pemisah kata dicocokkan tanpa membedakan huruf besar-kecil.
 \n\n"Ekstrak Artis dari Judul" mendeteksi pola seperti (feat. Artis) dalam judul lagu.
 \n\nBackslash (\\) dapat digunakan untuk mengabaikan pemisah karakter.</string>
     <string name="presentation_batch_g_artist_example_arrow"> → </string>
@@ -265,9 +265,9 @@
     <string name="presentation_batch_g_playstore_open">Buka Play Store</string>
     <string name="presentation_batch_g_playstore_continue_beta">Lanjutkan beta</string>
     <string name="presentation_batch_g_playstore_link_pending">Tautan Play Store akan diaktifkan dari konfigurasi GitHub.</string>
-    <string name="presentation_batch_g_playstore_title">LMusic kini tersedia di Google Play</string>
+    <string name="presentation_batch_g_playstore_title">Nobody Listens kini tersedia di Google Play</string>
     <string name="presentation_batch_g_playstore_body">Gunakan saluran stabil di Google Play untuk pembaruan rilis sementara kami tetap mengaktifkan build beta.</string>
-    <string name="presentation_batch_g_playstore_app_name">LMusic</string>
+    <string name="presentation_batch_g_playstore_app_name">Nobody Listens</string>
     <string name="presentation_batch_g_playstore_release_announcement">Pengumuman rilis</string>
     <string name="presentation_batch_g_playstore_coming_soon">Segera hadir</string>
     <string name="presentation_batch_g_genre_sort_title">Urutkan &amp; Putar</string>
@@ -286,7 +286,7 @@
     <string name="presentation_batch_g_presets_cd_rename">Ubah nama</string>
     <string name="presentation_batch_g_presets_cd_delete">Hapus</string>
     <string name="presentation_batch_g_beta_sheet_version">Beta 0.6.0</string>
-    <string name="presentation_batch_g_beta_sheet_welcome_title">Selamat datang di LMusic 0.6.0-beta</string>
+    <string name="presentation_batch_g_beta_sheet_welcome_title">Selamat datang di Nobody Listens 0.6.0-beta</string>
     <string name="presentation_batch_g_beta_sheet_welcome_body">Beta ini sekarang difokuskan pada stabilitas, performa, dan pemutaran lintas perangkat sambil merilis integrasi baru yang besar.</string>
     <string name="presentation_batch_g_beta_sheet_expect_title">Apa yang diharapkan</string>
     <string name="presentation_batch_g_beta_sheet_expect_1">Penggunaan harian yang lebih cepat: startup, navigasi, dan interaksi pemutar yang lebih lancar di seluruh aplikasi.</string>
@@ -309,7 +309,7 @@
     <string name="presentation_batch_g_album_sel_queue_hint">Antrekan + putar menghormati urutan pilihan Anda.</string>
     <string name="presentation_batch_g_album_sel_limit">Batas: %1$d album per pilihan.</string>
     <string name="presentation_batch_g_album_sel_add_queue_play">Tambah ke Antrean &amp; Putar</string>
-    <string name="presentation_batch_g_app_name">LMusic</string>
+    <string name="presentation_batch_g_app_name">Nobody Listens</string>
     <string name="presentation_batch_g_app_tagline">Pemutar Musik</string>
     <string name="presentation_batch_g_brick_high">TERTINGGI %1$d</string>
     <string name="presentation_batch_g_brick_cd_close">Tutup</string>
@@ -359,7 +359,7 @@
     <string name="presentation_batch_g_cast_playing">Memutar</string>
     <string name="presentation_batch_g_cast_paused">Dijeda</string>
     <string name="presentation_batch_g_cast_perm_title">Bersiaplah untuk terhubung</string>
-    <string name="presentation_batch_g_cast_perm_body">Izinkan LMusic untuk melihat perangkat terdekat dan Wi‑Fi saat ini agar kami dapat menjaga sinkronisasi cast, audio Bluetooth, dan speaker Anda.</string>
+    <string name="presentation_batch_g_cast_perm_body">Izinkan Nobody Listens untuk melihat perangkat terdekat dan Wi‑Fi saat ini agar kami dapat menjaga sinkronisasi cast, audio Bluetooth, dan speaker Anda.</string>
     <string name="presentation_batch_g_cast_perm_nearby_title">Perangkat terdekat</string>
     <string name="presentation_batch_g_cast_perm_nearby_desc">Diperlukan untuk membaca dan mengontrol perangkat audio Bluetooth Anda yang terhubung.</string>
     <string name="presentation_batch_g_cast_perm_location_title">Lokasi untuk Wi‑Fi</string>

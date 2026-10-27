@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.twilighty.lmusic.baselineprofile"
+    namespace = "com.nobodybuilds.listens.baselineprofile"
     compileSdk = 37
 
     compileOptions {

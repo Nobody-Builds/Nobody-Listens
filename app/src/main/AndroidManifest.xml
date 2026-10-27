@@ -43,7 +43,7 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
-        android:name=".LMusicApplication"
+        android:name=".NobodyListensApplication"
         android:allowBackup="true"
         android:enableOnBackInvokedCallback="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -53,7 +53,7 @@
         android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.LMusic"
+        android:theme="@style/Theme.NobodyListens"
         android:usesCleartextTraffic="false"
         android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
@@ -61,7 +61,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.LMusic"
+            android:theme="@style/Theme.NobodyListens"
             android:launchMode="singleTop"
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize">
             <intent-filter>
@@ -76,7 +76,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.twilighty.lmusic.action.OPEN_PLAYER" />
+                <action android:name="com.nobodybuilds.listens.action.OPEN_PLAYER" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <meta-data
@@ -88,43 +88,49 @@
             android:name=".presentation.telegram.auth.TelegramLoginActivity"
             android:exported="false"
             android:label="Telegram Login"
-            android:theme="@style/Theme.LMusic" />
+            android:theme="@style/Theme.NobodyListens" />
 
         <activity
             android:name=".presentation.netease.auth.NeteaseLoginActivity"
             android:exported="false"
             android:label="Netease Login"
-            android:theme="@style/Theme.LMusic" />
+            android:theme="@style/Theme.NobodyListens" />
 
         <activity
             android:name=".presentation.gdrive.auth.GDriveLoginActivity"
             android:exported="false"
             android:label="Google Drive Login"
-            android:theme="@style/Theme.LMusic" />
+            android:theme="@style/Theme.NobodyListens" />
 
         <activity
             android:name=".presentation.qqmusic.auth.QqMusicLoginActivity"
             android:exported="false"
             android:label="QQ Music Login"
-            android:theme="@style/Theme.LMusic" />
+            android:theme="@style/Theme.NobodyListens" />
 
         <activity
             android:name=".presentation.navidrome.auth.NavidromeLoginActivity"
             android:exported="false"
             android:label="Navidrome Login"
-            android:theme="@style/Theme.LMusic" />
+            android:theme="@style/Theme.NobodyListens" />
 
         <activity
             android:name=".presentation.jellyfin.auth.JellyfinLoginActivity"
             android:exported="false"
             android:label="Jellyfin Login"
-            android:theme="@style/Theme.LMusic" />
+            android:theme="@style/Theme.NobodyListens" />
 
         <activity
             android:name=".presentation.ytmusic.auth.YouTubeMusicLoginActivity"
             android:exported="false"
             android:label="YouTube Music"
-            android:theme="@style/Theme.LMusic" />
+            android:theme="@style/Theme.NobodyListens" />
+
+        <activity
+            android:name=".presentation.jiosaavn.auth.JioSaavnLoginActivity"
+            android:exported="false"
+            android:label="JioSaavn"
+            android:theme="@style/Theme.NobodyListens" />
 
         <activity
             android:name=".presentation.ytmusic.video.YouTubeMusicVideoActivity"
@@ -137,7 +143,7 @@
             android:screenOrientation="fullSensor"
             android:supportsPictureInPicture="true"
             android:taskAffinity="${applicationId}.video"
-            android:theme="@style/Theme.LMusic" />
+            android:theme="@style/Theme.NobodyListens" />
 
 
         <!-- Screensaver (standby) mode: Settings › Appearance › Screensaver, or the charging prompt -->
@@ -146,7 +152,7 @@
             android:exported="false"
             android:label="Screensaver"
             android:screenOrientation="sensorLandscape"
-            android:theme="@style/Theme.LMusic.Screensaver"
+            android:theme="@style/Theme.NobodyListens.Screensaver"
             android:excludeFromRecents="true"
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize" />
 
@@ -155,7 +161,7 @@
             android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.LMusic.ExternalPlayer"
+            android:theme="@style/Theme.NobodyListens.ExternalPlayer"
             android:excludeFromRecents="true"
             android:grantUriPermissions="true">
             <intent-filter>
@@ -195,14 +201,14 @@
             android:resource="@xml/automotive_app_desc" />
 
         <receiver
-            android:name=".ui.glancewidget.LMusicGlanceWidgetReceiver"
+            android:name=".ui.glancewidget.NobodyListensGlanceWidgetReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/lmusic_glance_widget_info" />
+                android:resource="@xml/nobody_listens_glance_widget_info" />
         </receiver>
 
         <receiver
@@ -249,7 +255,7 @@
                 android:resource="@xml/garden_widget_2x2_info" />
         </receiver>
 
-        <!-- v1.4 widgets (Yuyu): now playing, album art, queue, lofi & focus, stats, recently played, lock screen. -->
+        <!-- v1.4 widgets (Daylight): now playing, album art, queue, lofi & focus, stats, recently played, lock screen. -->
         <receiver
             android:name=".ui.glancewidget.NowPlayingWidget2x1Receiver"
             android:exported="false">
@@ -325,7 +331,7 @@
 
         <!-- Media Button Receiver for external media controls (headphones, car, etc.) -->
         <receiver
-            android:name=".data.service.LMusicMediaButtonReceiver"
+            android:name=".data.service.NobodyListensMediaButtonReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
@@ -347,7 +353,7 @@
 
         <receiver android:name=".ui.glancewidget.WidgetUpdateReceiver" android:exported="false">
             <intent-filter>
-                <action android:name="com.twilighty.lmusic.ACTION_WIDGET_UPDATE_PLAYBACK_STATE" />
+                <action android:name="com.nobodybuilds.listens.ACTION_WIDGET_UPDATE_PLAYBACK_STATE" />
             </intent-filter>
         </receiver>
 
@@ -378,12 +384,8 @@
             android:foregroundServiceType="dataSync"
             android:exported="false" />
         <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
-
-        <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="com.twilighty.lmusic.data.service.cast.CastOptionsProvider" />
+            android:value="com.nobodybuilds.listens.data.service.cast.CastOptionsProvider" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -511,9 +513,9 @@
 
         <!-- System screen saver (Settings › Display › Screen saver) using the same screensaver UI -->
         <service
-            android:name=".presentation.screensaver.LMusicDreamService"
+            android:name=".presentation.screensaver.NobodyListensDreamService"
             android:exported="true"
-            android:label="LMusic"
+            android:label="Nobody Listens"
             android:permission="android.permission.BIND_DREAM_SERVICE">
             <intent-filter>
                 <action android:name="android.service.dreams.DreamService" />

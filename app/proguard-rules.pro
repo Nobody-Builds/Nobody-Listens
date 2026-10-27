@@ -58,31 +58,31 @@
 -dontwarn com.softsynth.**
 
 # Mantener clases de datos y sus miembros para evitar que R8 Full elimine campos
--keepclassmembers class com.twilighty.lmusic.data.model.** { *; }
--keepclassmembers class com.twilighty.lmusic.domain.model.** { *; }
+-keepclassmembers class com.nobodybuilds.listens.data.model.** { *; }
+-keepclassmembers class com.nobodybuilds.listens.domain.model.** { *; }
 
 -keepattributes Signature, InnerClasses, EnclosingMethod, AnnotationDefault, *Annotation*
 
 # Cast framework classes loaded via manifest/reflective entry points.
--keep class com.twilighty.lmusic.data.service.cast.CastOptionsProvider { *; }
+-keep class com.nobodybuilds.listens.data.service.cast.CastOptionsProvider { *; }
 -keep class * implements com.google.android.gms.cast.framework.OptionsProvider
 
 # Gson generic type capture for backup/restore in release builds.
 -keep class com.google.gson.reflect.TypeToken { *; }
 -keep class * extends com.google.gson.reflect.TypeToken
--keep class com.twilighty.lmusic.data.preferences.PreferenceBackupEntry { *; }
--keep class com.twilighty.lmusic.data.backup.model.** { *; }
--keep class com.twilighty.lmusic.data.backup.module.** { *; }
-# LMusic: listening history and skips are stored as Gson JSON. Keep field names stable
+-keep class com.nobodybuilds.listens.data.preferences.PreferenceBackupEntry { *; }
+-keep class com.nobodybuilds.listens.data.backup.model.** { *; }
+-keep class com.nobodybuilds.listens.data.backup.module.** { *; }
+# Nobody Listens: listening history and skips are stored as Gson JSON. Keep field names stable
 # across builds so stats survive app updates.
--keep class com.twilighty.lmusic.data.stats.PlaybackStatsRepository$PlaybackEvent { *; }
--keep class com.twilighty.lmusic.data.stats.PlaybackStatsRepository$SkipEvent { *; }
+-keep class com.nobodybuilds.listens.data.stats.PlaybackStatsRepository$PlaybackEvent { *; }
+-keep class com.nobodybuilds.listens.data.stats.PlaybackStatsRepository$SkipEvent { *; }
 # Backup payload entities are part of the persisted .pxpl contract.
--keep class com.twilighty.lmusic.data.database.FavoritesEntity { *; }
--keep class com.twilighty.lmusic.data.database.SongEngagementEntity { *; }
--keep class com.twilighty.lmusic.data.database.LyricsEntity { *; }
--keep class com.twilighty.lmusic.data.database.SearchHistoryEntity { *; }
--keep class com.twilighty.lmusic.data.database.TransitionRuleEntity { *; }
+-keep class com.nobodybuilds.listens.data.database.FavoritesEntity { *; }
+-keep class com.nobodybuilds.listens.data.database.SongEngagementEntity { *; }
+-keep class com.nobodybuilds.listens.data.database.LyricsEntity { *; }
+-keep class com.nobodybuilds.listens.data.database.SearchHistoryEntity { *; }
+-keep class com.nobodybuilds.listens.data.database.TransitionRuleEntity { *; }
 
 # Netty channel classes are instantiated reflectively and require public no-arg constructors.
 # Without these, release builds can fail with:
@@ -173,7 +173,7 @@
 -dontwarn io.netty.**
 
 # Ensure internal server can start
--keep class com.twilighty.lmusic.data.telegram.TelegramStreamProxy { *; }
+-keep class com.nobodybuilds.listens.data.telegram.TelegramStreamProxy { *; }
 
 # Keep Kotlin reflection if needed by Ktor/Serialization in Release
 -keep class kotlin.reflect.** { *; }
@@ -215,7 +215,7 @@
     public static int i(...);
 }
 
-# LMusic smart features: TensorFlow Lite runtime (JNI) and Gson-cached mixes
+# Nobody Listens smart features: TensorFlow Lite runtime (JNI) and Gson-cached mixes
 -keep class org.tensorflow.lite.** { *; }
 -dontwarn org.tensorflow.lite.**
--keep class com.twilighty.lmusic.data.smart.SmartMix { *; }
+-keep class com.nobodybuilds.listens.data.smart.SmartMix { *; }

@@ -17,7 +17,7 @@
             android:contentDescription="@null"
             android:padding="14dp"
             android:src="@drawable/ic_music_placeholder"
-            android:tint="@color/yuyu_widget_text_muted" />
+            android:tint="@color/nb_widget_text_muted" />
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -30,15 +30,15 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Now playing"
-            android:textColor="@color/yuyu_widget_text"
+            android:textColor="@color/nb_widget_text"
             android:textSize="15sp" android:textStyle="bold" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="LMusic"
-            android:textColor="@color/yuyu_widget_text_muted"
+            android:text="Nobody Listens"
+            android:textColor="@color/nb_widget_text_muted"
             android:textSize="12sp" />
         </LinearLayout>
         <ImageView
@@ -49,7 +49,7 @@
             android:contentDescription="@null"
             android:padding="8dp"
             android:src="@drawable/rounded_skip_next_24"
-            android:tint="@color/yuyu_widget_text" />
+            android:tint="@color/nb_widget_text" />
         <ImageView
             android:layout_width="44dp"
             android:layout_height="44dp"
@@ -58,7 +58,7 @@
             android:contentDescription="@null"
             android:padding="8dp"
             android:src="@drawable/rounded_play_arrow_24"
-            android:tint="@color/yuyu_widget_on_accent" />
+            android:tint="@color/nb_widget_on_accent" />
     </LinearLayout>
         <TextView
             android:layout_width="wrap_content"
@@ -66,7 +66,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Up next"
-            android:textColor="@color/yuyu_widget_text_muted"
+            android:textColor="@color/nb_widget_text_muted"
             android:textSize="11sp" android:layout_marginTop="10dp" />
     <LinearLayout
         android:layout_width="match_parent"
@@ -81,7 +81,7 @@
             android:contentDescription="@null"
             android:padding="9dp"
             android:src="@drawable/ic_music_placeholder"
-            android:tint="@color/yuyu_widget_text_muted" />
+            android:tint="@color/nb_widget_text_muted" />
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Next song"
-            android:textColor="@color/yuyu_widget_text"
+            android:textColor="@color/nb_widget_text"
             android:textSize="13sp" android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
@@ -111,7 +111,7 @@
             android:contentDescription="@null"
             android:padding="9dp"
             android:src="@drawable/ic_music_placeholder"
-            android:tint="@color/yuyu_widget_text_muted" />
+            android:tint="@color/nb_widget_text_muted" />
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -124,7 +124,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="After that"
-            android:textColor="@color/yuyu_widget_text"
+            android:textColor="@color/nb_widget_text"
             android:textSize="13sp" android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>

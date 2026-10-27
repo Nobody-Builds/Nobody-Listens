@@ -77,4 +77,20 @@
     <string name="wear_saving">Guardando…</string>
     <string name="wear_save_to_watch">Guardar en el reloj</string>
     <string name="wear_confirm_save">Confirmar guardado</string>
+    <string name="wear_search">Buscar</string>
+    <string name="wear_search_hint">Buscar canciones</string>
+    <string name="wear_search_on_watch">En el reloj</string>
+    <string name="wear_search_on_phone">En el teléfono</string>
+    <string name="wear_search_no_results">No se encontraron canciones</string>
+    <string name="wear_search_phone_offline">Teléfono no conectado.</string>
+    <string name="wear_watch_playlists">Listas del reloj</string>
+    <string name="wear_watch_playlists_empty">Abre una lista en Listas y guárdala para escucharla sin el teléfono.</string>
+    <string name="wear_save_playlist_to_watch">Guardar lista en el reloj</string>
+    <string name="wear_update_playlist_on_watch">Actualizar en el reloj</string>
+    <string name="wear_saving_playlist">Guardando en el reloj…</string>
+    <string name="wear_playlist_saved_count">%1$d de %2$d en el reloj</string>
+    <string name="wear_play_all">Reproducir</string>
+    <string name="wear_remove_playlist">Quitar del reloj</string>
+    <string name="wear_not_on_watch_yet">Aún no está en el reloj</string>
+    <string name="wear_search_online">Buscar en %1$s</string>
 </resources>

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
@@ -6,16 +8,33 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+// Same release key as the phone app: the Wear Data Layer only pairs apps signed alike.
+val keystoreProperties = Properties().apply {
+    val propFile = rootProject.file("keystore.properties")
+    if (propFile.exists()) {
+        propFile.inputStream().use { load(it) }
+    }
+}
+
 android {
-    namespace = "com.twilighty.lmusic"
+    namespace = "com.nobodybuilds.listens"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.twilighty.lmusic"
-        minSdk = 30
+        applicationId = "com.nobodybuilds.listens"
+        minSdk = 26
         targetSdk = 37
         versionCode = (project.findProperty("APP_VERSION_CODE") as String).toInt()
         versionName = project.findProperty("APP_VERSION_NAME") as String
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystoreProperties.getProperty("storeFile") ?: "$rootDir/nobody-listens-release.jks")
+            storePassword = keystoreProperties.getProperty("storePassword") ?: "dummyPassword"
+            keyAlias = keystoreProperties.getProperty("keyAlias") ?: "dummyAlias"
+            keyPassword = keystoreProperties.getProperty("keyPassword") ?: "dummyPassword"
+        }
     }
 
     buildTypes {
@@ -24,6 +43,7 @@ android {
         }
 
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -31,6 +51,10 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+
+    testOptions {
+        unitTests.all { it.useJUnitPlatform() }
     }
 
     buildFeatures {
@@ -53,12 +77,18 @@ kotlin {
 
 dependencies {
     implementation(project(":shared"))
+    implementation(project(":streaming"))
+
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+    testRuntimeOnly(libs.junitplatformlauncher)
 
     // Wear OS Compose
     implementation(libs.wear.compose.material)
     implementation(libs.wear.compose.material3)
     implementation(libs.wear.compose.foundation)
     implementation(libs.wear.compose.navigation)
+    implementation(libs.wear.input)
 
     // Horologist
     implementation(libs.horologist.compose.layout)

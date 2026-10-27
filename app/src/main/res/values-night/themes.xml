@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.LMusic" parent="Theme.Material3.DynamicColors.DayNight">
+    <!-- Same as values/themes.xml; the Daylight dark window colours come from values-night/colors.xml. -->
+    <style name="Theme.NobodyListens" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/nb_primary</item>
+        <item name="colorOnPrimary">@color/nb_on_primary</item>
+        <item name="android:windowBackground">@color/nb_window_background</item>
+        <item name="android:windowSplashScreenBackground">@color/nb_window_background</item>
     </style>
 
-    <!-- Splash screen theme can still extend Theme.SplashScreen, but ensure it transitions to the correct base theme -->
-    <!-- For dark mode, postSplashScreenTheme should ideally point to a dark version of Theme.LMusic if specific overrides are needed -->
-    <!-- However, since Theme.LMusic itself will be resolved from values-night, this setup should work. -->
-    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-<!--        <item name="windowSplashScreenBackground">@color/pixel_play_purple_dark</item>-->
-<!--        &lt;!&ndash; icon and animation can be the same or specific for dark theme &ndash;&gt;-->
-<!--        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>-->
-<!--        <item name="postSplashScreenTheme">@style/Theme.LMusic</item>-->
-    </style>
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen" />
 </resources>

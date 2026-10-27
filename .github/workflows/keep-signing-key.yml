@@ -1,6 +1,6 @@
 name: Keep CI signing key alive
 
-# GitHub drops Actions cache entries that go unused for 7 days. LMusic's CI
+# GitHub drops Actions cache entries that go unused for 7 days. Nobody Listens' CI
 # signing key lives in that cache (unless you set your own key as secrets), so
 # this touches it twice a week to make sure it never expires between releases.
 
@@ -17,8 +17,8 @@ jobs:
         id: restore
         uses: actions/cache/restore@v4
         with:
-          path: .lmusic-signing
-          key: lmusic-signing-key-v1
+          path: .nobody-listens-signing
+          key: nobody-listens-signing-key-v1
           lookup-only: false
 
       - name: Report

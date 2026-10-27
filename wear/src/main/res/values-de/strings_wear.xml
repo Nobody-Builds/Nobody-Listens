@@ -77,4 +77,20 @@
     <string name="wear_saving">Speichere…</string>
     <string name="wear_save_to_watch">Auf Uhr speichern</string>
     <string name="wear_confirm_save">Speichern bestätigen</string>
+    <string name="wear_search">Suchen</string>
+    <string name="wear_search_hint">Songs suchen</string>
+    <string name="wear_search_on_watch">Auf der Uhr</string>
+    <string name="wear_search_on_phone">Auf dem Handy</string>
+    <string name="wear_search_no_results">Keine Songs gefunden</string>
+    <string name="wear_search_phone_offline">Handy nicht verbunden.</string>
+    <string name="wear_watch_playlists">Uhr-Playlists</string>
+    <string name="wear_watch_playlists_empty">Öffne eine Playlist unter Playlists und speichere sie, um sie ohne Handy abzuspielen.</string>
+    <string name="wear_save_playlist_to_watch">Playlist auf Uhr speichern</string>
+    <string name="wear_update_playlist_on_watch">Auf der Uhr aktualisieren</string>
+    <string name="wear_saving_playlist">Wird auf Uhr gespeichert…</string>
+    <string name="wear_playlist_saved_count">%1$d von %2$d auf der Uhr</string>
+    <string name="wear_play_all">Abspielen</string>
+    <string name="wear_remove_playlist">Von der Uhr entfernen</string>
+    <string name="wear_not_on_watch_yet">Noch nicht auf der Uhr</string>
+    <string name="wear_search_online">In %1$s suchen</string>
 </resources>

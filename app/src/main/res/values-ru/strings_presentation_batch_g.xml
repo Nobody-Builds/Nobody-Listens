@@ -182,7 +182,7 @@
     <string name="presentation_batch_g_artist_group_by_album_artist">Группировать по Album Artist</string>
     <string name="presentation_batch_g_artist_group_by_album_artist_sub">Показывать совместные альбомы у основного артиста</string>
     <string name="presentation_batch_g_artist_info_title">О парсинге артистов</string>
-    <string name="presentation_batch_g_artist_info_body">LMusic разделяет теги артистов, используя символы (/, ;, &amp;) и слова (feat., ft., vs., x). Слова ищутся без учета регистра.
+    <string name="presentation_batch_g_artist_info_body">Nobody Listens разделяет теги артистов, используя символы (/, ;, &amp;) и слова (feat., ft., vs., x). Слова ищутся без учета регистра.
 
 «Брать артистов из названия» ищет шаблоны типа (feat. Артист).
 
@@ -267,9 +267,9 @@
     <string name="presentation_batch_g_playstore_open">Открыть Play Store</string>
     <string name="presentation_batch_g_playstore_continue_beta">Продолжить бету</string>
     <string name="presentation_batch_g_playstore_link_pending">Ссылка на Play Store будет доступна из конфига GitHub.</string>
-    <string name="presentation_batch_g_playstore_title">LMusic теперь в Google Play</string>
+    <string name="presentation_batch_g_playstore_title">Nobody Listens теперь в Google Play</string>
     <string name="presentation_batch_g_playstore_body">Используйте стабильный канал в Google Play для обновлений релиза, пока бета-версии остаются активными.</string>
-    <string name="presentation_batch_g_playstore_app_name">LMusic</string>
+    <string name="presentation_batch_g_playstore_app_name">Nobody Listens</string>
     <string name="presentation_batch_g_playstore_release_announcement">Анонс релиза</string>
     <string name="presentation_batch_g_playstore_coming_soon">Скоро</string>
     <string name="presentation_batch_g_genre_sort_title">Сортировка и игра</string>
@@ -288,7 +288,7 @@
     <string name="presentation_batch_g_presets_cd_rename">Переименовать</string>
     <string name="presentation_batch_g_presets_cd_delete">Удалить</string>
     <string name="presentation_batch_g_beta_sheet_version">Бета 0.6.0</string>
-    <string name="presentation_batch_g_beta_sheet_welcome_title">Добро пожаловать в LMusic 0.6.0-beta</string>
+    <string name="presentation_batch_g_beta_sheet_welcome_title">Добро пожаловать в Nobody Listens 0.6.0-beta</string>
     <string name="presentation_batch_g_beta_sheet_welcome_body">Эта бета сфокусирована на стабильности, скорости и кросс-девайс воспроизведении.</string>
     <string name="presentation_batch_g_beta_sheet_expect_title">Что нового</string>
     <string name="presentation_batch_g_beta_sheet_expect_1">Быстрая работа: плавный запуск, навигация и работа плеера.</string>
@@ -311,7 +311,7 @@
     <string name="presentation_batch_g_album_sel_queue_hint">Очередь соблюдает порядок выбора.</string>
     <string name="presentation_batch_g_album_sel_limit">Лимит: %1$d альбомов за раз.</string>
     <string name="presentation_batch_g_album_sel_add_queue_play">В очередь и играть</string>
-    <string name="presentation_batch_g_app_name">LMusic</string>
+    <string name="presentation_batch_g_app_name">Nobody Listens</string>
     <string name="presentation_batch_g_app_tagline">Музыкальный плеер</string>
     <string name="presentation_batch_g_brick_high">РЕКОРД %1$d</string>
     <string name="presentation_batch_g_brick_cd_close">Закрыть</string>
@@ -361,7 +361,7 @@
     <string name="presentation_batch_g_cast_playing">Играет</string>
     <string name="presentation_batch_g_cast_paused">Пауза</string>
     <string name="presentation_batch_g_cast_perm_title">Приготовьтесь к подключению</string>
-    <string name="presentation_batch_g_cast_perm_body">Разрешите LMusic видеть устройства рядом и Wi‑Fi, чтобы синхронизировать трансляции и колонки.</string>
+    <string name="presentation_batch_g_cast_perm_body">Разрешите Nobody Listens видеть устройства рядом и Wi‑Fi, чтобы синхронизировать трансляции и колонки.</string>
     <string name="presentation_batch_g_cast_perm_nearby_title">Устройства поблизости</string>
     <string name="presentation_batch_g_cast_perm_nearby_desc">Нужно для управления Bluetooth аудио-устройствами.</string>
     <string name="presentation_batch_g_cast_perm_location_title">Геопозиция для Wi‑Fi</string>

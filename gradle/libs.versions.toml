@@ -107,6 +107,7 @@ pagingCommon = "3.3.6"
 # Wear OS
 horologist = "0.7.15"
 wearCompose = "1.6.1"
+wearInput = "1.2.0"
 playServicesWearable = "20.0.1"
 
 [libraries]
@@ -246,6 +247,7 @@ wear-compose-material = { module = "androidx.wear.compose:compose-material", ver
 wear-compose-material3 = { module = "androidx.wear.compose:compose-material3", version.ref = "wearCompose" }
 wear-compose-foundation = { module = "androidx.wear.compose:compose-foundation", version.ref = "wearCompose" }
 wear-compose-navigation = { module = "androidx.wear.compose:compose-navigation", version.ref = "wearCompose" }
+wear-input = { module = "androidx.wear:wear-input", version.ref = "wearInput" }
 
 # Horologist
 horologist-compose-layout = { module = "com.google.android.horologist:horologist-compose-layout", version.ref = "horologist" }

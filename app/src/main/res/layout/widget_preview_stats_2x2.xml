@@ -11,7 +11,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Today"
-            android:textColor="@color/yuyu_widget_text_muted"
+            android:textColor="@color/nb_widget_text_muted"
             android:textSize="11sp" />
         <TextView
             android:layout_width="wrap_content"
@@ -19,7 +19,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="1h 12m"
-            android:textColor="@color/yuyu_widget_text"
+            android:textColor="@color/nb_widget_text"
             android:textSize="28sp" android:textStyle="bold" />
         <TextView
             android:layout_width="wrap_content"
@@ -27,7 +27,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="listened"
-            android:textColor="@color/yuyu_widget_text_muted"
+            android:textColor="@color/nb_widget_text_muted"
             android:textSize="11sp" />
     <View
         android:layout_width="match_parent"
@@ -42,6 +42,6 @@
         android:paddingEnd="10dp"
         android:paddingBottom="5dp"
         android:text="5-day streak"
-        android:textColor="@color/yuyu_widget_accent_text"
+        android:textColor="@color/nb_widget_accent_text"
         android:textSize="12sp" />
 </LinearLayout>

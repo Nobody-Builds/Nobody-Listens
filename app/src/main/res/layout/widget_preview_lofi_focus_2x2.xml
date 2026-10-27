@@ -11,7 +11,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Lofi &amp; focus"
-            android:textColor="@color/yuyu_widget_text_muted"
+            android:textColor="@color/nb_widget_text_muted"
             android:textSize="11sp" />
         <TextView
             android:layout_width="wrap_content"
@@ -19,7 +19,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="25:00"
-            android:textColor="@color/yuyu_widget_text"
+            android:textColor="@color/nb_widget_text"
             android:textSize="30sp" android:textStyle="bold" />
         <TextView
             android:layout_width="wrap_content"
@@ -27,7 +27,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Ready to focus"
-            android:textColor="@color/yuyu_widget_text_muted"
+            android:textColor="@color/nb_widget_text_muted"
             android:textSize="11sp" />
     <View
         android:layout_width="match_parent"
@@ -45,7 +45,7 @@
             android:contentDescription="@null"
             android:padding="8dp"
             android:src="@drawable/rounded_headphones_24"
-            android:tint="@color/yuyu_widget_text" />
+            android:tint="@color/nb_widget_text" />
         <ImageView
             android:layout_width="44dp"
             android:layout_height="44dp"
@@ -54,6 +54,6 @@
             android:contentDescription="@null"
             android:padding="8dp"
             android:src="@drawable/rounded_timer_24"
-            android:tint="@color/yuyu_widget_on_accent" />
+            android:tint="@color/nb_widget_on_accent" />
     </LinearLayout>
 </LinearLayout>

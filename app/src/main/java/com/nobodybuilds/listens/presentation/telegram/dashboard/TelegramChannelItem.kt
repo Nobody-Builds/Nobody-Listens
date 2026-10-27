@@ -1,0 +1,430 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
+package com.nobodybuilds.listens.presentation.telegram.dashboard
+
+import android.content.Context
+import android.text.format.DateUtils
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccessTime
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.MusicNote
+import androidx.compose.material.icons.rounded.Sync
+import androidx.compose.material.icons.rounded.Topic
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
+import com.nobodybuilds.listens.R
+import coil.compose.AsyncImage
+import com.nobodybuilds.listens.data.database.TelegramChannelEntity
+import com.nobodybuilds.listens.data.database.TelegramTopicEntity
+import com.nobodybuilds.listens.ui.theme.GoogleSansRounded
+import java.io.File
+import racra.compose.smooth_corner_rect_library.AbsoluteSmoothCornerShape
+
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+internal fun ExpressiveChannelItem(
+    channel: TelegramChannelEntity,
+    isSyncing: Boolean,
+    topics: List<TelegramTopicEntity>,
+    isExpanded: Boolean,
+    onSync: () -> Unit,
+    onOpenActions: () -> Unit,
+    onToggleExpand: () -> Unit
+) {
+    val context = LocalContext.current
+    val cardShape = AbsoluteSmoothCornerShape(
+        cornerRadiusTR = 28.dp,
+        cornerRadiusTL = 28.dp,
+        cornerRadiusBR = 28.dp,
+        cornerRadiusBL = 28.dp,
+        smoothnessAsPercentTR = 60,
+        smoothnessAsPercentTL = 60,
+        smoothnessAsPercentBR = 60,
+        smoothnessAsPercentBL = 60
+    )
+
+    val imageShape = AbsoluteSmoothCornerShape(
+        cornerRadiusTR = 20.dp,
+        cornerRadiusTL = 20.dp,
+        cornerRadiusBR = 20.dp,
+        cornerRadiusBL = 20.dp,
+        smoothnessAsPercentTR = 60,
+        smoothnessAsPercentTL = 60,
+        smoothnessAsPercentBR = 60,
+        smoothnessAsPercentBL = 60
+    )
+
+    val usernameLabel = remember(channel.username) {
+        channel.username
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { if (it.startsWith("@")) it else "@$it" }
+    }
+    val publicChannelFallback = stringResource(R.string.presentation_batch_f_public_channel_fallback)
+    val lastSyncLabel = remember(channel.lastSyncTime, context) {
+        formatLastSyncLabel(context, channel.lastSyncTime)
+    }
+
+    Surface(
+        shape = cardShape,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        tonalElevation = 1.dp,
+        shadowElevation = 0.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            // ── Channel header row ──────────────────────────────────────
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(62.dp)
+                        .clip(imageShape)
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.tertiary
+                                )
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (!channel.photoPath.isNullOrEmpty()) {
+                        AsyncImage(
+                            model = File(channel.photoPath),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        Text(
+                            text = channel.title.take(1).uppercase(),
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontFamily = GoogleSansRounded,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.size(14.dp))
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = channel.title,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontFamily = GoogleSansRounded,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = usernameLabel ?: publicChannelFallback,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontFamily = GoogleSansRounded,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+
+            // ── Meta pills ──────────────────────────────────────────────
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ChannelMetaPill(
+                    icon = Icons.Rounded.MusicNote,
+                    label = pluralStringResource(
+                        R.plurals.presentation_batch_f_n_songs,
+                        channel.songCount,
+                        channel.songCount
+                    )
+                )
+                ChannelMetaPill(
+                    icon = Icons.Rounded.AccessTime,
+                    label = lastSyncLabel
+                )
+                if (topics.isNotEmpty()) {
+                    ChannelMetaPill(
+                        icon = Icons.Rounded.Topic,
+                        label = pluralStringResource(
+                            R.plurals.presentation_batch_f_n_topics,
+                            topics.size,
+                            topics.size
+                        )
+                    )
+                }
+            }
+
+            // ── Action buttons ──────────────────────────────────────────
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                FilledTonalButton(
+                    onClick = onSync,
+                    enabled = !isSyncing,
+                    modifier = Modifier.weight(1f),
+                    colors = androidx.compose.material3.ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                ) {
+                    if (isSyncing) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        Text(stringResource(R.string.presentation_batch_f_syncing))
+                    } else {
+                        Icon(
+                            imageVector = Icons.Rounded.Sync,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        Text(stringResource(R.string.presentation_batch_f_sync_now))
+                    }
+                }
+
+                // Show expand/collapse button only when topics exist
+                if (topics.isNotEmpty()) {
+                    FilledTonalIconButton(
+                        onClick = onToggleExpand,
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    ) {
+                        Icon(
+                            imageVector = if (isExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+                            contentDescription = if (isExpanded) {
+                                stringResource(R.string.presentation_batch_f_cd_collapse_topics)
+                            } else {
+                                stringResource(R.string.presentation_batch_f_cd_show_topics)
+                            }
+                        )
+                    }
+                }
+
+                FilledTonalIconButton(
+                    onClick = onOpenActions,
+                    colors = IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.MoreVert,
+                        contentDescription = stringResource(R.string.presentation_batch_f_cd_channel_options)
+                    )
+                }
+            }
+
+            // ── Expandable topics list ──────────────────────────────────
+            AnimatedVisibility(
+                visible = isExpanded && topics.isNotEmpty(),
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
+                ) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = stringResource(R.string.presentation_batch_f_topics_heading),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontFamily = GoogleSansRounded,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    topics.forEach { topic ->
+                        TopicRow(topic = topic)
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ─── Single topic row ─────────────────────────────────────────────────────────
+
+@Composable
+private fun TopicRow(topic: TelegramTopicEntity) {
+    val songsLabel = pluralStringResource(
+        R.plurals.presentation_batch_f_n_songs,
+        topic.songCount,
+        topic.songCount
+    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.secondaryContainer),
+            contentAlignment = Alignment.Center
+        ) {
+//            Text(
+//                text = topic.iconEmoji?.takeIf { it.isNotBlank() } ?: "🎵",
+//                style = MaterialTheme.typography.bodyMedium,
+//                color = MaterialTheme.colorScheme.primary,
+//            )
+            Icon(
+                imageVector = Icons.Rounded.Topic,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp)
+            )
+        }
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = topic.name,
+                style = MaterialTheme.typography.bodyMedium,
+                fontFamily = GoogleSansRounded,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = songsLabel,
+                style = MaterialTheme.typography.labelSmall,
+                fontFamily = GoogleSansRounded,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+//            if (topic.songCount > 0) {
+//                Text(
+//                    text = "${topic.songCount} songs",
+//                    style = MaterialTheme.typography.labelSmall,
+//                    fontFamily = GoogleSansRounded,
+//                    color = MaterialTheme.colorScheme.onSurfaceVariant
+//                )
+//            } else {
+//                Text(
+//                    text = "Sync to load songs",
+//                    style = MaterialTheme.typography.labelSmall,
+//                    fontFamily = GoogleSansRounded,
+//                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+//                )
+//            }
+        }
+
+//        Icon(
+//            imageVector = Icons.Rounded.ChevronRight,
+//            contentDescription = null,
+//            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+//            modifier = Modifier.size(18.dp)
+//        )
+    }
+}
+
+@Composable
+private fun ChannelMetaPill(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String
+) {
+    Surface(
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surfaceContainerHighest
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(14.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelLarge,
+                fontFamily = GoogleSansRounded,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+private fun formatLastSyncLabel(context: Context, lastSyncTime: Long): String {
+    if (lastSyncTime <= 0L) return context.getString(R.string.presentation_batch_f_never_synced)
+    val relative = DateUtils.getRelativeTimeSpanString(
+        lastSyncTime,
+        System.currentTimeMillis(),
+        DateUtils.MINUTE_IN_MILLIS,
+        DateUtils.FORMAT_ABBREV_RELATIVE
+    ).toString()
+    return context.getString(R.string.presentation_batch_f_synced_relative, relative)
+}
