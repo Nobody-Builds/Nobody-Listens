@@ -22,7 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -58,12 +58,12 @@ fun PlayerScreen(
     onQueueClick: () -> Unit = {},
     viewModel: WearPlayerViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.playerState.collectAsState()
-    val isPhoneConnected by viewModel.isPhoneConnected.collectAsState()
-    val isWatchOutputSelected by viewModel.isWatchOutputSelected.collectAsState()
-    val activeOutputRouteType by viewModel.activeOutputRouteType.collectAsState()
-    val activeVolumeState by viewModel.activeVolumeState.collectAsState()
-    val albumArt by viewModel.albumArt.collectAsState()
+    val state by viewModel.playerDisplayState.collectAsStateWithLifecycle()
+    val isPhoneConnected by viewModel.isPhoneConnected.collectAsStateWithLifecycle()
+    val isWatchOutputSelected by viewModel.isWatchOutputSelected.collectAsStateWithLifecycle()
+    val activeOutputRouteType by viewModel.activeOutputRouteType.collectAsStateWithLifecycle()
+    val activeVolumeState by viewModel.activeVolumeState.collectAsStateWithLifecycle()
+    val albumArt by viewModel.albumArt.collectAsStateWithLifecycle()
 
     PlayerContent(
         state = state,
@@ -71,6 +71,7 @@ fun PlayerScreen(
         isPhoneConnected = isPhoneConnected,
         isWatchOutputSelected = isWatchOutputSelected,
         activeVolumeState = activeVolumeState,
+        positionProvider = viewModel::livePositionMs,
         onTogglePlayPause = viewModel::togglePlayPause,
         onNext = viewModel::next,
         onPrevious = viewModel::previous,
@@ -91,6 +92,7 @@ private fun PlayerContent(
     isPhoneConnected: Boolean,
     isWatchOutputSelected: Boolean = false,
     activeVolumeState: WearVolumeState,
+    positionProvider: () -> Long,
     onTogglePlayPause: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
@@ -103,9 +105,7 @@ private fun PlayerContent(
     onQueueClick: () -> Unit,
 ) {
     val palette = LocalWearPalette.current
-    // Memoize: radialGradient allocates Shader inputs on every call. PlayerContent
-    // recomposes whenever the play-button ring animation ticks, so without this
-    // we'd churn the GC for nothing.
+    // Reuse gradient inputs across player-state changes.
     val background = remember(palette) { palette.radialBackgroundBrush() }
 
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
@@ -129,7 +129,7 @@ private fun PlayerContent(
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            beyondViewportPageCount = 1,
+            beyondViewportPageCount = 0,
         ) { page ->
             when (page) {
                 0 -> {
@@ -140,6 +140,7 @@ private fun PlayerContent(
                         isPhoneConnected = isPhoneConnected,
                         isWatchOutputSelected = isWatchOutputSelected,
                         activeVolumeState = activeVolumeState,
+                        positionProvider = positionProvider,
                         onTogglePlayPause = onTogglePlayPause,
                         onNext = onNext,
                         onPrevious = onPrevious,
@@ -191,6 +192,7 @@ private fun PlayerMainPageHost(
     isPhoneConnected: Boolean,
     isWatchOutputSelected: Boolean,
     activeVolumeState: WearVolumeState,
+    positionProvider: () -> Long,
     onTogglePlayPause: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
@@ -257,11 +259,13 @@ private fun PlayerMainPageHost(
                 isPhoneConnected = isPhoneConnected,
                 isWatchOutputSelected = isWatchOutputSelected,
                 activeVolumeState = activeVolumeState,
+                positionProvider = positionProvider,
                 onTogglePlayPause = onTogglePlayPause,
                 onNext = onNext,
                 onPrevious = onPrevious,
                 onSetActiveVolume = onSetActiveVolume,
                 rotaryEnabled = isCurrentPage && albumRevealProgress <= 0.01f,
+                progressUpdatesEnabled = isCurrentPage && albumRevealProgress < 1f,
                 activeOutputRouteType = activeOutputRouteType,
                 onVolumeClick = onVolumeClick,
                 onOutputClick = onOutputClick,
@@ -309,7 +313,9 @@ private fun PlayerMainPageHost(
                 color = palette.textPrimary,
             )
 
-            if (canShowAlbumArt || albumRevealProgress > 0.01f) {
+            // The hidden artwork page samples image colors and runs a clock.
+            // Compose it only during a reveal, rather than for every playing song.
+            if (albumRevealProgress > 0f) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

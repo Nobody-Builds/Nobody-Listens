@@ -56,9 +56,17 @@ class WearStateRepository @Inject constructor() {
      */
     fun livePhonePositionMs(): Long {
         val state = _playerState.value
+        if (state.totalDurationMs > 0L) {
+            return PlaybackPosition(
+                positionMs = state.currentPositionMs,
+                durationMs = state.totalDurationMs,
+                isPlaying = state.isPlaying,
+                anchoredAtMs = playerStateReceivedAtMs,
+            ).positionAt(SystemClock.elapsedRealtime())
+        }
         if (!state.isPlaying) return state.currentPositionMs
         val position = state.currentPositionMs + (SystemClock.elapsedRealtime() - playerStateReceivedAtMs)
-        return if (state.totalDurationMs > 0L) position.coerceAtMost(state.totalDurationMs) else position
+        return position
     }
 
     fun updatePlayerState(state: WearPlayerState) {

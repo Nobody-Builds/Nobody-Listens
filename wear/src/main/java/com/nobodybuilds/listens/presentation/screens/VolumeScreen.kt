@@ -57,6 +57,7 @@ import com.nobodybuilds.listens.presentation.theme.surfaceContainerColor
 import com.nobodybuilds.listens.presentation.theme.surfaceContainerHighColor
 import com.nobodybuilds.listens.presentation.viewmodel.WearPlayerViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun VolumeScreen(
@@ -78,8 +79,8 @@ fun VolumeScreen(
     // (e.g. system-wide hard-key presses on some Wear builds). 1.5s is plenty
     // for a UI knob; it pauses immediately when the screen turns off.
     LaunchedEffect(viewModel) {
-        WearLifecycleState.isInteractive.collect { interactive ->
-            if (!interactive) return@collect
+        WearLifecycleState.isInteractive.collectLatest { interactive ->
+            if (!interactive) return@collectLatest
             while (WearLifecycleState.isInteractiveNow) {
                 viewModel.refreshActiveVolumeState()
                 delay(1_500L)

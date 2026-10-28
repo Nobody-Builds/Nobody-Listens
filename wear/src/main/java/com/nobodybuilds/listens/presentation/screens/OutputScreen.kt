@@ -50,6 +50,7 @@ import com.nobodybuilds.listens.presentation.viewmodel.WearPlayerViewModel
 import com.nobodybuilds.listens.shared.WearPlayerState
 import com.nobodybuilds.listens.shared.WearVolumeState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun OutputScreen(
@@ -79,8 +80,8 @@ fun OutputScreen(
     // reactively while discovery is on (DisposableEffect above). This loop is just a
     // slow safety net and pauses whenever the screen turns off.
     LaunchedEffect(viewModel) {
-        WearLifecycleState.isInteractive.collect { interactive ->
-            if (!interactive) return@collect
+        WearLifecycleState.isInteractive.collectLatest { interactive ->
+            if (!interactive) return@collectLatest
             while (WearLifecycleState.isInteractiveNow) {
                 viewModel.refreshWatchAudioState()
                 delay(2_500L)
