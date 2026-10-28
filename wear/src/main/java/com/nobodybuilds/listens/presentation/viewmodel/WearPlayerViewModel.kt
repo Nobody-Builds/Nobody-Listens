@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -106,6 +107,13 @@ class WearPlayerViewModel @Inject constructor(
             WearOutputTarget.PHONE -> remoteState
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), WearPlayerState())
+
+    // The player layout needs metadata and transport state, not position ticks.
+    // Progress reads livePositionMs separately, so every second does not rebuild
+    // the pager, scaling list, text, shapes, and control layout.
+    val playerDisplayState: StateFlow<WearPlayerState> = playerState
+        .map { it.copy(currentPositionMs = 0L) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), WearPlayerState())
 
     val albumArt: StateFlow<Bitmap?> = combine(
         stateRepository.outputTarget,
@@ -208,8 +216,8 @@ class WearPlayerViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            WearLifecycleState.isInteractive.collect { interactive ->
-                if (!interactive) return@collect
+            WearLifecycleState.isInteractive.collectLatest { interactive ->
+                if (!interactive) return@collectLatest
                 while (WearLifecycleState.isInteractiveNow) {
                     if (isWatchOutputSelected.value) {
                         volumeRepository.refreshWatchVolumeState()
@@ -266,6 +274,12 @@ class WearPlayerViewModel @Inject constructor(
             state.songTitle.isNotBlank() ||
             state.artistName.isNotBlank() ||
             state.isPlaying
+    }
+
+    /** Start a new UI clock from the source, including after the player page was unloaded. */
+    fun livePositionMs(): Long = when (outputTarget.value) {
+        WearOutputTarget.WATCH -> localPlayerRepository.livePositionMs()
+        WearOutputTarget.PHONE -> stateRepository.livePhonePositionMs()
     }
 
     fun selectOutput(target: WearOutputTarget) {

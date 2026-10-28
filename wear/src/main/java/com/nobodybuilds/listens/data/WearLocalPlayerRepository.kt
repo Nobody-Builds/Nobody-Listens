@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -390,7 +391,11 @@ class WearLocalPlayerRepository @Inject constructor(
 
     fun seekTo(positionMs: Long) {
         exoPlayer?.seekTo(positionMs)
+        updateState()
     }
+
+    /** Read on the main thread when recreating the lazily composed player UI. */
+    fun livePositionMs(): Long = exoPlayer?.currentPosition ?: _localPlayerState.value.currentPositionMs
 
     fun toggleShuffle() {
         scope.launch {
@@ -520,16 +525,18 @@ class WearLocalPlayerRepository @Inject constructor(
     private fun startPositionUpdates() {
         positionUpdateJob?.cancel()
         positionUpdateJob = scope.launch {
-            while (isActive) {
-                // Skip the StateFlow churn when the user can't see the UI: the
-                // ExoPlayer keeps tracking position internally, we just don't
-                // need to repaint composables. We still wake every second to
-                // notice the screen turning back on quickly, but we don't run
-                // the (allocating) updateState() pipeline.
-                if (WearLifecycleState.isInteractiveNow) {
-                    updateState()
+            WearLifecycleState.isInteractive.collectLatest { interactive ->
+                if (!interactive) return@collectLatest
+                while (isActive) {
+                    val player = exoPlayer ?: return@collectLatest
+                    // Position changes must not rebuild every item in the queue
+                    // or recheck artwork/palettes. Player events handle metadata.
+                    _localPlayerState.value = _localPlayerState.value.copy(
+                        currentPositionMs = player.currentPosition,
+                        totalDurationMs = player.duration.coerceAtLeast(0L),
+                    )
+                    delay(POSITION_UPDATE_INTERVAL_MS)
                 }
-                delay(POSITION_UPDATE_INTERVAL_MS)
             }
         }
     }

@@ -1,26 +1,17 @@
 package com.nobodybuilds.listens.presentation.components
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import com.nobodybuilds.listens.data.WearLifecycleState
-import kotlinx.coroutines.isActive
-import kotlin.math.PI
-import kotlin.math.sin
 
+/** Steady bars while playing, dots while paused; no perpetual frame loop on a watch. */
 @Composable
 fun PlayingEqIcon(
     modifier: Modifier = Modifier,
@@ -29,53 +20,13 @@ fun PlayingEqIcon(
     bars: Int = 3,
     minHeightFraction: Float = 0.28f,
     maxHeightFraction: Float = 1.0f,
-    phaseDurationMillis: Int = 2400,
-    wanderDurationMillis: Int = 8000,
     gapFraction: Float = 0.30f,
 ) {
-    val fullRotation = (2f * PI).toFloat()
-    val phaseAnim = remember { Animatable(0f) }
-    val wanderAnim = remember { Animatable(0f) }
-    val isInteractive by WearLifecycleState.isInteractive.collectAsState(
-        initial = WearLifecycleState.isInteractiveNow,
-    )
-    val animate = isPlaying && isInteractive
-
-    LaunchedEffect(animate, phaseDurationMillis) {
-        if (!animate) return@LaunchedEffect
-        while (isActive) {
-            val start = (phaseAnim.value % fullRotation).let { if (it < 0f) it + fullRotation else it }
-            phaseAnim.snapTo(start)
-            phaseAnim.animateTo(
-                targetValue = start + fullRotation,
-                animationSpec = tween(durationMillis = phaseDurationMillis, easing = LinearEasing),
-            )
-        }
-    }
-
-    LaunchedEffect(animate, wanderDurationMillis) {
-        if (!animate) return@LaunchedEffect
-        while (isActive) {
-            val start = (wanderAnim.value % fullRotation).let { if (it < 0f) it + fullRotation else it }
-            wanderAnim.snapTo(start)
-            wanderAnim.animateTo(
-                targetValue = start + fullRotation,
-                animationSpec = tween(durationMillis = wanderDurationMillis, easing = LinearEasing),
-            )
-        }
-    }
-
-    val phase = phaseAnim.value
-    val wander = wanderAnim.value
-
-    val activity by animateFloatAsState(
+    val activity = animateFloatAsState(
         targetValue = if (isPlaying) 1f else 0f,
         animationSpec = tween(durationMillis = 240, easing = FastOutSlowInEasing),
         label = "wearPlayingEqActivity",
     )
-
-    val speeds = remember(bars) { List(bars) { (it + 1).toFloat() } }
-    val shifts = remember(bars) { List(bars) { i -> i * 0.9f } }
 
     Canvas(modifier = modifier) {
         val width = size.width
@@ -87,16 +38,15 @@ fun PlayingEqIcon(
         val corner = CornerRadius(barWidth / 2f, barWidth / 2f)
 
         repeat(bars) { i ->
-            val slowShift = 0.6f * sin(wander + i * 0.4f)
-            val slowAmplitude = 0.85f + 0.15f * sin(wander * 0.5f + 1.1f + i * 0.3f)
-
-            val waveform = (sin(phase * speeds[i] + shifts[i] + slowShift) * slowAmplitude + 1f) * 0.5f
-            val eased = waveform * waveform * (3 - 2 * waveform)
-
-            val barsHeightFraction = minHeightFraction + (maxHeightFraction - minHeightFraction) * eased
+            val level = when (i % 3) {
+                0 -> 0.35f
+                1 -> 1f
+                else -> 0.65f
+            }
+            val barsHeightFraction = minHeightFraction + (maxHeightFraction - minHeightFraction) * level
             val barHeight = height * barsHeightFraction
             val dotHeight = barWidth
-            val blendedHeight = dotHeight + (barHeight - dotHeight) * activity
+            val blendedHeight = dotHeight + (barHeight - dotHeight) * activity.value
 
             val top = (height - blendedHeight) / 2f
             val left = i * (barWidth + gap)

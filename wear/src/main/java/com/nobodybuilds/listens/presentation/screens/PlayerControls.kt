@@ -1,13 +1,9 @@
 package com.nobodybuilds.listens.presentation.screens
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,13 +23,12 @@ import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathMeasure
@@ -44,7 +39,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Icon
-import com.nobodybuilds.listens.data.WearLifecycleState
 import com.nobodybuilds.listens.presentation.shapes.RoundedStarShape
 import com.nobodybuilds.listens.presentation.theme.LocalWearPalette
 import com.nobodybuilds.listens.presentation.theme.WearScreen
@@ -57,7 +51,7 @@ internal fun MainControlsRow(
     isPlaying: Boolean,
     isEmpty: Boolean,
     enabled: Boolean,
-    trackProgress: Float,
+    trackProgress: () -> Float,
     onTogglePlayPause: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
@@ -139,7 +133,7 @@ private fun FlattenedControlButton(
 private fun CenterPlayButton(
     isPlaying: Boolean,
     enabled: Boolean,
-    trackProgress: Float,
+    trackProgress: () -> Float,
     onClick: () -> Unit,
     screen: WearScreen,
 ) {
@@ -150,27 +144,8 @@ private fun CenterPlayButton(
         animationSpec = spring(),
         label = "playStarCurve",
     )
-    val rotation = remember { Animatable(0f) }
-    val isInteractive by WearLifecycleState.isInteractive.collectAsState(
-        initial = WearLifecycleState.isInteractiveNow,
-    )
-    LaunchedEffect(isPlaying, isInteractive) {
-        if (!isPlaying || !isInteractive) return@LaunchedEffect
-        while (true) {
-            val current = rotation.value
-            rotation.animateTo(
-                targetValue = current + 360f,
-                animationSpec = tween(
-                    durationMillis = 13800,
-                    easing = LinearEasing,
-                ),
-            )
-            if (rotation.value >= 3600f) {
-                rotation.snapTo(rotation.value % 360f)
-            }
-        }
-    }
-    val animatedRotation = rotation.value
+    // Keep the star, but do not run an endless animation during audio playback.
+    // Shape/size/color still animate briefly when play or pause changes.
     val animatedSize by animateDpAsState(
         targetValue = screen.scaled(if (isPlaying) 60.dp else 56.dp),
         animationSpec = spring(),
@@ -187,13 +162,17 @@ private fun CenterPlayButton(
         label = "playTint",
     )
 
-    val ringProgress = trackProgress.coerceIn(0f, 1f)
+    val playShape = remember(animatedCurve) {
+        RoundedStarShape(sides = 8, curve = animatedCurve.toDouble())
+    }
 
     Box(
         modifier = Modifier.size(animatedSize + 12.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().drawWithCache {
+            // Cache geometry until size or shape changes. Progress is read only
+            // during drawing, so its ticks cannot recompose or lay out controls.
             val strokeWidth = 4.dp.toPx()
             val ringInset = (strokeWidth / 2f) + 1.5.dp.toPx()
             val ringRadius = ((size.minDimension - (ringInset * 2f)) / 2f).coerceAtLeast(0f)
@@ -202,7 +181,6 @@ private fun CenterPlayButton(
                 centerY = size.height / 2f,
                 radius = ringRadius,
                 curve = animatedCurve,
-                rotation = animatedRotation,
             )
             val ringStroke = Stroke(
                 width = strokeWidth,
@@ -210,64 +188,38 @@ private fun CenterPlayButton(
                 join = StrokeJoin.Round,
             )
 
-            drawPath(
-                path = ringPath,
-                color = palette.surfaceContainerLowest, //.copy(alpha = 0.62f),
-                style = ringStroke,
-            )
-
             val pathMeasure = PathMeasure().apply {
                 setPath(ringPath, forceClosed = true)
             }
-            val pathLength = pathMeasure.length
-            val progressLength = pathLength * ringProgress
-            if (progressLength > 0f && pathLength > 0f) {
-                val normalizedRotation = ((animatedRotation % 360f) + 360f) % 360f
-                val startDistance = (pathLength * (normalizedRotation / 360f)).coerceIn(0f, pathLength)
-                val boundedProgress = progressLength.coerceAtMost(pathLength)
-                val progressPath = Path()
-
-                if (startDistance + boundedProgress <= pathLength) {
-                    pathMeasure.getSegment(
-                        startDistance = startDistance,
-                        stopDistance = startDistance + boundedProgress,
-                        destination = progressPath,
-                        startWithMoveTo = true,
-                    )
-                } else {
-                    val firstLeg = pathLength - startDistance
-                    pathMeasure.getSegment(
-                        startDistance = startDistance,
-                        stopDistance = pathLength,
-                        destination = progressPath,
-                        startWithMoveTo = true,
-                    )
-                    pathMeasure.getSegment(
-                        startDistance = 0f,
-                        stopDistance = (boundedProgress - firstLeg).coerceAtLeast(0f),
-                        destination = progressPath,
-                        startWithMoveTo = false,
-                    )
-                }
-
+            val progressPath = Path()
+            onDrawBehind {
                 drawPath(
-                    path = progressPath,
-                    color = palette.controlContainer.copy(alpha = if (enabled) 1f else 0.95f),
+                    path = ringPath,
+                    color = palette.surfaceContainerLowest,
                     style = ringStroke,
                 )
+                val progressLength = pathMeasure.length * trackProgress().coerceIn(0f, 1f)
+                if (progressLength > 0f) {
+                    progressPath.reset()
+                    pathMeasure.getSegment(
+                        startDistance = 0f,
+                        stopDistance = progressLength,
+                        destination = progressPath,
+                        startWithMoveTo = true,
+                    )
+                    drawPath(
+                        path = progressPath,
+                        color = palette.controlContainer.copy(alpha = if (enabled) 1f else 0.95f),
+                        style = ringStroke,
+                    )
+                }
             }
-        }
+        })
 
         Box(
             modifier = Modifier
                 .size(animatedSize)
-                .clip(
-                    RoundedStarShape(
-                        sides = 8,
-                        curve = animatedCurve.toDouble(),
-                        rotation = animatedRotation,
-                    )
-                )
+                .clip(playShape)
                 .background(container)
                 .clickable(enabled = enabled, onClick = onClick),
             contentAlignment = Alignment.Center,
@@ -287,14 +239,12 @@ private fun buildPlayButtonRingPath(
     centerY: Float,
     radius: Float,
     curve: Float,
-    rotation: Float,
     sides: Int = 8,
     steps: Int = 320,
 ): Path {
     val twoPi = Math.PI * 2.0
     val startAngle = -Math.PI / 2.0
     val angleStep = twoPi / steps.toDouble()
-    val rotationRad = Math.toRadians(rotation.toDouble())
     val ringPath = Path()
     val boundedCurve = curve.coerceIn(0f, 0.12f)
     val boundedRadius = radius.coerceAtLeast(0f)
@@ -303,8 +253,8 @@ private fun buildPlayButtonRingPath(
         val angle = startAngle + t
         val wave = 1f + (boundedCurve * cos((sides * angle)).toFloat())
         val distance = boundedRadius * wave
-        val x = centerX + (distance * cos(angle - rotationRad).toFloat())
-        val y = centerY + (distance * sin(angle - rotationRad).toFloat())
+        val x = centerX + (distance * cos(angle).toFloat())
+        val y = centerY + (distance * sin(angle).toFloat())
         return Offset(x, y)
     }
 
